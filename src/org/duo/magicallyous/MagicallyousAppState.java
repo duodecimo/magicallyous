@@ -26,7 +26,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.npc.NpcAppState;
-import org.duo.magicallyous.utils.TurnState;
 
 /**
  *

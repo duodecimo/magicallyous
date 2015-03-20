@@ -22,7 +22,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
-import org.duo.magicallyous.utils.TurnState;
 import org.duo.magicallyous.utils.WalkState;
 
 /**
