@@ -21,7 +21,7 @@ import org.duo.magicallyous.TerrainHeightControl;
  */
 public class NpcAppState extends AbstractAppState {
     SimpleApplication app;
-    List<Spatial> spiders;
+    List<Node> spiders;
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -36,9 +36,9 @@ public class NpcAppState extends AbstractAppState {
         int x = -50;
         int z = 50;
         Vector3f vector3f;
-        Spatial spider;
+        Node spider;
         for(int i=0; i<21; i++) {
-            spider = app.getAssetManager().loadModel("Models/spider.j3o");
+            spider = (Node) app.getAssetManager().loadModel("Models/spider.j3o");
             if (i<20) {
                 spider.scale(0.2f);
             }
