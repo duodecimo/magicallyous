@@ -40,7 +40,7 @@ public class NpcMovementControl extends AbstractControl {
     private boolean walkRandom = true;
     private Random random;
     private final Quaternion lookRotation = new Quaternion();
-    private long timeCounter = 0l;
+    private double timeCounter = 0l;
     private boolean active = false;
     // terrain bounds for npcs
     private float xmax, xmin, zmax, zmin;
@@ -76,18 +76,37 @@ public class NpcMovementControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        timeCounter += tpf;
         if (this.isActive()) {
-            timeCounter += tpf;
-            if(debugPosition) {
-                System.out.println("spider location: " + 
-                        spatial.getLocalTranslation() + " " + 
-                        spatial.getWorldTranslation());
+            // randomly toggle between walk and idle each 20 seconds
+            if (((long) timeCounter) % 20 == 0) {
+                timeCounter += 1;
+                if (npcState == NpcState.WALK) {
+                    if (random == null) {
+                        random = new Random();
+                    }
+                    switch (random.nextInt(10)) {
+                        case 0:
+                            npcState = NpcState.IDLE;
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (npcState == NpcState.IDLE) {
+                    npcState = NpcState.WALK;
+                }
+            }
+            if (debugPosition) {
+                System.out.println("spider location: "
+                        + spatial.getLocalTranslation() + " "
+                        +                        spatial.getWorldTranslation());
             }
             if (checkControl()) {
                 if (npcState == NpcState.WALK) {
                     // check the animation
                     if (animChannel.getAnimationName().compareTo("Walk_1") != 0) {
                         animChannel.setAnim("Walk_1");
+                        animChannel.setSpeed(0.5f);
                         animChannel.setLoopMode(LoopMode.Loop);
                     }
                     // check terrain limits
@@ -110,7 +129,7 @@ public class NpcMovementControl extends AbstractControl {
                         if (random == null) {
                             random = new Random();
                         }
-                        switch (random.nextInt(10)) {
+                        switch (random.nextInt(50)) {
                             case 0:
                                 // turn left
                                 spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 5f, 0.0f);
@@ -134,6 +153,23 @@ public class NpcMovementControl extends AbstractControl {
                             spatial.move(dist.multLocal(1.0f * tpf));
                         }
                     }
+                } else if(npcState == NpcState.IDLE) {
+                        // randomly turn
+                        if (random == null) {
+                            random = new Random();
+                        }
+                        switch (random.nextInt(5)) {
+                            case 0:
+                                // turn left
+                                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 5f, 0.0f);
+                                break;
+                            case 1:
+                                // turn right
+                                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -5f, 0.0f);
+                                break;
+                            default:
+                                break;
+                        }
                 }
             }
         }
