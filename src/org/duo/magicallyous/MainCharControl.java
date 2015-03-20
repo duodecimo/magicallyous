@@ -4,14 +4,17 @@
  */
 package org.duo.magicallyous;
 
+import org.duo.magicallyous.utils.ActionState;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.LoopMode;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -19,6 +22,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
+import org.duo.magicallyous.utils.TurnState;
+import org.duo.magicallyous.utils.WalkState;
 
 /**
  *
@@ -31,8 +36,9 @@ public class MainCharControl extends AbstractControl {
     AnimControl animControl;
     AnimChannel animChannel;
     private ActionState actionState = ActionState.IDLE;
-    enum WalkState {NORMAL, RUN};
-    WalkState walkState = WalkState.NORMAL;
+    private WalkState walkState = WalkState.NORMAL;
+    private boolean turningLeft = false;
+    private boolean turningRight = false;
 
     public ActionState getActionState() {
         return actionState;
@@ -52,8 +58,40 @@ public class MainCharControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(checkControl()) {
-            if(actionState != ActionState.IDLE) {
+        if (checkControl()) {
+            BetterCharacterControl betterCharacterControl = spatial.
+                    getControl(BetterCharacterControl.class);
+            // walk direction
+            Vector3f walkDirection = Vector3f.ZERO;
+            // foward direction
+            Vector3f fowardDirection = spatial.getWorldRotation().mult(Vector3f.UNIT_Z);
+            // side direction
+            Vector3f sideDirection = spatial.getWorldRotation().mult(Vector3f.UNIT_X);
+            // view direction
+            Vector3f viewDirection = betterCharacterControl.getViewDirection();
+            if (turningLeft) {
+                walkDirection.addLocal(sideDirection.mult(1.0f));
+                Quaternion rotate = new Quaternion().
+                        fromAngleAxis(FastMath.PI * tpf, Vector3f.UNIT_Y);
+                rotate.multLocal(viewDirection);
+            } else if (turningRight) {
+                walkDirection.addLocal(sideDirection.negate().mult(1.0f));
+                Quaternion rotate = new Quaternion().
+                        fromAngleAxis(-FastMath.PI * tpf, Vector3f.UNIT_Y);
+                rotate.multLocal(viewDirection);
+            }
+            if (actionState == ActionState.WALK) {
+                // calculate distance to walk
+                if (walkState == WalkState.RUN) {
+                    walkDirection.addLocal(fowardDirection.multLocal(9.0f));
+                } else {
+                    walkDirection.addLocal(fowardDirection.multLocal(1.0f));
+                }
+            }
+            betterCharacterControl.setWalkDirection(walkDirection);
+            betterCharacterControl.setViewDirection(viewDirection.normalize());
+            // set animation
+            if (actionState == ActionState.WALK) {
                 if (walkState == WalkState.RUN) {
                     if (animChannel.getAnimationName().compareTo("Run") != 0) {
                         animChannel.setAnim("Run");
@@ -65,26 +103,8 @@ public class MainCharControl extends AbstractControl {
                         animChannel.setLoopMode(LoopMode.Loop);
                     }
                 }
-                // walk foward
-                Vector3f walkDirection = Vector3f.ZERO;
-                // get foward direction
-                Vector3f fowardDirection = spatial.getWorldRotation().getRotationColumn(2);
-                if(actionState == ActionState.WALKFORWARD) {
-                    // add direction
-                    walkDirection.addLocal(fowardDirection);
-                    // calculate distance to walk
-                    if(walkState == WalkState.RUN) {
-                        spatial.move(walkDirection.multLocal(9.0f).multLocal(tpf));
-                    } else {
-                        spatial.move(walkDirection.multLocal(1.0f).multLocal(tpf));
-                    }
-                } else if(actionState == ActionState.TURNLEFT) {
-                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
-                } else if(actionState == ActionState.TURNRIGHT) {
-                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
-                }
             } else {
-                if(animChannel.getAnimationName().compareTo("Idle")!=0) {
+                if (animChannel.getAnimationName().compareTo("Idle") != 0) {
                     animChannel.setAnim("Idle");
                     animChannel.setSpeed(0.5f);
                     animChannel.setLoopMode(LoopMode.Loop);
@@ -133,5 +153,13 @@ public class MainCharControl extends AbstractControl {
         OutputCapsule out = ex.getCapsule(this);
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
+    }
+
+    public void setTurningLeft(boolean turningLeft) {
+        this.turningLeft = turningLeft;
+    }
+
+    public void setTurningRight(boolean turningRight) {
+        this.turningRight = turningRight;
     }
 }
