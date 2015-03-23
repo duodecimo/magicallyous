@@ -102,7 +102,6 @@ public class NpcMovementControl extends AbstractControl {
         if (this.isActive()) {
             // check if main char is in attack range
             if(mainChar != null) {
-                System.out.println("main char at: " + mainChar.getWorldTranslation());
                 Vector3f aim = mainChar.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
@@ -116,7 +115,6 @@ public class NpcMovementControl extends AbstractControl {
                         MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
                         mainCharControl.setActionState(ActionState.ATTACK);
                     }
-                    System.out.println("spider attacking from: " + dist.length());
                 } else {
                     // stop attacking
                     if(npcState == NpcState.ATTACK) {
