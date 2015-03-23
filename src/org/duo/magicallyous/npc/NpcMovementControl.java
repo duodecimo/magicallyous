@@ -13,6 +13,7 @@ import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -57,6 +58,17 @@ public class NpcMovementControl extends AbstractControl {
         this.zmin = zmin;
     }
 
+    public Vector2f getSpawnLocation() {
+        Vector2f vector2f = new Vector2f(0.0f, 0.0f);
+        if(random == null) {
+            random = new Random();
+        }
+        float pointX = xmin + 2.0f + random.nextInt(((int) Math.abs(xmax - xmin)) -4)* (xmin/xmin);
+        float pointZ = zmin + 2.0f + random.nextInt(((int) Math.abs(zmax - zmin)) -4)* (zmin/zmin);
+        vector2f.x = pointX;
+        vector2f.y = pointZ;
+        return vector2f;
+    }
     public void setNpcTerrainCenter(float xcenter, float zcenter) {
         this.xcenter = xcenter;
         this.zcenter = zcenter;
@@ -76,9 +88,7 @@ public class NpcMovementControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        //BetterCharacterControl betterCharacterControl = spatial.getControl(BetterCharacterControl.class);
         Vector3f walkDirection = Vector3f.ZERO;
-        //Vector3f aimDirection = Vector3f.ZERO;
         timeCounter += tpf;
         if (this.isActive()) {
             // randomly toggle between walk and idle each 20 seconds
@@ -119,7 +129,6 @@ public class NpcMovementControl extends AbstractControl {
                         walkRandom = false;
                     }
                     if (walkRandom) {
-                        // walk foward
                         // get foward direction
                         Vector3f fowardDirection = spatial.getWorldRotation().getRotationColumn(2);
                         // add direction
@@ -135,12 +144,10 @@ public class NpcMovementControl extends AbstractControl {
                             case 0:
                                 // turn left
                                 spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 5f, 0.0f);
-                                //betterCharacterControl.setViewDirection(new Vector3f(0.0f, FastMath.DEG_TO_RAD * 5f, 0.0f));
                                 break;
                             case 1:
                                 // turn right
                                 spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -5f, 0.0f);
-                                //betterCharacterControl.setViewDirection(new Vector3f(0.0f, FastMath.DEG_TO_RAD * -55f, 0.0f));
                                 break;
                             default:
                                 break;
@@ -152,13 +159,11 @@ public class NpcMovementControl extends AbstractControl {
                             walkRandom = true;
                         } else {
                             dist.normalizeLocal();
-                            //betterCharacterControl.setViewDirection(dist);
                             lookRotation.lookAt(dist, Vector3f.UNIT_Y);
                             spatial.setLocalRotation(lookRotation);
                             spatial.move(dist.multLocal(1.0f * tpf));
                         }
                     }
-                    //betterCharacterControl.setWalkDirection(walkDirection);
                 } else if(npcState == NpcState.IDLE) {
                         // randomly turn
                         if (random == null) {
