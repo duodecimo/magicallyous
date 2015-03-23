@@ -51,9 +51,9 @@ public class NpcAppState extends AbstractAppState {
             npcMovementControl = new NpcMovementControl();
             npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);
-            if(i==0) {
-                npcMovementControl.setDebugPosition(true);
-            }
+            /*if(i==0) {
+             * npcMovementControl.setDebugPosition(true);
+             * }*/
             ((Node) scene).attachChild(spider);
             if(mainChar != null) {
                 npcMovementControl.setMainChar(mainChar);
