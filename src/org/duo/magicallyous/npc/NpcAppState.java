@@ -30,6 +30,11 @@ public class NpcAppState extends AbstractAppState {
         //this is called on the OpenGL thread after the AppState has been attached
         this.app = (SimpleApplication) app;
         Node scene = (Node) ((SimpleApplication) app).getRootNode().getChild("Scene01");
+        Node mainChar = (Node) scene.getChild("mainChar");
+        if(mainChar == null) {
+            System.err.println("mainChar is NULL!");
+            System.exit(1);
+        }
         NpcMovementControl npcMovementControl;
         // atach spiders
         spiders = new ArrayList<>();
@@ -50,6 +55,9 @@ public class NpcAppState extends AbstractAppState {
                 npcMovementControl.setDebugPosition(true);
             }
             ((Node) scene).attachChild(spider);
+            if(mainChar != null) {
+                npcMovementControl.setMainChar(mainChar);
+            }
             vector3f = new Vector3f(x, 0.0f, z);
             spider.addControl(npcMovementControl);
             vector2f = npcMovementControl.getSpawnLocation();

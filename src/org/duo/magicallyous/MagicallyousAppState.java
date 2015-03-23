@@ -49,10 +49,6 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         this.app = (SimpleApplication) app;
         // multiplayer, so, it should not pause on lost focus
         this.app.setPauseOnLostFocus(false);
-        // physics
-        //BulletAppState bulletAppState = new BulletAppState();
-        //stateManager.attach(bulletAppState);
-        
         setupKeys(app.getInputManager());
         this.app.getRootNode().attachChild(app.getAssetManager().loadModel("Scenes/Scene01.j3o"));
         for(Spatial spatial : this.app.getRootNode().getChildren()) {
@@ -61,25 +57,12 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         scene = this.app.getRootNode().getChild("Scene01");
         terrainNode = (Node) ((Node) scene).getChild("terrainNode");
         
-        // We set up collision detection for the scene by creating a
-        // compound collision shape and a static RigidBodyControl with mass zero.
-        //CollisionShape terrainShape =
-            //CollisionShapeFactory.createMeshShape(terrainNode);
-        //RigidBodyControl landscape = new RigidBodyControl(terrainShape, 0);
-        //terrainNode.addControl(landscape);
-        //bulletAppState.getPhysicsSpace().add(landscape);
-        //bulletAppState.getPhysicsSpace().addAll(terrainNode);
         mainChar = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
-        //BetterCharacterControl betterCharacterControl = new BetterCharacterControl(0.5f, 2.5f, 80f);
-        //mainChar.addControl(betterCharacterControl);
+        mainChar.setName("mainChar");
         mainChar.addControl(new MainCharControl());
         mainChar.addControl(new TerrainHeightControl());
-        //betterCharacterControl.setGravity(new Vector3f(0.0f, -9.8f, 0.0f));
-        //betterCharacterControl.warp(new Vector3f(0.0f, 10.0f, 0.0f));
         mainChar.move(0.0f, 0.0f, 0.0f);
         ((Node) scene).attachChild(mainChar);
-        //bulletAppState.getPhysicsSpace().add(betterCharacterControl);
-        //bulletAppState.getPhysicsSpace().addAll(mainChar);
         for(Spatial spatial : ((Node) scene).getChildren()) {
             System.out.println("scene children: " + spatial.getName());
         }

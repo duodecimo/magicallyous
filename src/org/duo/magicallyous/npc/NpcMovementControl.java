@@ -17,6 +17,7 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
@@ -35,9 +36,10 @@ public class NpcMovementControl extends AbstractControl {
     private AnimControl animControl;
     private AnimChannel animChannel;
     enum NpcState {
-        WALK, RUN, STRIKE, IDLE
+        WALK, RUN, ATTACK, IDLE
     };
     private NpcState npcState = NpcState.WALK;
+    private NpcState previousNpcState = NpcState.WALK;
     private boolean walkRandom = true;
     private Random random;
     private final Quaternion lookRotation = new Quaternion();
@@ -50,12 +52,17 @@ public class NpcMovementControl extends AbstractControl {
     // debug position
     private boolean debugPosition = false;
     long debugPositionTime = 0l;
+    Node mainChar;
 
     public void setNpcTerrainBounds(float xmax, float xmin, float zmax, float zmin) {
         this.xmax = xmax;
         this.xmin = xmin;
         this.zmax = zmax;
         this.zmin = zmin;
+    }
+
+    public void setMainChar(Node mainChar) {
+        this.mainChar = mainChar;
     }
 
     public Vector2f getSpawnLocation() {
@@ -91,6 +98,26 @@ public class NpcMovementControl extends AbstractControl {
         Vector3f walkDirection = Vector3f.ZERO;
         timeCounter += tpf;
         if (this.isActive()) {
+            // check if main char is in attack range
+            if(mainChar != null) {
+                System.out.println("main char at: " + mainChar.getWorldTranslation());
+                Vector3f aim = mainChar.getWorldTranslation();
+                Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                if (dist.length() < 3.0f) {
+                    if(npcState != NpcState.ATTACK) {
+                        previousNpcState = npcState;
+                        npcState = NpcState.ATTACK;
+                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                        spatial.setLocalRotation(lookRotation);
+                    }
+                    System.out.println("spider attacking from: " + dist.length());
+                } else {
+                    // stop attacking
+                    if(npcState == NpcState.ATTACK) {
+                        npcState = previousNpcState;
+                    }
+                }
+            }
             // randomly toggle between walk and idle each 20 seconds
             if (((long) timeCounter) % 20 == 0) {
                 timeCounter += 1;
@@ -181,6 +208,13 @@ public class NpcMovementControl extends AbstractControl {
                             default:
                                 break;
                         }
+                } else if(npcState == NpcState.ATTACK) {
+                    // check the animation
+                    if (animChannel.getAnimationName().compareTo("Strike") != 0) {
+                        animChannel.setAnim("Strike");
+                        animChannel.setSpeed(1.0f);
+                        animChannel.setLoopMode(LoopMode.Loop);
+                    }
                 }
             }
         }
