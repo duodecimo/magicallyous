@@ -55,42 +55,23 @@ public class MainCharControl extends AbstractControl {
         }
     }
 
+    public void setTurningLeft(boolean turningLeft) {
+        this.turningLeft = turningLeft;
+    }
+
+    public void setTurningRight(boolean turningRight) {
+        this.turningRight = turningRight;
+    }
+
     @Override
     protected void controlUpdate(float tpf) {
-        if (checkControl()) {
-            BetterCharacterControl betterCharacterControl = spatial.
-                    getControl(BetterCharacterControl.class);
-            // walk direction
-            Vector3f walkDirection = Vector3f.ZERO;
-            // foward direction
-            Vector3f fowardDirection = spatial.getWorldRotation().mult(Vector3f.UNIT_Z);
-            // side direction
-            Vector3f sideDirection = spatial.getWorldRotation().mult(Vector3f.UNIT_X);
-            // view direction
-            Vector3f viewDirection = betterCharacterControl.getViewDirection();
+        if(checkControl()) {
             if (turningLeft) {
-                walkDirection.addLocal(sideDirection.mult(1.0f));
-                Quaternion rotate = new Quaternion().
-                        fromAngleAxis(FastMath.PI * tpf, Vector3f.UNIT_Y);
-                rotate.multLocal(viewDirection);
+                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
             } else if (turningRight) {
-                walkDirection.addLocal(sideDirection.negate().mult(1.0f));
-                Quaternion rotate = new Quaternion().
-                        fromAngleAxis(-FastMath.PI * tpf, Vector3f.UNIT_Y);
-                rotate.multLocal(viewDirection);
+                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
             }
-            if (actionState == ActionState.WALK) {
-                // calculate distance to walk
-                if (walkState == WalkState.RUN) {
-                    walkDirection.addLocal(fowardDirection.multLocal(9.0f));
-                } else {
-                    walkDirection.addLocal(fowardDirection.multLocal(1.0f));
-                }
-            }
-            betterCharacterControl.setWalkDirection(walkDirection);
-            betterCharacterControl.setViewDirection(viewDirection.normalize());
-            // set animation
-            if (actionState == ActionState.WALK) {
+            if(actionState != ActionState.IDLE) {
                 if (walkState == WalkState.RUN) {
                     if (animChannel.getAnimationName().compareTo("Run") != 0) {
                         animChannel.setAnim("Run");
@@ -102,8 +83,22 @@ public class MainCharControl extends AbstractControl {
                         animChannel.setLoopMode(LoopMode.Loop);
                     }
                 }
+                // walk foward
+                Vector3f walkDirection = Vector3f.ZERO;
+                // get foward direction
+                Vector3f fowardDirection = spatial.getWorldRotation().getRotationColumn(2);
+                if(actionState == ActionState.WALK) {
+                    // add direction
+                    walkDirection.addLocal(fowardDirection);
+                    // calculate distance to walk
+                    if(walkState == WalkState.RUN) {
+                        spatial.move(walkDirection.multLocal(9.0f).multLocal(tpf));
+                    } else {
+                        spatial.move(walkDirection.multLocal(1.0f).multLocal(tpf));
+                    }
+                }
             } else {
-                if (animChannel.getAnimationName().compareTo("Idle") != 0) {
+                if(animChannel.getAnimationName().compareTo("Idle")!=0) {
                     animChannel.setAnim("Idle");
                     animChannel.setSpeed(0.5f);
                     animChannel.setLoopMode(LoopMode.Loop);
@@ -152,13 +147,5 @@ public class MainCharControl extends AbstractControl {
         OutputCapsule out = ex.getCapsule(this);
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
-    }
-
-    public void setTurningLeft(boolean turningLeft) {
-        this.turningLeft = turningLeft;
-    }
-
-    public void setTurningRight(boolean turningRight) {
-        this.turningRight = turningRight;
     }
 }

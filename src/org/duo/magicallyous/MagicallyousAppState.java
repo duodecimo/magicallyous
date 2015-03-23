@@ -9,11 +9,6 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -22,7 +17,6 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.npc.NpcAppState;
@@ -56,8 +50,9 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         // multiplayer, so, it should not pause on lost focus
         this.app.setPauseOnLostFocus(false);
         // physics
-        BulletAppState bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
+        //BulletAppState bulletAppState = new BulletAppState();
+        //stateManager.attach(bulletAppState);
+        
         setupKeys(app.getInputManager());
         this.app.getRootNode().attachChild(app.getAssetManager().loadModel("Scenes/Scene01.j3o"));
         for(Spatial spatial : this.app.getRootNode().getChildren()) {
@@ -68,22 +63,23 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         
         // We set up collision detection for the scene by creating a
         // compound collision shape and a static RigidBodyControl with mass zero.
-        CollisionShape terrainShape =
-            CollisionShapeFactory.createMeshShape(terrainNode);
-        RigidBodyControl landscape = new RigidBodyControl(terrainShape, 0);
-        terrainNode.addControl(landscape);
-        bulletAppState.getPhysicsSpace().add(landscape);
-        bulletAppState.getPhysicsSpace().addAll(terrainNode);
+        //CollisionShape terrainShape =
+            //CollisionShapeFactory.createMeshShape(terrainNode);
+        //RigidBodyControl landscape = new RigidBodyControl(terrainShape, 0);
+        //terrainNode.addControl(landscape);
+        //bulletAppState.getPhysicsSpace().add(landscape);
+        //bulletAppState.getPhysicsSpace().addAll(terrainNode);
         mainChar = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
-        BetterCharacterControl betterCharacterControl = new BetterCharacterControl(0.5f, 2.5f, 80f);
-        mainChar.addControl(betterCharacterControl);
+        //BetterCharacterControl betterCharacterControl = new BetterCharacterControl(0.5f, 2.5f, 80f);
+        //mainChar.addControl(betterCharacterControl);
         mainChar.addControl(new MainCharControl());
         mainChar.addControl(new TerrainHeightControl());
-        betterCharacterControl.setGravity(new Vector3f(0.0f, -9.8f, 0.0f));
-        betterCharacterControl.warp(new Vector3f(0.0f, 10.0f, 0.0f));
+        //betterCharacterControl.setGravity(new Vector3f(0.0f, -9.8f, 0.0f));
+        //betterCharacterControl.warp(new Vector3f(0.0f, 10.0f, 0.0f));
+        mainChar.move(0.0f, 0.0f, 0.0f);
         ((Node) scene).attachChild(mainChar);
-        bulletAppState.getPhysicsSpace().add(betterCharacterControl);
-        bulletAppState.getPhysicsSpace().addAll(mainChar);
+        //bulletAppState.getPhysicsSpace().add(betterCharacterControl);
+        //bulletAppState.getPhysicsSpace().addAll(mainChar);
         for(Spatial spatial : ((Node) scene).getChildren()) {
             System.out.println("scene children: " + spatial.getName());
         }
@@ -106,10 +102,10 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         // add a barrel
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
         ((Node) scene).attachChild(barrel);
-        barrel.setLocalTranslation(0.0f,  -0.0f, -6.0f);
-        RigidBodyControl barrelRigidBodyControl = new RigidBodyControl(0.0f);
-        barrel.addControl(barrelRigidBodyControl);
-        bulletAppState.getPhysicsSpace().add(barrelRigidBodyControl);
+        barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
+        //RigidBodyControl barrelRigidBodyControl = new RigidBodyControl(0.0f);
+        //barrel.addControl(barrelRigidBodyControl);
+        //bulletAppState.getPhysicsSpace().add(barrelRigidBodyControl);
     }
 
     @Override

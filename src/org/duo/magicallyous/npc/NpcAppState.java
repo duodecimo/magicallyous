@@ -28,6 +28,7 @@ public class NpcAppState extends AbstractAppState {
         //TODO: initialize your AppState, e.g. attach spatials to rootNode
         //this is called on the OpenGL thread after the AppState has been attached
         this.app = (SimpleApplication) app;
+        //BulletAppState bulletAppState = app.getStateManager().getState(BulletAppState.class);
         Node scene = (Node) ((SimpleApplication) app).getRootNode().getChild("Scene01");
         NpcMovementControl npcMovementControl;
         // atach spiders
@@ -41,6 +42,10 @@ public class NpcAppState extends AbstractAppState {
             if (i<20) {
                 spider.scale(0.2f);
             }
+            //BetterCharacterControl betterCharacterControl = new BetterCharacterControl(0.5f, 0.5f, 20.0f);
+            //spider.addControl(betterCharacterControl);
+            //bulletAppState.getPhysicsSpace().add(betterCharacterControl);
+            //bulletAppState.getPhysicsSpace().addAll(spider);
             npcMovementControl = new NpcMovementControl();
             npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);
@@ -49,7 +54,9 @@ public class NpcAppState extends AbstractAppState {
             }
             ((Node) scene).attachChild(spider);
             vector3f = new Vector3f(x, 0.0f, z);
+            //betterCharacterControl.warp(vector3f);
             spider.setLocalTranslation(vector3f);
+            //spider.move(vector3f);
             /*            if(i==0) {
              * npcMovementControl.setDebugPosition(true);
              * spider.setLocalTranslation(-28.0f, 0.0f, 28.0f);
