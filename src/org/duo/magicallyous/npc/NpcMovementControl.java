@@ -23,6 +23,8 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
+import org.duo.magicallyous.MainCharControl;
+import org.duo.magicallyous.utils.ActionState;
 
 /**
  *
@@ -109,6 +111,10 @@ public class NpcMovementControl extends AbstractControl {
                         npcState = NpcState.ATTACK;
                         lookRotation.lookAt(dist, Vector3f.UNIT_Y);
                         spatial.setLocalRotation(lookRotation);
+                        lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
+                        mainChar.setLocalRotation(lookRotation);
+                        MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
+                        mainCharControl.setActionState(ActionState.ATTACK);
                     }
                     System.out.println("spider attacking from: " + dist.length());
                 } else {

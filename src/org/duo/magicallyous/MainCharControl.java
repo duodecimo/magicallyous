@@ -7,14 +7,13 @@ package org.duo.magicallyous;
 import org.duo.magicallyous.utils.ActionState;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -28,22 +27,27 @@ import org.duo.magicallyous.utils.WalkState;
  *
  * @author duo
  */
-public class MainCharControl extends AbstractControl {
+public class MainCharControl extends AbstractControl implements AnimEventListener {
     //Any local variables should be encapsulated by getters/setters so they
     //appear in the SDK properties window and can be edited.
     //Right-click a local variable to encapsulate it with getters and setters.
     AnimControl animControl;
     AnimChannel animChannel;
     private ActionState actionState = ActionState.IDLE;
+    private ActionState previousActionState = ActionState.IDLE;
     private WalkState walkState = WalkState.NORMAL;
     private boolean turningLeft = false;
     private boolean turningRight = false;
+    private boolean startAtack = false;
 
     public ActionState getActionState() {
         return actionState;
     }
 
     public void setActionState(ActionState actionState) {
+        if(actionState == ActionState.ATTACK) {
+            previousActionState = this.actionState;
+        }
         this.actionState = actionState;
     }
 
@@ -66,12 +70,14 @@ public class MainCharControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(checkControl()) {
-            if (turningLeft) {
-                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
-            } else if (turningRight) {
-                spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
+            if (actionState != ActionState.ATTACK) {
+                if (turningLeft) {
+                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
+                } else if (turningRight) {
+                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
+                }
             }
-            if(actionState != ActionState.IDLE) {
+            if(actionState == ActionState.WALK) {
                 if (walkState == WalkState.RUN) {
                     if (animChannel.getAnimationName().compareTo("Run") != 0) {
                         animChannel.setAnim("Run");
@@ -97,7 +103,7 @@ public class MainCharControl extends AbstractControl {
                         spatial.move(walkDirection.multLocal(1.0f).multLocal(tpf));
                     }
                 }
-            } else {
+            } else if(actionState == ActionState.IDLE) {
                 if(animChannel.getAnimationName().compareTo("Idle")!=0) {
                     animChannel.setAnim("Idle");
                     animChannel.setSpeed(0.5f);
@@ -105,14 +111,25 @@ public class MainCharControl extends AbstractControl {
                     System.out.println("mainchar location: " + spatial.getLocalTranslation()
                             + "    " + spatial.getWorldTranslation());
                 }
+            } else if(actionState == ActionState.ATTACK) {
+                if(!startAtack) {
+                    startAtack = true;
+                    if(animChannel.getAnimationName().compareTo("Precast")!=0) {
+                        animChannel.setAnim("Precast");
+                        animChannel.setSpeed(1.0f);
+                        animChannel.setLoopMode(LoopMode.DontLoop);
+                    }
+                }
             }
         }
     }
+
 
     protected boolean checkControl() {
         AnimControl control = spatial.getControl(AnimControl.class);
         if(control != animControl) {
             animControl = control;
+            animControl.addListener(this);
             animChannel = animControl.createChannel();
             animChannel.setAnim("Idle");
             animChannel.setLoopMode(LoopMode.Loop);
@@ -147,5 +164,22 @@ public class MainCharControl extends AbstractControl {
         OutputCapsule out = ex.getCapsule(this);
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
+    }
+
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if(animName == "Precast") {
+            animChannel.setAnim("Cast");
+            animChannel.setSpeed(0.3f);
+            animChannel.setLoopMode(LoopMode.DontLoop);
+        } else {
+            animChannel.setAnim("Precast");
+            animChannel.setSpeed(1.0f);
+            animChannel.setLoopMode(LoopMode.DontLoop);
+        }
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
     }
 }

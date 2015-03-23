@@ -107,48 +107,50 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
-        switch (name) {
-            case "Forward":
-                if (isPressed) {
-                    mainCharControl.setActionState(ActionState.WALK);
-                } else {
+        if (mainCharControl.getActionState() != ActionState.ATTACK) {
+            switch (name) {
+                case "Forward":
+                    if (isPressed) {
+                        mainCharControl.setActionState(ActionState.WALK);
+                    } else {
+                        mainCharControl.setActionState(ActionState.IDLE);
+                    }
+                    break;
+                case "Stop":
                     mainCharControl.setActionState(ActionState.IDLE);
-                }
-                break;
-            case "Stop":
-                mainCharControl.setActionState(ActionState.IDLE);
-                break;
-            case "Rotate Left":
-                if(isPressed) {
-                    mainCharControl.setTurningLeft(true);
-                } else {
-                    mainCharControl.setTurningLeft(false);
-                }
-                break;
-            case "Rotate Right":
-                if(isPressed) {
-                    mainCharControl.setTurningRight(true);
-                } else {
-                    mainCharControl.setTurningRight(false);
-                }
-                break;
-            case "toggle walk state":
-                if(isPressed) {
-                    mainCharControl.toggleWalkState();
-                }
-                break;
-            case "pick target":
-                if (isPressed) {
-                    if (handNode != null && swordNode != null) {
-                        if (handNode.hasChild(swordNode)) {
-                            handNode.detachChild(swordNode);
-                        } else {
-                            handNode.attachChild(swordNode);
+                    break;
+                case "Rotate Left":
+                    if (isPressed) {
+                        mainCharControl.setTurningLeft(true);
+                    } else {
+                        mainCharControl.setTurningLeft(false);
+                    }
+                    break;
+                case "Rotate Right":
+                    if (isPressed) {
+                        mainCharControl.setTurningRight(true);
+                    } else {
+                        mainCharControl.setTurningRight(false);
+                    }
+                    break;
+                case "toggle walk state":
+                    if (isPressed) {
+                        mainCharControl.toggleWalkState();
+                    }
+                    break;
+                case "pick target":
+                    if (isPressed) {
+                        if (handNode != null && swordNode != null) {
+                            if (handNode.hasChild(swordNode)) {
+                                handNode.detachChild(swordNode);
+                            } else {
+                                handNode.attachChild(swordNode);
+                            }
                         }
                     }
-                }
-                break;
-            default:
+                    break;
+                default:
+            }
         }
     }
 
