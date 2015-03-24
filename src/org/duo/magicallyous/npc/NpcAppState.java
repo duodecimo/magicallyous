@@ -48,6 +48,7 @@ public class NpcAppState extends AbstractAppState {
             if (i<20) {
                 spider.scale(0.2f);
             }
+            spider.setUserData("health", 100);
             npcMovementControl = new NpcMovementControl();
             npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);

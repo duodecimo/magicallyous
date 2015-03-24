@@ -134,7 +134,7 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
                         if (timeCounter - attackTimer > 1.0d) {
                             waitingForCast = false;
                             animChannel.setAnim("Cast");
-                            animChannel.setSpeed(0.3f);
+                            animChannel.setSpeed(1.0f);
                             animChannel.setLoopMode(LoopMode.DontLoop);
                         }
                     } else if (waitingForPrecast) {

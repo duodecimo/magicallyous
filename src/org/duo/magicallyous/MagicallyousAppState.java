@@ -65,6 +65,7 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         mainChar = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         mainChar.setName("mainChar");
         mainChar.setUserData("shoot", getShoot());
+        mainChar.setUserData("health", 100);
         mainChar.addControl(new MainCharControl());
         mainChar.addControl(new TerrainHeightControl());
         mainChar.move(0.0f, 0.0f, 0.0f);

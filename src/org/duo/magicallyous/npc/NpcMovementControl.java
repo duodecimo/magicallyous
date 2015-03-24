@@ -38,14 +38,15 @@ public class NpcMovementControl extends AbstractControl {
     private AnimControl animControl;
     private AnimChannel animChannel;
     enum NpcState {
-        WALK, RUN, ATTACK, IDLE
+        WALK, RUN, ATTACK, IDLE, DEAD
     };
     private NpcState npcState = NpcState.WALK;
     private NpcState previousNpcState = NpcState.WALK;
     private boolean walkRandom = true;
     private Random random;
     private final Quaternion lookRotation = new Quaternion();
-    private double timeCounter = 0l;
+    private double timeCounter = 0d;
+    private double deathTimeCounter = 0d;
     private boolean active = false;
     // terrain bounds for npcs
     private float xmax, xmin, zmax, zmin;
@@ -101,25 +102,24 @@ public class NpcMovementControl extends AbstractControl {
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if(mainChar != null) {
+            if (mainChar != null) {
                 Vector3f aim = mainChar.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
-                    if(npcState != NpcState.ATTACK) {
-                        previousNpcState = npcState;
-                        npcState = NpcState.ATTACK;
-                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                        spatial.setLocalRotation(lookRotation);
-                        lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
-                        mainChar.setLocalRotation(lookRotation);
-                        MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
-                        mainCharControl.setTarget(spatial);
-                        mainCharControl.setActionState(ActionState.ATTACK);
-                    }
-                } else {
-                    // stop attacking
-                    if(npcState == NpcState.ATTACK) {
-                        npcState = previousNpcState;
+                    // avoid attacking a mainChar already beeing attacked
+                    if (mainChar.getControl(MainCharControl.class).getActionState() 
+                            != ActionState.ATTACK) {
+                        if (npcState != NpcState.ATTACK) {
+                            previousNpcState = npcState;
+                            npcState = NpcState.ATTACK;
+                            lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                            spatial.setLocalRotation(lookRotation);
+                            lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
+                            mainChar.setLocalRotation(lookRotation);
+                            MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
+                            mainCharControl.setTarget(spatial);
+                            mainCharControl.setActionState(ActionState.ATTACK);
+                        }
                     }
                 }
             }
@@ -219,6 +219,24 @@ public class NpcMovementControl extends AbstractControl {
                         animChannel.setAnim("Strike");
                         animChannel.setSpeed(1.0f);
                         animChannel.setLoopMode(LoopMode.Loop);
+                    }
+                    int health = spatial.getUserData("health");
+                    if(health <= 0) {
+                        // should.die!
+                        mainChar.getControl(MainCharControl.class).setActionState(ActionState.WALK);
+                        deathTimeCounter = timeCounter;
+                        npcState = NpcState.DEAD;
+                        spatial.setCullHint(Spatial.CullHint.Always);
+                    }
+                } else if(npcState == NpcState.DEAD) {
+                    if(timeCounter - deathTimeCounter > 2.0d) {
+                        // can revive
+                        spatial.setCullHint(Spatial.CullHint.Inherit);
+                        spatial.setUserData("health", 100);
+                        npcState = previousNpcState;
+                    } else {
+                        System.out.println("Npc will revive in 2: (" + 
+                                (timeCounter - deathTimeCounter) + ")");
                     }
                 }
             }

@@ -27,6 +27,7 @@ public class MainCharShootControl extends AbstractControl {
     private Spatial target;
     Node rightHandNode;
     Node leftHandNode;
+    Node targetHitNode;
     Spatial shoot1, shoot2;
     Vector3f initialPosition;
     private final Quaternion rightLookRotation = new Quaternion();
@@ -44,18 +45,30 @@ public class MainCharShootControl extends AbstractControl {
                     break;
             }
         }
+        for(Node node : ((Node) target).descendantMatches(Node.class)) {
+            switch (node.getName()) {
+                case "hitNode":
+                    targetHitNode = node;
+                    break;
+            }
+        }
+        if(targetHitNode == null) {
+            targetHitNode = ((Node) target);
+        }
         if (rightHandNode != null && target != null) {
             if (shoot1 == null) {
                 shoot1 = ((Spatial) spatial.getUserData("shoot")).clone();
+                shoot1.scale(0.2f);
                 ((Node) (spatial.getParent())).attachChild(shoot1);
                 shoot1.setLocalTranslation(rightHandNode.getWorldTranslation());
                 shoot2 = ((Spatial) spatial.getUserData("shoot")).clone();
+                shoot2.scale(0.2f);
                 ((Node) (spatial.getParent())).attachChild(shoot2);
                 shoot2.setLocalTranslation(leftHandNode.getWorldTranslation());
                 //System.out.println("Shoot started at: " + shoot1.getLocalTranslation());
             }
             if (shoot1 != null) {
-                Vector3f aim = new Vector3f(target.getWorldTranslation());
+                Vector3f aim = new Vector3f(targetHitNode.getWorldTranslation());
                 Vector3f rightDist = aim.subtract(shoot1.getWorldTranslation());
                 Vector3f leftDist = aim.subtract(shoot2.getWorldTranslation());
                 //System.out.println("shoot1 is at: " + shoot1.getLocalTranslation() 
@@ -64,6 +77,9 @@ public class MainCharShootControl extends AbstractControl {
                     //System.out.println("shoot1 ended at distance: " + dist.length());
                     ((Node) (spatial.getParent())).detachChild(shoot1);
                     ((Node) (spatial.getParent())).detachChild(shoot2);
+                    int health = target.getUserData("health");
+                    health -= 10;
+                    target.setUserData("health", health);
                     spatial.removeControl(this);
                 } else {
                     rightDist.normalizeLocal();
@@ -71,9 +87,9 @@ public class MainCharShootControl extends AbstractControl {
                     rightLookRotation.lookAt(rightDist, Vector3f.UNIT_Y);
                     leftLookRotation.lookAt(leftDist, Vector3f.UNIT_Y);
                     shoot1.setLocalRotation(rightLookRotation);
-                    shoot1.move(rightDist.multLocal(2.0f * tpf));
+                    shoot1.move(rightDist.multLocal(4.0f * tpf));
                     shoot2.setLocalRotation(leftLookRotation);
-                    shoot2.move(leftDist.multLocal(2.0f * tpf));
+                    shoot2.move(leftDist.multLocal(4.0f * tpf));
                 }
             }
         }
