@@ -38,7 +38,12 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
     private WalkState walkState = WalkState.NORMAL;
     private boolean turningLeft = false;
     private boolean turningRight = false;
-    private boolean startAtack = false;
+    private double timeCounter = 0d;
+    private double attackTimer = 0d;
+    private boolean startAttack = false;
+    private boolean waitingForCast = false;
+    private boolean waitingForPrecast = false;
+    private Spatial target;
 
     public ActionState getActionState() {
         return actionState;
@@ -69,6 +74,7 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
 
     @Override
     protected void controlUpdate(float tpf) {
+        timeCounter += (double) tpf;
         if(checkControl()) {
             if (actionState != ActionState.ATTACK) {
                 if (turningLeft) {
@@ -112,12 +118,32 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
                             + "    " + spatial.getWorldTranslation());
                 }
             } else if(actionState == ActionState.ATTACK) {
-                if(!startAtack) {
-                    startAtack = true;
+                if(!startAttack) {
+                    startAttack = true;
                     if(animChannel.getAnimationName().compareTo("Precast")!=0) {
                         animChannel.setAnim("Precast");
                         animChannel.setSpeed(1.0f);
                         animChannel.setLoopMode(LoopMode.DontLoop);
+                    }
+                } else {
+                    // perform animations according to time
+                    if(waitingForCast) {
+                        //System.out.println("Waiting for cast from: " +  
+                        //        attackTimer + " now: " + timeCounter + 
+                        //        " difference: " + (timeCounter - attackTimer));
+                        if (timeCounter - attackTimer > 1.0d) {
+                            waitingForCast = false;
+                            animChannel.setAnim("Cast");
+                            animChannel.setSpeed(0.3f);
+                            animChannel.setLoopMode(LoopMode.DontLoop);
+                        }
+                    } else if (waitingForPrecast) {
+                        if (timeCounter - attackTimer > 1.3d) {
+                            waitingForPrecast = false;
+                            animChannel.setAnim("Precast");
+                            animChannel.setSpeed(1.0f);
+                            animChannel.setLoopMode(LoopMode.DontLoop);
+                        }
                     }
                 }
             }
@@ -168,18 +194,26 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
 
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if(animName == "Precast") {
-            animChannel.setAnim("Cast");
-            animChannel.setSpeed(0.3f);
-            animChannel.setLoopMode(LoopMode.DontLoop);
-        } else {
-            animChannel.setAnim("Precast");
-            animChannel.setSpeed(1.0f);
-            animChannel.setLoopMode(LoopMode.DontLoop);
+        if(animName.compareTo("Precast") == 0) {
+            //System.out.println("Start waiting for cast!");
+            waitingForCast = true;
+            waitingForPrecast = false;
+            MainCharShootControl mainCharShootControlControl = new MainCharShootControl();
+            mainCharShootControlControl.setTarget(target);
+            spatial.addControl(mainCharShootControlControl);
+            attackTimer = timeCounter;
+        } else if(animName.compareTo("Cast")==0) {
+            waitingForPrecast = true;
+            waitingForCast = false;
+            attackTimer = timeCounter;
         }
     }
 
     @Override
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+    }
+
+    public void setTarget(Spatial target) {
+        this.target = target;
     }
 }

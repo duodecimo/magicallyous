@@ -17,8 +17,12 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Sphere;
 import org.duo.magicallyous.npc.NpcAppState;
 
 /**
@@ -59,6 +63,7 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         
         mainChar = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         mainChar.setName("mainChar");
+        mainChar.setUserData("shoot", getShoot());
         mainChar.addControl(new MainCharControl());
         mainChar.addControl(new TerrainHeightControl());
         mainChar.move(0.0f, 0.0f, 0.0f);
@@ -189,5 +194,16 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
         inputManager.addListener(this, "jumpWalk");
         inputManager.addListener(this, "pick target");
         inputManager.addListener(this, "toggle walk state");
+    }
+
+    Spatial getShoot() {
+        Sphere sphere = new Sphere();
+        Geometry shoot = new Geometry("shoot", sphere);
+        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Blue);
+        shoot.setMaterial(material);
+        shoot.setName("shoot");
+        shoot.setCullHint(Spatial.CullHint.Always);
+        return shoot;
     }
 }

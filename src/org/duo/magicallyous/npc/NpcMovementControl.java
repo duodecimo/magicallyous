@@ -113,6 +113,7 @@ public class NpcMovementControl extends AbstractControl {
                         lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
                         mainChar.setLocalRotation(lookRotation);
                         MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
+                        mainCharControl.setTarget(spatial);
                         mainCharControl.setActionState(ActionState.ATTACK);
                     }
                 } else {
