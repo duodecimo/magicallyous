@@ -102,7 +102,7 @@ public class NpcMovementControl extends AbstractControl {
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (mainChar != null) {
+            if (mainChar != null && npcState != NpcState.DEAD) {
                 Vector3f aim = mainChar.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
@@ -223,19 +223,19 @@ public class NpcMovementControl extends AbstractControl {
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         // should.die!
-                        mainChar.getControl(MainCharControl.class).setActionState(ActionState.WALK);
+                        mainChar.getControl(MainCharControl.class).setActionState(ActionState.IDLE);
                         deathTimeCounter = timeCounter;
                         npcState = NpcState.DEAD;
                         spatial.setCullHint(Spatial.CullHint.Always);
                     }
                 } else if(npcState == NpcState.DEAD) {
-                    if(timeCounter - deathTimeCounter > 2.0d) {
+                    if(timeCounter - deathTimeCounter > 10.0d) {
                         // can revive
                         spatial.setCullHint(Spatial.CullHint.Inherit);
                         spatial.setUserData("health", 100);
                         npcState = previousNpcState;
                     } else {
-                        System.out.println("Npc will revive in 2: (" + 
+                        System.out.println("Npc will revive in 10: (" + 
                                 (timeCounter - deathTimeCounter) + ")");
                     }
                 }
