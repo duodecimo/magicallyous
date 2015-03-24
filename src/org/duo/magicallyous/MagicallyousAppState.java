@@ -34,7 +34,8 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
     private Spatial scene;
     private Node terrainNode;
     private Node mainChar;
-    private Node handNode;
+    private Node rightHandNode;
+    private Node leftHandNode;
     private Node swordNode;
     private Spatial barrel;
     private ChaseCamera chaseCamera;
@@ -78,7 +79,10 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
                     swordNode = node;
                     break;
                 case "hand.R_attachnode":
-                    handNode = node;
+                    rightHandNode = node;
+                    break;
+                case "hand.L_attachnode":
+                    leftHandNode = node;
                     break;
             }
         }
@@ -145,11 +149,11 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
                     break;
                 case "pick target":
                     if (isPressed) {
-                        if (handNode != null && swordNode != null) {
-                            if (handNode.hasChild(swordNode)) {
-                                handNode.detachChild(swordNode);
+                        if (rightHandNode != null && swordNode != null) {
+                            if (rightHandNode.hasChild(swordNode)) {
+                                rightHandNode.detachChild(swordNode);
                             } else {
-                                handNode.attachChild(swordNode);
+                                rightHandNode.attachChild(swordNode);
                             }
                         }
                     }
@@ -197,13 +201,12 @@ public class MagicallyousAppState extends AbstractAppState implements ActionList
     }
 
     Spatial getShoot() {
-        Sphere sphere = new Sphere();
+        Sphere sphere = new Sphere(16, 16, 0.2f);
         Geometry shoot = new Geometry("shoot", sphere);
         Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Blue);
         shoot.setMaterial(material);
         shoot.setName("shoot");
-        shoot.setCullHint(Spatial.CullHint.Always);
         return shoot;
     }
 }

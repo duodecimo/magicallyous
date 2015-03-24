@@ -21,45 +21,59 @@ import java.io.IOException;
 /**
  *
  * @author duo
- * Controls one shoot
+ * Controls one shoot1
  */
 public class MainCharShootControl extends AbstractControl {
     private Spatial target;
-    Node handNode;
-    Spatial shoot;
+    Node rightHandNode;
+    Node leftHandNode;
+    Spatial shoot1, shoot2;
     Vector3f initialPosition;
-    private final Quaternion lookRotation = new Quaternion();
+    private final Quaternion rightLookRotation = new Quaternion();
+    private final Quaternion leftLookRotation = new Quaternion();
 
     @Override
     protected void controlUpdate(float tpf) {
         for(Node node : ((Node) spatial).descendantMatches(Node.class)) {
             switch (node.getName()) {
                 case "hand.R_attachnode":
-                    handNode = node;
+                    rightHandNode = node;
+                    break;
+                case "hand.L_attachnode":
+                    leftHandNode = node;
                     break;
             }
         }
-        if (handNode != null && target != null) {
-            if (shoot == null) {
-                shoot = (Spatial) spatial.getUserData("shoot");
-                ((Node) (spatial.getParent())).attachChild(shoot);
-                shoot.setLocalTranslation(handNode.getWorldTranslation());
-                System.out.println("Shoot started at: " + shoot.getLocalTranslation());
+        if (rightHandNode != null && target != null) {
+            if (shoot1 == null) {
+                shoot1 = ((Spatial) spatial.getUserData("shoot")).clone();
+                ((Node) (spatial.getParent())).attachChild(shoot1);
+                shoot1.setLocalTranslation(rightHandNode.getWorldTranslation());
+                shoot2 = ((Spatial) spatial.getUserData("shoot")).clone();
+                ((Node) (spatial.getParent())).attachChild(shoot2);
+                shoot2.setLocalTranslation(leftHandNode.getWorldTranslation());
+                //System.out.println("Shoot started at: " + shoot1.getLocalTranslation());
             }
-            if (shoot != null) {
+            if (shoot1 != null) {
                 Vector3f aim = new Vector3f(target.getWorldTranslation());
-                Vector3f dist = aim.subtract(shoot.getWorldTranslation());
-                System.out.println("shoot is at: " + shoot.getLocalTranslation() 
-                        + " aim to: " + aim + " distance: " + dist.length());
-                if(dist.length() < 0.05f) {
-                    System.out.println("shoot ended at distance: " + dist.length());
-                    ((Node) (spatial.getParent())).detachChild(shoot);
+                Vector3f rightDist = aim.subtract(shoot1.getWorldTranslation());
+                Vector3f leftDist = aim.subtract(shoot2.getWorldTranslation());
+                //System.out.println("shoot1 is at: " + shoot1.getLocalTranslation() 
+                //        + " aim to: " + aim + " distance: " + dist.length());
+                if(rightDist.length() < 0.05f) {
+                    //System.out.println("shoot1 ended at distance: " + dist.length());
+                    ((Node) (spatial.getParent())).detachChild(shoot1);
+                    ((Node) (spatial.getParent())).detachChild(shoot2);
                     spatial.removeControl(this);
                 } else {
-                    dist.normalizeLocal();
-                    lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                    shoot.setLocalRotation(lookRotation);
-                    shoot.move(dist.multLocal(0.5f * tpf));
+                    rightDist.normalizeLocal();
+                    leftDist.normalizeLocal();
+                    rightLookRotation.lookAt(rightDist, Vector3f.UNIT_Y);
+                    leftLookRotation.lookAt(leftDist, Vector3f.UNIT_Y);
+                    shoot1.setLocalRotation(rightLookRotation);
+                    shoot1.move(rightDist.multLocal(2.0f * tpf));
+                    shoot2.setLocalRotation(leftLookRotation);
+                    shoot2.move(leftDist.multLocal(2.0f * tpf));
                 }
             }
         }
