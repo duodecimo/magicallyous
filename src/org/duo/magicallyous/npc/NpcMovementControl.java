@@ -139,7 +139,7 @@ public class NpcMovementControl extends AbstractControl {
                 }
             }
             if (debugPosition) {
-                //System.out.println("spider location: "
+                //System.out.println("npc location: "
                 //  + spatial.getLocalTranslation() + " "
                 //  +                        spatial.getWorldTranslation());
             }
@@ -245,13 +245,11 @@ public class NpcMovementControl extends AbstractControl {
         spatial.setUserData("health", 100);
         Vector3f vector3f = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector2f vector2f = getSpawnLocation();
-        if (vector2f.x < -30.0f && vector2f.y < 250.0f) {
-            vector3f.x = vector2f.x;
-            vector3f.z = vector2f.y;
-            spatial.setLocalTranslation(vector3f);
-        }
+        vector3f.x = vector2f.x;
+        vector3f.z = vector2f.y;
+        spatial.setLocalTranslation(vector3f);
         npcState = previousNpcState;
-        System.out.println("spider respawn at: " + vector3f);
+        System.out.println("npc respawn at: " + vector3f);
     }
 
     protected boolean checkControl() {
