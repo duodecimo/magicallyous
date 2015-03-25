@@ -16,8 +16,7 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.scene.Node;
-import org.duo.magicallyous.PlayerControl;
-import org.duo.magicallyous.utils.ActionState;
+import org.duo.magicallyous.utils.ActionStateEnum;
 
 /**
  *
@@ -55,38 +54,38 @@ public class PlayerMovement extends AbstractAppState implements ActionListener, 
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
         Node swordNode = (Node) rightHandNode.getChild("sword01");
         PlayerControl playerControl = player.getControl(PlayerControl.class);
-        if (playerControl.getActionState() != ActionState.ATTACK) {
+        if (playerControl.getActionState() != ActionStateEnum.ATTACK) {
             switch (name) {
-                case PlayerAction.GOFOWARD :
+                case PlayerActionString.GOFOWARD :
                     if (isPressed) {
-                        playerControl.setActionState(ActionState.WALK);
+                        playerControl.setActionState(ActionStateEnum.WALK);
                     } else {
-                        playerControl.setActionState(ActionState.IDLE);
+                        playerControl.setActionState(ActionStateEnum.IDLE);
                     }
                     break;
-                case PlayerAction.STOP :
-                    playerControl.setActionState(ActionState.IDLE);
+                case PlayerActionString.STOP :
+                    playerControl.setActionState(ActionStateEnum.IDLE);
                     break;
-                case PlayerAction.TURNLEFT :
+                case PlayerActionString.TURNLEFT :
                     if (isPressed) {
                         playerControl.setTurningLeft(true);
                     } else {
                         playerControl.setTurningLeft(false);
                     }
                     break;
-                case PlayerAction.TURNRIGHT :
+                case PlayerActionString.TURNRIGHT :
                     if (isPressed) {
                         playerControl.setTurningRight(true);
                     } else {
                         playerControl.setTurningRight(false);
                     }
                     break;
-                case PlayerAction.TOGGLEWALKSTATE :
+                case PlayerActionString.TOGGLEWALKSTATE :
                     if (isPressed) {
                         playerControl.toggleWalkState();
                     }
                     break;
-                case PlayerAction.PICKSWORD :
+                case PlayerActionString.PICKSWORD :
                     if (isPressed) {
                         if (rightHandNode != null && swordNode != null) {
                             if (rightHandNode.hasChild(swordNode)) {
@@ -107,33 +106,33 @@ public class PlayerMovement extends AbstractAppState implements ActionListener, 
     }
 
     private void setupKeys(InputManager inputManager) {
-        inputManager.addMapping(PlayerAction.GOFOWARD,
+        inputManager.addMapping(PlayerActionString.GOFOWARD,
                 new KeyTrigger(KeyInput.KEY_I),
                 new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addListener(this, PlayerAction.GOFOWARD);
+        inputManager.addListener(this, PlayerActionString.GOFOWARD);
 
-        inputManager.addMapping(PlayerAction.TURNRIGHT,
+        inputManager.addMapping(PlayerActionString.TURNRIGHT,
                 new KeyTrigger(KeyInput.KEY_L),
                 new KeyTrigger(KeyInput.KEY_RIGHT));
-                inputManager.addListener(this, PlayerAction.TURNRIGHT);
+                inputManager.addListener(this, PlayerActionString.TURNRIGHT);
 
-        inputManager.addMapping(PlayerAction.TURNLEFT,
+        inputManager.addMapping(PlayerActionString.TURNLEFT,
                 new KeyTrigger(KeyInput.KEY_J),
                 new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addListener(this, PlayerAction.TURNLEFT);
+        inputManager.addListener(this, PlayerActionString.TURNLEFT);
 
-        inputManager.addMapping(PlayerAction.STOP,
+        inputManager.addMapping(PlayerActionString.STOP,
                 new KeyTrigger(KeyInput.KEY_K),
                 new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addListener(this, PlayerAction.STOP);
+        inputManager.addListener(this, PlayerActionString.STOP);
 
-        inputManager.addMapping(PlayerAction.TOGGLEWALKSTATE, 
+        inputManager.addMapping(PlayerActionString.TOGGLEWALKSTATE, 
                 new KeyTrigger(KeyInput.KEY_R));
-        inputManager.addListener(this, PlayerAction.TOGGLEWALKSTATE);
+        inputManager.addListener(this, PlayerActionString.TOGGLEWALKSTATE);
 
-        inputManager.addMapping(PlayerAction.PICKSWORD, 
+        inputManager.addMapping(PlayerActionString.PICKSWORD, 
                 new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addListener(this, PlayerAction.PICKSWORD);
+        inputManager.addListener(this, PlayerActionString.PICKSWORD);
 
     }
 

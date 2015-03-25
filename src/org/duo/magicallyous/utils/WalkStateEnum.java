@@ -8,6 +8,6 @@ package org.duo.magicallyous.utils;
  *
  * @author duo
  */
-public enum TurnState {
-    FOWARD, LEFT, RIGHT
+public enum WalkStateEnum {
+    NORMAL, SLOW, RUN
 }

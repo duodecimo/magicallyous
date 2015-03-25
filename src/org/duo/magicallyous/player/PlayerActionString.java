@@ -8,7 +8,7 @@ package org.duo.magicallyous.player;
  *
  * @author duo
  */
-public class PlayerAction {
+public class PlayerActionString {
     public final static String GOFOWARD = "Go Foward";
     public final static String GOBACKWARD = "Go Backward";
     public final static String TURNRIGHT = "Turn Right";

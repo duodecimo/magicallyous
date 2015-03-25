@@ -15,7 +15,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
-import org.duo.magicallyous.PlayerControl;
 import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**

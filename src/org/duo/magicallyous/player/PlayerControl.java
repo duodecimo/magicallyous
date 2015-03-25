@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.duo.magicallyous;
+package org.duo.magicallyous.player;
 
-import org.duo.magicallyous.utils.ActionState;
+import org.duo.magicallyous.utils.ActionStateEnum;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
@@ -21,7 +21,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
-import org.duo.magicallyous.utils.WalkState;
+import org.duo.magicallyous.utils.WalkStateEnum;
 
 /**
  *
@@ -33,9 +33,9 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
     //Right-click a local variable to encapsulate it with getters and setters.
     AnimControl animControl;
     AnimChannel animChannel;
-    private ActionState actionState = ActionState.IDLE;
-    //private ActionState previousActionState = ActionState.IDLE;
-    private WalkState walkState = WalkState.NORMAL;
+    private ActionStateEnum actionState = ActionStateEnum.IDLE;
+    //private ActionStateEnum previousActionState = ActionStateEnum.IDLE;
+    private WalkStateEnum walkState = WalkStateEnum.NORMAL;
     private boolean turningLeft = false;
     private boolean turningRight = false;
     private double timeCounter = 0d;
@@ -45,22 +45,22 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
     private boolean waitingForPrecast = false;
     private Spatial target;
 
-    public ActionState getActionState() {
+    public ActionStateEnum getActionState() {
         return actionState;
     }
 
-    public void setActionState(ActionState actionState) {
-        if(actionState == ActionState.ATTACK) {
+    public void setActionState(ActionStateEnum actionState) {
+        if(actionState == ActionStateEnum.ATTACK) {
             //previousActionState = this.actionState;
         }
         this.actionState = actionState;
     }
 
     public void toggleWalkState() {
-        if(walkState == WalkState.NORMAL) {
-            walkState = WalkState.RUN;
+        if(walkState == WalkStateEnum.NORMAL) {
+            walkState = WalkStateEnum.RUN;
         } else {
-            walkState = WalkState.NORMAL;
+            walkState = WalkStateEnum.NORMAL;
         }
     }
 
@@ -76,15 +76,15 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
     protected void controlUpdate(float tpf) {
         timeCounter += (double) tpf;
         if(checkControl()) {
-            if (actionState != ActionState.ATTACK) {
+            if (actionState != ActionStateEnum.ATTACK) {
                 if (turningLeft) {
                     spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
                 } else if (turningRight) {
                     spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
                 }
             }
-            if(actionState == ActionState.WALK) {
-                if (walkState == WalkState.RUN) {
+            if(actionState == ActionStateEnum.WALK) {
+                if (walkState == WalkStateEnum.RUN) {
                     if (animChannel.getAnimationName().compareTo("Run") != 0) {
                         animChannel.setAnim("Run");
                         animChannel.setLoopMode(LoopMode.Loop);
@@ -99,17 +99,17 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
                 Vector3f walkDirection = Vector3f.ZERO;
                 // get foward direction
                 Vector3f fowardDirection = spatial.getWorldRotation().getRotationColumn(2);
-                if(actionState == ActionState.WALK) {
+                if(actionState == ActionStateEnum.WALK) {
                     // add direction
                     walkDirection.addLocal(fowardDirection);
                     // calculate distance to walk
-                    if(walkState == WalkState.RUN) {
+                    if(walkState == WalkStateEnum.RUN) {
                         spatial.move(walkDirection.multLocal(9.0f).multLocal(tpf));
                     } else {
                         spatial.move(walkDirection.multLocal(1.0f).multLocal(tpf));
                     }
                 }
-            } else if(actionState == ActionState.IDLE) {
+            } else if(actionState == ActionStateEnum.IDLE) {
                 if(animChannel.getAnimationName().compareTo("Idle")!=0) {
                     animChannel.setAnim("Idle");
                     animChannel.setSpeed(0.5f);
@@ -117,7 +117,7 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
                     System.out.println("mainchar location: " + spatial.getLocalTranslation()
                             + "    " + spatial.getWorldTranslation());
                 }
-            } else if(actionState == ActionState.ATTACK) {
+            } else if(actionState == ActionStateEnum.ATTACK) {
                 if(!startAttack) {
                     startAttack = true;
                     if(animChannel.getAnimationName().compareTo("Precast")!=0) {

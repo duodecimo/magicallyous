@@ -23,18 +23,14 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
-import org.duo.magicallyous.PlayerControl;
-import org.duo.magicallyous.utils.ActionState;
+import org.duo.magicallyous.player.PlayerControl;
+import org.duo.magicallyous.utils.ActionStateEnum;
 
 /**
  *
  * @author duo
  */
 public class NpcMovementControl extends AbstractControl {
-    //Any local variables should be encapsulated by getters/setters so they
-    //appear in the SDK properties window and can be edited.
-    //Right-click a local variable to encapsulate it with getters and setters.
-
     private AnimControl animControl;
     private AnimChannel animChannel;
     enum NpcState {
@@ -108,7 +104,7 @@ public class NpcMovementControl extends AbstractControl {
                 if (dist.length() < 3.0f) {
                     // avoid attacking a player already beeing attacked
                     if (player.getControl(PlayerControl.class).getActionState() 
-                            != ActionState.ATTACK) {
+                            != ActionStateEnum.ATTACK) {
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
                             npcState = NpcState.ATTACK;
@@ -118,7 +114,7 @@ public class NpcMovementControl extends AbstractControl {
                             player.setLocalRotation(lookRotation);
                             PlayerControl playerControl = player.getControl(PlayerControl.class);
                             playerControl.setTarget(spatial);
-                            playerControl.setActionState(ActionState.ATTACK);
+                            playerControl.setActionState(ActionStateEnum.ATTACK);
                         }
                     }
                 }
@@ -223,7 +219,7 @@ public class NpcMovementControl extends AbstractControl {
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         // should.die!
-                        player.getControl(PlayerControl.class).setActionState(ActionState.IDLE);
+                        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.IDLE);
                         deathTimeCounter = timeCounter;
                         npcState = NpcState.DEAD;
                         spatial.setCullHint(Spatial.CullHint.Always);

@@ -8,6 +8,6 @@ package org.duo.magicallyous.utils;
  *
  * @author duo
  */
-public enum ActionState {
-    WALK, IDLE, ATTACK;
+public enum TurnStateEnum {
+    FOWARD, LEFT, RIGHT
 }
