@@ -13,7 +13,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import java.util.List;
-import org.duo.magicallyous.TerrainHeightControl;
+import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**
  *
@@ -30,9 +30,9 @@ public class NpcAppState extends AbstractAppState {
         //this is called on the OpenGL thread after the AppState has been attached
         this.app = (SimpleApplication) app;
         Node scene = (Node) ((SimpleApplication) app).getRootNode().getChild("Scene01");
-        Node mainChar = (Node) scene.getChild("mainChar");
-        if(mainChar == null) {
-            System.err.println("mainChar is NULL!");
+        Node player = (Node) scene.getChild("player");
+        if(player == null) {
+            System.err.println("player is NULL, ending game!");
             System.exit(1);
         }
         NpcMovementControl npcMovementControl;
@@ -56,8 +56,8 @@ public class NpcAppState extends AbstractAppState {
              * npcMovementControl.setDebugPosition(true);
              * }*/
             ((Node) scene).attachChild(spider);
-            if(mainChar != null) {
-                npcMovementControl.setMainChar(mainChar);
+            if(player != null) {
+                npcMovementControl.setMainChar(player);
             }
             vector3f = new Vector3f(x, 0.0f, z);
             spider.addControl(npcMovementControl);

@@ -27,14 +27,14 @@ import org.duo.magicallyous.utils.WalkState;
  *
  * @author duo
  */
-public class MainCharControl extends AbstractControl implements AnimEventListener {
+public class PlayerControl extends AbstractControl implements AnimEventListener {
     //Any local variables should be encapsulated by getters/setters so they
     //appear in the SDK properties window and can be edited.
     //Right-click a local variable to encapsulate it with getters and setters.
     AnimControl animControl;
     AnimChannel animChannel;
     private ActionState actionState = ActionState.IDLE;
-    private ActionState previousActionState = ActionState.IDLE;
+    //private ActionState previousActionState = ActionState.IDLE;
     private WalkState walkState = WalkState.NORMAL;
     private boolean turningLeft = false;
     private boolean turningRight = false;
@@ -51,7 +51,7 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
 
     public void setActionState(ActionState actionState) {
         if(actionState == ActionState.ATTACK) {
-            previousActionState = this.actionState;
+            //previousActionState = this.actionState;
         }
         this.actionState = actionState;
     }
@@ -171,7 +171,7 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
     
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        MainCharControl control = new MainCharControl();
+        PlayerControl control = new PlayerControl();
         //TODO: copy parameters to new Control
         return control;
     }
@@ -198,9 +198,9 @@ public class MainCharControl extends AbstractControl implements AnimEventListene
             //System.out.println("Start waiting for cast!");
             waitingForCast = true;
             waitingForPrecast = false;
-            MainCharShootControl mainCharShootControlControl = new MainCharShootControl();
-            mainCharShootControlControl.setTarget(target);
-            spatial.addControl(mainCharShootControlControl);
+            PlayerShootControl playerShootControl = new PlayerShootControl();
+            playerShootControl.setTarget(target);
+            spatial.addControl(playerShootControl);
             attackTimer = timeCounter;
         } else if(animName.compareTo("Cast")==0) {
             waitingForPrecast = true;

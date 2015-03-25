@@ -23,7 +23,7 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
-import org.duo.magicallyous.MainCharControl;
+import org.duo.magicallyous.PlayerControl;
 import org.duo.magicallyous.utils.ActionState;
 
 /**
@@ -55,7 +55,7 @@ public class NpcMovementControl extends AbstractControl {
     // debug position
     private boolean debugPosition = false;
     long debugPositionTime = 0l;
-    Node mainChar;
+    Node player;
 
     public void setNpcTerrainBounds(float xmax, float xmin, float zmax, float zmin) {
         this.xmax = xmax;
@@ -64,8 +64,8 @@ public class NpcMovementControl extends AbstractControl {
         this.zmin = zmin;
     }
 
-    public void setMainChar(Node mainChar) {
-        this.mainChar = mainChar;
+    public void setMainChar(Node player) {
+        this.player = player;
     }
 
     public Vector2f getSpawnLocation() {
@@ -102,12 +102,12 @@ public class NpcMovementControl extends AbstractControl {
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (mainChar != null && npcState != NpcState.DEAD) {
-                Vector3f aim = mainChar.getWorldTranslation();
+            if (player != null && npcState != NpcState.DEAD) {
+                Vector3f aim = player.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
-                    // avoid attacking a mainChar already beeing attacked
-                    if (mainChar.getControl(MainCharControl.class).getActionState() 
+                    // avoid attacking a player already beeing attacked
+                    if (player.getControl(PlayerControl.class).getActionState() 
                             != ActionState.ATTACK) {
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
@@ -115,10 +115,10 @@ public class NpcMovementControl extends AbstractControl {
                             lookRotation.lookAt(dist, Vector3f.UNIT_Y);
                             spatial.setLocalRotation(lookRotation);
                             lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
-                            mainChar.setLocalRotation(lookRotation);
-                            MainCharControl mainCharControl = mainChar.getControl(MainCharControl.class);
-                            mainCharControl.setTarget(spatial);
-                            mainCharControl.setActionState(ActionState.ATTACK);
+                            player.setLocalRotation(lookRotation);
+                            PlayerControl playerControl = player.getControl(PlayerControl.class);
+                            playerControl.setTarget(spatial);
+                            playerControl.setActionState(ActionState.ATTACK);
                         }
                     }
                 }
@@ -223,7 +223,7 @@ public class NpcMovementControl extends AbstractControl {
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         // should.die!
-                        mainChar.getControl(MainCharControl.class).setActionState(ActionState.IDLE);
+                        player.getControl(PlayerControl.class).setActionState(ActionState.IDLE);
                         deathTimeCounter = timeCounter;
                         npcState = NpcState.DEAD;
                         spatial.setCullHint(Spatial.CullHint.Always);

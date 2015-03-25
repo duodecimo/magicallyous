@@ -23,7 +23,7 @@ import java.io.IOException;
  * @author duo
  * Controls one shoot1
  */
-public class MainCharShootControl extends AbstractControl {
+public class PlayerShootControl extends AbstractControl {
     private Spatial target;
     Node rightHandNode;
     Node leftHandNode;
@@ -57,11 +57,11 @@ public class MainCharShootControl extends AbstractControl {
         }
         if (rightHandNode != null && target != null) {
             if (shoot1 == null) {
-                shoot1 = ((Spatial) spatial.getUserData("shoot")).clone();
+                shoot1 = ((Spatial) spatial.getUserData("earthMagic")).clone();
                 shoot1.scale(0.2f);
                 ((Node) (spatial.getParent())).attachChild(shoot1);
                 shoot1.setLocalTranslation(rightHandNode.getWorldTranslation());
-                shoot2 = ((Spatial) spatial.getUserData("shoot")).clone();
+                shoot2 = ((Spatial) spatial.getUserData("waterMagic")).clone();
                 shoot2.scale(0.2f);
                 ((Node) (spatial.getParent())).attachChild(shoot2);
                 shoot2.setLocalTranslation(leftHandNode.getWorldTranslation());
@@ -103,7 +103,7 @@ public class MainCharShootControl extends AbstractControl {
     
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        MainCharShootControl control = new MainCharShootControl();
+        PlayerShootControl control = new PlayerShootControl();
         //TODO: copy parameters to new Control
         return control;
     }
