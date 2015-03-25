@@ -11,10 +11,13 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.input.ChaseCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import de.lessvoid.nifty.Nifty;
+import org.duo.magicallyous.utils.PlayerNiftyController;
 import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**
@@ -46,6 +49,13 @@ public class PlayerState extends AbstractAppState {
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
         chaseCamera.setSmoothMotion(true);
+        // Nifty
+        NiftyJmeDisplay niftyJmeDisplay = new NiftyJmeDisplay(app.getAssetManager(), app.getInputManager(), 
+                app.getAudioRenderer(), app.getViewPort());
+        Nifty nifty = niftyJmeDisplay.getNifty();
+        nifty.fromXml("Interface/nifty/niftyGame.xml", "start", new PlayerNiftyController());
+        //nifty.setDebugOptionPanelColors(true);
+        app.getGuiViewPort().addProcessor(niftyJmeDisplay);
     }
     
     Spatial getShoot(String shootType) {
