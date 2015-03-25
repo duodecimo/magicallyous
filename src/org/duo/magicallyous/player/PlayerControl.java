@@ -14,6 +14,7 @@ import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -44,6 +45,7 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
     private boolean waitingForCast = false;
     private boolean waitingForPrecast = false;
     private Spatial target;
+    private Quaternion lookRotation;
 
     public ActionStateEnum getActionState() {
         return actionState;
@@ -70,6 +72,10 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
 
     public void setTurningRight(boolean turningRight) {
         this.turningRight = turningRight;
+    }
+
+    public void setStartAttack(boolean startAttack) {
+        this.startAttack = startAttack;
     }
 
     @Override
@@ -118,8 +124,22 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
                             + "    " + spatial.getWorldTranslation());
                 }
             } else if(actionState == ActionStateEnum.ATTACK) {
-                if(!startAttack) {
-                    startAttack = true;
+                if(startAttack) {
+                    startAttack = false;
+                    // face target
+                    if (target != null) {
+                        Vector3f aim = target.getWorldTranslation();
+                        Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                        System.out.println("Starting fight with target at: "
+                                + target.getWorldTranslation() + " distance: "
+                                + dist.length());
+                        lookRotation = new Quaternion();
+                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                        spatial.setLocalRotation(lookRotation);
+                    } else {
+                        System.out.println("Starting fight NULL target !!!!!");
+                    }
+                    // change anim
                     if(animChannel.getAnimationName().compareTo("Precast")!=0) {
                         animChannel.setAnim("Precast");
                         animChannel.setSpeed(1.0f);
@@ -131,14 +151,14 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
                         //System.out.println("Waiting for cast from: " +  
                         //        attackTimer + " now: " + timeCounter + 
                         //        " difference: " + (timeCounter - attackTimer));
-                        if (timeCounter - attackTimer > 1.0d) {
+                        if (timeCounter - attackTimer > 0.5d) {
                             waitingForCast = false;
                             animChannel.setAnim("Cast");
                             animChannel.setSpeed(1.0f);
                             animChannel.setLoopMode(LoopMode.DontLoop);
                         }
                     } else if (waitingForPrecast) {
-                        if (timeCounter - attackTimer > 1.3d) {
+                        if (timeCounter - attackTimer > 0.8d) {
                             waitingForPrecast = false;
                             animChannel.setAnim("Precast");
                             animChannel.setSpeed(1.0f);
@@ -149,7 +169,6 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
             }
         }
     }
-
 
     protected boolean checkControl() {
         AnimControl control = spatial.getControl(AnimControl.class);

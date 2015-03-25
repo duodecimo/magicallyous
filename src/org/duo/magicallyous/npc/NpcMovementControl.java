@@ -98,7 +98,7 @@ public class NpcMovementControl extends AbstractControl {
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (player != null && npcState != NpcState.DEAD) {
+            if (player != null && npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
                 Vector3f aim = player.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
@@ -110,10 +110,11 @@ public class NpcMovementControl extends AbstractControl {
                             npcState = NpcState.ATTACK;
                             lookRotation.lookAt(dist, Vector3f.UNIT_Y);
                             spatial.setLocalRotation(lookRotation);
-                            lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
-                            player.setLocalRotation(lookRotation);
+                            //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
+                            //player.setLocalRotation(lookRotation);
                             PlayerControl playerControl = player.getControl(PlayerControl.class);
                             playerControl.setTarget(spatial);
+                            playerControl.setStartAttack(true);
                             playerControl.setActionState(ActionStateEnum.ATTACK);
                         }
                     }
@@ -138,9 +139,9 @@ public class NpcMovementControl extends AbstractControl {
                 }
             }
             if (debugPosition) {
-                System.out.println("spider location: "
-                  + spatial.getLocalTranslation() + " "
-                  +                        spatial.getWorldTranslation());
+                //System.out.println("spider location: "
+                //  + spatial.getLocalTranslation() + " "
+                //  +                        spatial.getWorldTranslation());
             }
             if (checkControl()) {
                 if (npcState == NpcState.WALK) {
@@ -218,25 +219,39 @@ public class NpcMovementControl extends AbstractControl {
                     }
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
-                        // should.die!
-                        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.IDLE);
-                        deathTimeCounter = timeCounter;
-                        npcState = NpcState.DEAD;
-                        spatial.setCullHint(Spatial.CullHint.Always);
+                        npcDie();
                     }
                 } else if(npcState == NpcState.DEAD) {
                     if(timeCounter - deathTimeCounter > 10.0d) {
-                        // can revive
-                        spatial.setCullHint(Spatial.CullHint.Inherit);
-                        spatial.setUserData("health", 100);
-                        npcState = previousNpcState;
+                        npcRevive();
                     } else {
-                        System.out.println("Npc will revive in 10: (" + 
-                                (timeCounter - deathTimeCounter) + ")");
+                        //System.out.println("Npc will revive in 10: (" + 
+                        //        (timeCounter - deathTimeCounter) + ")");
                     }
                 }
             }
         }
+    }
+
+    protected void npcDie() {
+        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.IDLE);
+        deathTimeCounter = timeCounter;
+        npcState = NpcState.DEAD;
+        spatial.setCullHint(Spatial.CullHint.Always);
+    }
+
+    protected void npcRevive() {
+        spatial.setCullHint(Spatial.CullHint.Inherit);
+        spatial.setUserData("health", 100);
+        Vector3f vector3f = new Vector3f(0.0f, 0.0f, 0.0f);
+        Vector2f vector2f = getSpawnLocation();
+        if (vector2f.x < -30.0f && vector2f.y < 250.0f) {
+            vector3f.x = vector2f.x;
+            vector3f.z = vector2f.y;
+            spatial.setLocalTranslation(vector3f);
+        }
+        npcState = previousNpcState;
+        System.out.println("spider respawn at: " + vector3f);
     }
 
     protected boolean checkControl() {
