@@ -8,10 +8,12 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -33,7 +35,7 @@ public class PlayerState extends AbstractAppState {
     private Spatial barrel;
     private double timeCounter = 0.0d;
     private double timeEvent = 0.0d;
-
+    BitmapText hudText;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -52,20 +54,23 @@ public class PlayerState extends AbstractAppState {
         player.move(0.0f, 0.0f, 0.0f);
         // add healthbar
         BillboardControl billboard = new BillboardControl();
-        healthbar = new Geometry("healthbar", new Quad(4.0f, 0.1f));
+        healthbar = new Geometry("healthbar", new Quad(2.0f, 0.1f));
         Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         material.setColor("Color", ColorRGBA.Red);
         healthbar.setMaterial(material);
         healthbar.setQueueBucket(RenderQueue.Bucket.Translucent);
         player.attachChild(healthbar);
+        //this.app.getGuiNode().attachChild(healthbar);
         healthbar.center();
-        //healthbar.move(0, 0, 0);
+        Vector3f camPos = new Vector3f();
+        this.app.getCamera().getScreenCoordinates(camPos.add(player.getLocalTranslation()));
+        healthbar.move(camPos.x, camPos.y, 0.0f);
         billboard.setAlignment(BillboardControl.Alignment.Screen);
         healthbar.setBatchHint(Spatial.BatchHint.Never);
-        float x = player.getWorldTranslation().x;
-        float y = player.getWorldTranslation().y;
-        float z = player.getWorldTranslation().z + 2.0f;
-        healthbar.setLocalTranslation(x, y, z);
+        //float x = player.getWorldTranslation().x;
+        //float y = player.getWorldTranslation().y+2.1f;
+        //float z = player.getWorldTranslation().z;
+        //healthbar.setLocalTranslation(x, y, z);
         healthbar.addControl(billboard);
         
         scene.attachChild(player);
@@ -79,6 +84,16 @@ public class PlayerState extends AbstractAppState {
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
         chaseCamera.setSmoothMotion(true);
+        // bitmap text
+        BitmapFont hudFont = this.app.getAssetManager().loadFont("Interface/Fonts/LiberationSans.fnt");
+        hudText = new BitmapText(hudFont, true);
+        hudText.setSize(hudFont.getCharSet().getRenderedSize());
+        hudText.setColor(ColorRGBA.Blue);
+        hudText.setText("You can write any string here");
+        hudText.setQueueBucket(RenderQueue.Bucket.Gui);
+        hudText.setLocalTranslation(camPos.x, camPos.y, 0);
+        System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
+        this.app.getGuiNode().attachChild(hudText);
     }
     
     Spatial getShoot(String shootType) {
@@ -106,7 +121,12 @@ public class PlayerState extends AbstractAppState {
             player.setUserData("health", health);
             timeEvent = timeCounter;
         }
-        ((Quad) healthbar.getMesh()).updateGeometry(((float) health / 100) * 4.0f, 0.2f);
+        ((Quad) healthbar.getMesh()).updateGeometry(((float) health / 100) * 2.0f, 0.1f);
+        Vector3f camPos = this.app.getCamera().getScreenCoordinates(player.getWorldTranslation());
+        //System.out.println("screen position: " + camPos);
+        healthbar.move(camPos.x, camPos.y, 0.0f);
+        hudText.setLocalTranslation(camPos.x -100, camPos.y , 0);
+        System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
     }
     
     @Override
