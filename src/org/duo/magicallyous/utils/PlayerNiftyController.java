@@ -5,10 +5,13 @@
 package org.duo.magicallyous.utils;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.scene.Node;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 
@@ -17,18 +20,29 @@ import de.lessvoid.nifty.screen.ScreenController;
  * @author duo
  */
 public class PlayerNiftyController extends AbstractAppState implements ScreenController {
-    Element element;
+    SimpleApplication app;
+    Node player;
+    Node scene;
+    Nifty nifty;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
-        //TODO: initialize your AppState, e.g. attach spatials to rootNode
-        //this is called on the OpenGL thread after the AppState has been attached
+        this.app = (SimpleApplication) app;
+        scene = (Node) this.app.getRootNode().getChild("Scene01");
+        player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
     }
     
     @Override
     public void update(float tpf) {
-        //TODO: implement behavior during runtime
+        if (nifty != null) {
+            Element niftyElement = nifty.getCurrentScreen().findElementByName("playerhealth");
+            // swap old with new text
+            niftyElement.getRenderer(TextRenderer.class).setText("health: " + getPlayerHealth());
+            niftyElement = nifty.getCurrentScreen().findElementByName("playername");
+            // swap old with new text
+            niftyElement.getRenderer(TextRenderer.class).setText("health: " + getPlayerHealth());
+        }
     }
     
     @Override
@@ -41,7 +55,7 @@ public class PlayerNiftyController extends AbstractAppState implements ScreenCon
 
     @Override
     public void bind(Nifty nifty, Screen screen) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.nifty = nifty;
     }
 
     @Override
@@ -56,5 +70,13 @@ public class PlayerNiftyController extends AbstractAppState implements ScreenCon
 
     public void charFoward() {
         System.out.println("Nifty called char foward !!!");
+    }
+
+    public String getPlayerName() {
+        return player.getUserData("name");
+    }
+
+    public int getPlayerHealth() {
+        return player.getUserData("health");
     }
 }

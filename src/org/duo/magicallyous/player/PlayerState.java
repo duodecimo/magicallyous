@@ -38,6 +38,7 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("fireMagic", getShoot("fireMagic"));
         player.setUserData("waterMagic", getShoot("waterMagic"));
         player.setUserData("earthMagic", getShoot("earthMagic"));
+        player.setUserData("name", "Astofoboldo");
         player.setUserData("health", 100);
         player.addControl(new PlayerControl());
         player.addControl(new TerrainHeightControl());
