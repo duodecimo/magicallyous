@@ -21,7 +21,6 @@ public class MagicallyousAppState extends AbstractAppState {
     private SimpleApplication app;
     private Node scene;
     private Node terrainNode;
-    private Spatial barrel;
 
     public Spatial getTerrainNode() {
         return terrainNode;
@@ -37,16 +36,15 @@ public class MagicallyousAppState extends AbstractAppState {
         for(Spatial spatial : this.app.getRootNode().getChildren()) {
             System.out.println("Root children: " + spatial.getName());
         }
+        // disable flycam
+        this.app.getFlyByCamera().setEnabled(false);
+        
         scene = (Node) this.app.getRootNode().getChild("Scene01");
         terrainNode = (Node) ((Node) scene).getChild("terrainNode");
         // PlayerState to initialize player
         stateManager.attach(new PlayerState());
         // NpcAppState to initialize npc
         stateManager.attach(new NpcAppState());
-        // add a barrel
-        barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
-        ((Node) scene).attachChild(barrel);
-        barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
     }
 
     @Override

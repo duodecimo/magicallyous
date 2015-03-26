@@ -30,21 +30,20 @@ public class PlayerNiftyController extends AbstractAppState implements ScreenCon
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
         scene = (Node) this.app.getRootNode().getChild("Scene01");
-        player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
+        player = (Node) scene.getChild("player");
     }
-    
+
     @Override
     public void update(float tpf) {
         if (nifty != null) {
-            Element niftyElement = nifty.getCurrentScreen().findElementByName("playerhealth");
-            // swap old with new text
-            niftyElement.getRenderer(TextRenderer.class).setText("health: " + getPlayerHealth());
-            niftyElement = nifty.getCurrentScreen().findElementByName("playername");
-            // swap old with new text
+            Element niftyElement = nifty.getCurrentScreen().findElementByName("playername");
+            niftyElement.getRenderer(TextRenderer.class).setText("name: " + getPlayerName());
+
+            niftyElement = nifty.getCurrentScreen().findElementByName("playerhealth");
             niftyElement.getRenderer(TextRenderer.class).setText("health: " + getPlayerHealth());
         }
     }
-    
+
     @Override
     public void cleanup() {
         super.cleanup();
@@ -56,6 +55,7 @@ public class PlayerNiftyController extends AbstractAppState implements ScreenCon
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.nifty = nifty;
+        System.out.println("bind called, nifty is " + (nifty != null));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PlayerNiftyController extends AbstractAppState implements ScreenCon
         return player.getUserData("name");
     }
 
-    public int getPlayerHealth() {
-        return player.getUserData("health");
+    public String getPlayerHealth() {
+        return player.getUserData("health").toString();
     }
 }

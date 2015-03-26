@@ -8,16 +8,17 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.BillboardControl;
+import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
-import de.lessvoid.nifty.Nifty;
-import org.duo.magicallyous.utils.PlayerNiftyController;
 import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**
@@ -27,13 +28,19 @@ import org.duo.magicallyous.utils.TerrainHeightControl;
 public class PlayerState extends AbstractAppState {
     private SimpleApplication app;
     private ChaseCamera chaseCamera;
+    private Node player;
+    private Geometry healthbar;
+    private Spatial barrel;
+    private double timeCounter = 0.0d;
+    private double timeEvent = 0.0d;
+
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
         Node scene = (Node) this.app.getRootNode().getChild("Scene01");
-        Node player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
+        player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
         player.setUserData("fireMagic", getShoot("fireMagic"));
         player.setUserData("waterMagic", getShoot("waterMagic"));
@@ -43,20 +50,35 @@ public class PlayerState extends AbstractAppState {
         player.addControl(new PlayerControl());
         player.addControl(new TerrainHeightControl());
         player.move(0.0f, 0.0f, 0.0f);
+        // add healthbar
+        BillboardControl billboard = new BillboardControl();
+        healthbar = new Geometry("healthbar", new Quad(4.0f, 0.1f));
+        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        material.setColor("Color", ColorRGBA.Red);
+        healthbar.setMaterial(material);
+        healthbar.setQueueBucket(RenderQueue.Bucket.Translucent);
+        player.attachChild(healthbar);
+        healthbar.center();
+        //healthbar.move(0, 0, 0);
+        billboard.setAlignment(BillboardControl.Alignment.Screen);
+        healthbar.setBatchHint(Spatial.BatchHint.Never);
+        float x = player.getWorldTranslation().x;
+        float y = player.getWorldTranslation().y;
+        float z = player.getWorldTranslation().z + 2.0f;
+        healthbar.setLocalTranslation(x, y, z);
+        healthbar.addControl(billboard);
+        
         scene.attachChild(player);
+        // add a barrel
+        barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
+        scene.attachChild(barrel);
+        barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
         // start player basic key controls
         stateManager.attach(new PlayerMovement());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
         chaseCamera.setSmoothMotion(true);
-        // Nifty
-        NiftyJmeDisplay niftyJmeDisplay = new NiftyJmeDisplay(app.getAssetManager(), app.getInputManager(), 
-                app.getAudioRenderer(), app.getViewPort());
-        Nifty nifty = niftyJmeDisplay.getNifty();
-        nifty.fromXml("Interface/nifty/niftyGame.xml", "start", new PlayerNiftyController());
-        //nifty.setDebugOptionPanelColors(true);
-        app.getGuiViewPort().addProcessor(niftyJmeDisplay);
     }
     
     Spatial getShoot(String shootType) {
@@ -77,7 +99,14 @@ public class PlayerState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
-        //TODO: implement behavior during runtime
+        timeCounter += tpf;
+        int health = player.getUserData("health");
+        if(timeCounter - timeEvent > 3.0d) {
+            health -=1;
+            player.setUserData("health", health);
+            timeEvent = timeCounter;
+        }
+        ((Quad) healthbar.getMesh()).updateGeometry(((float) health / 100) * 4.0f, 0.2f);
     }
     
     @Override

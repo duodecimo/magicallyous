@@ -62,7 +62,7 @@ public class NpcAppState extends AbstractAppState {
             vector3f = new Vector3f(x, 0.0f, z);
             spider.addControl(npcMovementControl);
             vector2f = npcMovementControl.getSpawnLocation();
-            System.out.println("spider spawn location = " + vector2f);
+            //System.out.println("spider spawn location = " + vector2f);
             if (vector2f.x < -30.0f && vector2f.y < 250.0f)  {
                 vector3f.x = vector2f.x;
                 vector3f.z = vector2f.y;
