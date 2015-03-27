@@ -97,13 +97,12 @@ public class PlayerToneGodGuiState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
-        Vector3f camPos = new Vector3f();
-        this.app.getCamera().getScreenCoordinates(camPos.add(player.getLocalTranslation()));
+        Vector3f camPos = this.app.getCamera().getScreenCoordinates(player.getWorldTranslation());
 
         int health = getPlayerHealth();
         player.setUserData("health", health);
 
-        indicator.setLocalTranslation(camPos.x, camPos.y , 0);
+        indicator.setLocalTranslation(camPos.x - 100, camPos.y , 0);
         indicator.setCurrentValue(getPlayerHealth());
         System.out.println("Indicator Position: " + camPos);
     }
