@@ -38,7 +38,6 @@ public class MagicallyousAppState extends AbstractAppState {
         }
         // disable flycam
         this.app.getFlyByCamera().setEnabled(false);
-        
         scene = (Node) this.app.getRootNode().getChild("Scene01");
         terrainNode = (Node) ((Node) scene).getChild("terrainNode");
         // PlayerState to initialize player
