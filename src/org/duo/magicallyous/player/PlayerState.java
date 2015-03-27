@@ -94,7 +94,8 @@ public class PlayerState extends AbstractAppState {
         hudText.setLocalTranslation(camPos.x, camPos.y, 0);
         System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
         this.app.getGuiNode().attachChild(hudText);
-        this.app.getStateManager().attach(new PlayerToneGodGuiState());
+        //this.app.getStateManager().attach(new PlayerToneGodGuiState());
+        this.app.getStateManager().attach(new TestToneGodGuiState());
     }
     
     Spatial getShoot(String shootType) {
