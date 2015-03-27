@@ -13,6 +13,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import java.util.List;
+import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**
@@ -69,6 +70,9 @@ public class NpcAppState extends AbstractAppState {
             }
             spider.setLocalTranslation(vector3f);
             npcMovementControl.setActive(true);
+            if (i==20) {
+                spider.addControl(new HealthBarControl(this.app, spider));
+            }
             spider.addControl(new TerrainHeightControl());
             spiders.add(spider);
             x-=3;

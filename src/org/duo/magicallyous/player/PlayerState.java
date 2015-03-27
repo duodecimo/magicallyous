@@ -21,6 +21,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
+import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.TerrainHeightControl;
 
 /**
@@ -51,6 +52,7 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("health", 100);
         player.addControl(new PlayerControl());
         player.addControl(new TerrainHeightControl());
+        player.addControl(new HealthBarControl(this.app, player));
         player.move(0.0f, 0.0f, 0.0f);
         // add healthbar
         BillboardControl billboard = new BillboardControl();
@@ -59,7 +61,7 @@ public class PlayerState extends AbstractAppState {
         material.setColor("Color", ColorRGBA.Red);
         healthbar.setMaterial(material);
         healthbar.setQueueBucket(RenderQueue.Bucket.Translucent);
-        player.attachChild(healthbar);
+        //player.attachChild(healthbar);
         //this.app.getGuiNode().attachChild(healthbar);
         healthbar.center();
         Vector3f camPos = new Vector3f();
@@ -92,10 +94,11 @@ public class PlayerState extends AbstractAppState {
         hudText.setText("You can write any string here");
         hudText.setQueueBucket(RenderQueue.Bucket.Gui);
         hudText.setLocalTranslation(camPos.x, camPos.y, 0);
-        System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
-        this.app.getGuiNode().attachChild(hudText);
+        //System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
+        //this.app.getGuiNode().attachChild(hudText);
         //this.app.getStateManager().attach(new PlayerToneGodGuiState());
-        this.app.getStateManager().attach(new TestToneGodGuiState());
+        //this.app.getStateManager().attach(new TestToneGodGuiState());
+        
     }
     
     Spatial getShoot(String shootType) {
