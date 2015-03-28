@@ -11,6 +11,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
 import org.duo.magicallyous.utils.HealthBarControl;
@@ -45,7 +46,7 @@ public class NpcAppState extends AbstractAppState {
         Vector2f vector2f;
         Node spider;
         for(int i=0; i<21; i++) {
-            spider = (Node) app.getAssetManager().loadModel("Models/spider.j3o");
+            spider  = (Node) app.getAssetManager().loadModel("Models/spider.j3o");
             if (i<20) {
                 spider.scale(0.2f);
             }
@@ -70,9 +71,7 @@ public class NpcAppState extends AbstractAppState {
             }
             spider.setLocalTranslation(vector3f);
             npcMovementControl.setActive(true);
-            if (i==20) {
-                spider.addControl(new HealthBarControl(this.app, spider));
-            }
+            spider.addControl(new HealthBarControl(this.app, spider));
             spider.addControl(new TerrainHeightControl());
             spiders.add(spider);
             x-=3;

@@ -32,11 +32,9 @@ public class PlayerState extends AbstractAppState {
     private SimpleApplication app;
     private ChaseCamera chaseCamera;
     private Node player;
-    private Geometry healthbar;
     private Spatial barrel;
     private double timeCounter = 0.0d;
     private double timeEvent = 0.0d;
-    BitmapText hudText;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -49,31 +47,30 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("waterMagic", getShoot("waterMagic"));
         player.setUserData("earthMagic", getShoot("earthMagic"));
         player.setUserData("name", "Astofoboldo");
-        player.setUserData("health", 100);
         player.addControl(new PlayerControl());
         player.addControl(new TerrainHeightControl());
-        player.addControl(new HealthBarControl(this.app, player));
         player.move(0.0f, 0.0f, 0.0f);
+        player.addControl(new HealthBarControl(this.app, player));
         // add healthbar
-        BillboardControl billboard = new BillboardControl();
-        healthbar = new Geometry("healthbar", new Quad(2.0f, 0.1f));
-        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        material.setColor("Color", ColorRGBA.Red);
-        healthbar.setMaterial(material);
-        healthbar.setQueueBucket(RenderQueue.Bucket.Translucent);
+        //BillboardControl billboard = new BillboardControl();
+        //healthbar = new Geometry("healthbar", new Quad(2.0f, 0.1f));
+        //Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        //material.setColor("Color", ColorRGBA.Red);
+        //healthbar.setMaterial(material);
+        //healthbar.setQueueBucket(RenderQueue.Bucket.Translucent);
         //player.attachChild(healthbar);
         //this.app.getGuiNode().attachChild(healthbar);
-        healthbar.center();
-        Vector3f camPos = new Vector3f();
-        this.app.getCamera().getScreenCoordinates(camPos.add(player.getLocalTranslation()));
-        healthbar.move(camPos.x, camPos.y, 0.0f);
-        billboard.setAlignment(BillboardControl.Alignment.Screen);
-        healthbar.setBatchHint(Spatial.BatchHint.Never);
+        //healthbar.center();
+        //Vector3f camPos = new Vector3f();
+        //this.app.getCamera().getScreenCoordinates(camPos.add(player.getLocalTranslation()));
+        //healthbar.move(camPos.x, camPos.y, 0.0f);
+        //billboard.setAlignment(BillboardControl.Alignment.Screen);
+        //healthbar.setBatchHint(Spatial.BatchHint.Never);
         //float x = player.getWorldTranslation().x;
         //float y = player.getWorldTranslation().y+2.1f;
         //float z = player.getWorldTranslation().z;
         //healthbar.setLocalTranslation(x, y, z);
-        healthbar.addControl(billboard);
+        //healthbar.addControl(billboard);
         
         scene.attachChild(player);
         // add a barrel
@@ -87,13 +84,13 @@ public class PlayerState extends AbstractAppState {
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
         chaseCamera.setSmoothMotion(true);
         // bitmap text
-        BitmapFont hudFont = this.app.getAssetManager().loadFont("Interface/Fonts/LiberationSans.fnt");
-        hudText = new BitmapText(hudFont, true);
-        hudText.setSize(hudFont.getCharSet().getRenderedSize());
-        hudText.setColor(ColorRGBA.Blue);
-        hudText.setText("You can write any string here");
-        hudText.setQueueBucket(RenderQueue.Bucket.Gui);
-        hudText.setLocalTranslation(camPos.x, camPos.y, 0);
+        //BitmapFont hudFont = this.app.getAssetManager().loadFont("Interface/Fonts/LiberationSans.fnt");
+        //hudText = new BitmapText(hudFont, true);
+        //hudText.setSize(hudFont.getCharSet().getRenderedSize());
+        //hudText.setColor(ColorRGBA.Blue);
+        //hudText.setText("You can write any string here");
+        //hudText.setQueueBucket(RenderQueue.Bucket.Gui);
+        //hudText.setLocalTranslation(camPos.x, camPos.y, 0);
         //System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
         //this.app.getGuiNode().attachChild(hudText);
         //this.app.getStateManager().attach(new PlayerToneGodGuiState());
@@ -126,11 +123,11 @@ public class PlayerState extends AbstractAppState {
             player.setUserData("health", health);
             timeEvent = timeCounter;
         }
-        ((Quad) healthbar.getMesh()).updateGeometry(((float) health / 100) * 2.0f, 0.1f);
-        Vector3f camPos = this.app.getCamera().getScreenCoordinates(player.getWorldTranslation());
+        //((Quad) healthbar.getMesh()).updateGeometry(((float) health / 100) * 2.0f, 0.1f);
+        //Vector3f camPos = this.app.getCamera().getScreenCoordinates(player.getWorldTranslation());
         //System.out.println("screen position: " + camPos);
-        healthbar.move(camPos.x, camPos.y, 0.0f);
-        hudText.setLocalTranslation(camPos.x -100, camPos.y , 0);
+        //healthbar.move(camPos.x, camPos.y, 0.0f);
+        //hudText.setLocalTranslation(camPos.x -100, camPos.y , 0);
         //System.out.println("hudText postioned in: " + hudText.getLocalTranslation());
     }
     
