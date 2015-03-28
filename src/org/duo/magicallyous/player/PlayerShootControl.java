@@ -77,8 +77,12 @@ public class PlayerShootControl extends AbstractControl {
                     //System.out.println("shoot1 ended at distance: " + dist.length());
                     ((Node) (spatial.getParent())).detachChild(shoot1);
                     ((Node) (spatial.getParent())).detachChild(shoot2);
+                    int damage = spatial.getUserData("damage");
                     int health = target.getUserData("health");
-                    health -= 10;
+                    health -= damage;
+                    if(health < 0) {
+                        health = 0;
+                    }
                     target.setUserData("health", health);
                     spatial.removeControl(this);
                 } else {

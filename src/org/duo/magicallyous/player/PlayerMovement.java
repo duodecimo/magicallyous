@@ -87,12 +87,10 @@ public class PlayerMovement extends AbstractAppState implements ActionListener, 
                     break;
                 case PlayerActionString.PICKSWORD :
                     if (isPressed) {
-                        if (rightHandNode != null && swordNode != null) {
-                            if (rightHandNode.hasChild(swordNode)) {
-                                rightHandNode.detachChild(swordNode);
-                            } else {
-                                rightHandNode.attachChild(swordNode);
-                            }
+                        if (rightHandNode.hasChild(swordNode)) {
+                            rightHandNode.detachChild(swordNode);
+                        } else {
+                            rightHandNode.attachChild(swordNode);
                         }
                     }
                     break;

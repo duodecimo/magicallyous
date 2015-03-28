@@ -43,6 +43,7 @@ public class NpcMovementControl extends AbstractControl {
     private final Quaternion lookRotation = new Quaternion();
     private double timeCounter = 0d;
     private double deathTimeCounter = 0d;
+    private double fightTimeCounter = 0d;
     private boolean active = false;
     // terrain bounds for npcs
     private float xmax, xmin, zmax, zmin;
@@ -98,7 +99,9 @@ public class NpcMovementControl extends AbstractControl {
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (player != null && npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
+            if (player != null && player.getControl(PlayerControl.class).getActionState() 
+                    != ActionStateEnum.DIE && 
+                    npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
                 Vector3f aim = player.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
@@ -116,6 +119,7 @@ public class NpcMovementControl extends AbstractControl {
                             playerControl.setTarget(spatial);
                             playerControl.setStartAttack(true);
                             playerControl.setActionState(ActionStateEnum.ATTACK);
+                            fightTimeCounter = timeCounter;
                         }
                     }
                 }
@@ -220,6 +224,19 @@ public class NpcMovementControl extends AbstractControl {
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         npcDie();
+                    }
+                    if((timeCounter - fightTimeCounter) >= 3.0f) {
+                        // cause damage each 3 seconds
+                        fightTimeCounter = timeCounter;
+                        int damage = spatial.getUserData("damage");
+                        int playerHealth = player.getUserData("health");
+                        playerHealth -= damage;
+                        player.setUserData("health", playerHealth);
+                    }
+                    if((int) player.getUserData("health") <= 0) {
+                        // player must die
+                        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.DIE);
+                        npcState = previousNpcState;
                     }
                 } else if(npcState == NpcState.DEAD) {
                     if(timeCounter - deathTimeCounter > 10.0d) {
