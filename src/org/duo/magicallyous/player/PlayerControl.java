@@ -42,7 +42,6 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
     private double timeCounter = 0d;
     private double attackTimer = 0d;
     private boolean startAttack = false;
-    private boolean startDying = false;
     private boolean waitingForCast = false;
     private boolean waitingForPrecast = false;
     private Spatial target;
@@ -77,10 +76,6 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
 
     public void setStartAttack(boolean startAttack) {
         this.startAttack = startAttack;
-    }
-
-    public void setStartDying(boolean startDying) {
-        this.startDying = startDying;
     }
 
     @Override
@@ -172,13 +167,11 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
                     }
                 }
             } else if (actionState == ActionStateEnum.DIE) {
-                if (startDying) {
-                    startDying = false;
-                    if (animChannel.getAnimationName().compareTo("Die") != 0) {
-                        animChannel.setAnim("Die");
-                        animChannel.setSpeed(0.5f);
-                        animChannel.setLoopMode(LoopMode.DontLoop);
-                    }
+                if(target != null) target = null;
+                if (animChannel.getAnimationName().compareTo("Die") != 0) {
+                    animChannel.setAnim("Die");
+                    animChannel.setSpeed(0.5f);
+                    animChannel.setLoopMode(LoopMode.DontLoop);
                 }
             }
         }
@@ -241,9 +234,11 @@ public class PlayerControl extends AbstractControl implements AnimEventListener 
             attackTimer = timeCounter;
         } else if(animName.compareTo("Die")==0) {
             // respawn
-            actionState = ActionStateEnum.IDLE;
             spatial.setUserData("health", 100);
             spatial.move(0.0f, 0.0f, 0.0f);
+            spatial.setLocalTranslation(0.0f, 0.0f, 0.0f);
+            System.out.println("Player revived on " + spatial.getLocalTranslation());
+            actionState = ActionStateEnum.IDLE;
         }
     }
 

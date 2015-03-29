@@ -24,6 +24,7 @@ import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
 import org.duo.magicallyous.player.PlayerControl;
+import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.ActionStateEnum;
 
 /**
@@ -232,9 +233,12 @@ public class NpcMovementControl extends AbstractControl {
                         int playerHealth = player.getUserData("health");
                         playerHealth -= damage;
                         player.setUserData("health", playerHealth);
+                        System.out.println("npc caused " + damage + " of damage to player, health now = " +
+                                playerHealth);
                     }
                     if((int) player.getUserData("health") <= 0) {
                         // player must die
+                        player.removeControl(PlayerShootControl.class);
                         player.getControl(PlayerControl.class).setActionState(ActionStateEnum.DIE);
                         npcState = previousNpcState;
                     }
