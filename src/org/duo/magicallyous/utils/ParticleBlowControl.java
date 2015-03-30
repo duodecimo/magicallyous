@@ -5,14 +5,13 @@
 package org.duo.magicallyous.utils;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh;
 import org.duo.magicallyous.player.*;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -22,6 +21,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
+import com.jme3.scene.shape.Sphere;
 import java.io.IOException;
 
 /**
@@ -31,18 +31,17 @@ import java.io.IOException;
  */
 public class ParticleBlowControl extends AbstractControl {
     SimpleApplication app;
-    private Spatial target;
-    Node origin, targetHitNode;
+    private Node target;
+    private Node origin, targetHitNode;
     Vector3f initialPosition;
     private final Quaternion lookRotation = new Quaternion();
-    private ParticleEmitter particleEmitter;
-    private boolean particleStart = false;
-    private float angle = 0.0f;
+    private Geometry shoot;
+    private boolean shootStart = false;
 
     public ParticleBlowControl(SimpleApplication app, Spatial target) {
         super();
         this.app = app;
-        this.target = target;
+        this.target = (Node) target;
         System.out.println("particle system started!");
     }
 
@@ -54,6 +53,7 @@ public class ParticleBlowControl extends AbstractControl {
                     switch (node.getName()) {
                         case "hitNode":
                             origin = node;
+                            System.out.println("hitNode found into spatial node!");
                             break;
                     }
                 }
@@ -63,6 +63,7 @@ public class ParticleBlowControl extends AbstractControl {
                     switch (node.getName()) {
                         case "hitNode":
                             targetHitNode = node;
+                            System.out.println("targetHitNode found into target node!");
                             break;
                     }
                 }
@@ -71,18 +72,19 @@ public class ParticleBlowControl extends AbstractControl {
                 origin = (Node) spatial;
             }
             if (targetHitNode == null) {
-                targetHitNode = ((Node) target);
+                targetHitNode = (Node) target;
             }
-            if(!particleStart) {
-                createParticleBlow();
-                app.getRootNode().attachChild(particleEmitter);
-                particleEmitter.setLocalTranslation(origin.getWorldTranslation());
+            if(!shootStart) {
+                shootStart = true;
+                getShoot("waterMagic");
+                app.getRootNode().attachChild(shoot);
+                shoot.setLocalTranslation(origin.getWorldTranslation());
             }
             if (origin != null && targetHitNode != null) {
                 Vector3f aim = new Vector3f(targetHitNode.getWorldTranslation());
-                Vector3f dist = aim.subtract(origin.getWorldTranslation());
-                if (dist.length() < 0.05f) {
-                    app.getRootNode().detachChild(particleEmitter);
+                Vector3f dist = aim.subtract(shoot.getWorldTranslation());
+                if (dist.length() < 0.02f) {
+                    app.getRootNode().detachChild(shoot);
                     System.out.println("particle ended at distance: " + dist.length());
                     int damage = spatial.getUserData("damage");
                     int health = target.getUserData("health");
@@ -92,12 +94,14 @@ public class ParticleBlowControl extends AbstractControl {
                     }
                     target.setUserData("health", health);
                     spatial.removeControl(this);
+                    shoot = null;
                 } else {
                     dist.normalizeLocal();
                     lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                    particleEmitter.setLocalRotation(lookRotation);
-                    particleEmitter.move(dist.multLocal(4.0f * tpf));
-                    System.out.println("particle at: " + particleEmitter.getWorldTranslation());
+                    shoot.setLocalRotation(lookRotation);
+                    shoot.move(dist.multLocal(4.0f * tpf));
+                    System.out.println("particle at: " + shoot.getWorldTranslation()
+                            + " distance: " + dist.length());
                 }
             }
         }
@@ -132,21 +136,19 @@ public class ParticleBlowControl extends AbstractControl {
         //out.write(this.value, "name", defaultValue);
     }
 
-    public void setTarget(Spatial target) {
-        this.target = target;
-    }
-
-    public Geometry createParticleBlow() {
-        particleEmitter = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 300);
-        particleEmitter.setGravity(0, 0, 0);
-        //emit.setVelocityVariation(1);
-        particleEmitter.setLowLife(1);
-        particleEmitter.setHighLife(1);
-        //emit.setInitialVelocity(new Vector3f(0, .5f, 0));
-        particleEmitter.setImagesX(15);
-        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Particle.j3md");
-        mat.setTexture("Texture", app.getAssetManager().loadTexture("Effects/Smoke/Smoke.png"));
-        particleEmitter.setMaterial(mat);
-        return particleEmitter;
+    private Spatial getShoot(String shootType) {
+        Sphere sphere = new Sphere(16, 16, 0.1f);
+        shoot = new Geometry("shoot", sphere);
+        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        if(shootType.compareTo("fireMagic") == 0) {
+            material.setColor("Color", ColorRGBA.Yellow);
+        } else if(shootType.compareTo("waterMagic") == 0) {
+            material.setColor("Color", ColorRGBA.Blue);
+        } else {
+            material.setColor("Color", ColorRGBA.Green);
+        }
+        shoot.setMaterial(material);
+        shoot.setName("shoot");
+        return shoot;
     }
 }

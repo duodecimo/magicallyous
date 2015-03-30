@@ -230,7 +230,6 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                         animChannel.setAnim("Strike");
                         animChannel.setSpeed(1.0f);
                         animChannel.setLoopMode(LoopMode.Loop);
-                        spatial.addControl(new ParticleBlowControl(app, player));
                     }
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
@@ -287,6 +286,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
         AnimControl control = spatial.getControl(AnimControl.class);
         if (control != animControl) {
             animControl = control;
+            animControl.addListener(this);
             animChannel = animControl.createChannel();
             animChannel.setAnim("Walk_1");
             animChannel.setLoopMode(LoopMode.Loop);
@@ -325,7 +325,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if(animName.compareTo("Strike") == 0) {
-            
+            spatial.addControl(new ParticleBlowControl(app, player));
         }
     }
 
