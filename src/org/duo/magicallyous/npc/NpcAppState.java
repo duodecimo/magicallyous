@@ -11,7 +11,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.List;
 import org.duo.magicallyous.utils.HealthBarControl;
@@ -54,7 +53,7 @@ public class NpcAppState extends AbstractAppState {
                 spider.setUserData("damage", 40);
             }
             spider.setUserData("health", 100);
-            npcMovementControl = new NpcMovementControl();
+            npcMovementControl = new NpcMovementControl(this.app);
             npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);
             /*if(i==0) {

@@ -6,7 +6,9 @@ package org.duo.magicallyous.npc;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
+import com.jme3.app.SimpleApplication;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
@@ -26,14 +28,16 @@ import java.util.Random;
 import org.duo.magicallyous.player.PlayerControl;
 import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.ActionStateEnum;
+import org.duo.magicallyous.utils.ParticleBlowControl;
 
 /**
  *
  * @author duo
  */
-public class NpcMovementControl extends AbstractControl {
+public class NpcMovementControl extends AbstractControl implements AnimEventListener {
     private AnimControl animControl;
     private AnimChannel animChannel;
+
     enum NpcState {
         WALK, RUN, ATTACK, IDLE, DEAD
     };
@@ -54,6 +58,11 @@ public class NpcMovementControl extends AbstractControl {
     private boolean debugPosition = false;
     long debugPositionTime = 0l;
     Node player;
+    SimpleApplication app;
+
+    public NpcMovementControl(SimpleApplication app) {
+        this.app = app;
+    }
 
     public void setNpcTerrainBounds(float xmax, float xmin, float zmax, float zmin) {
         this.xmax = xmax;
@@ -221,6 +230,7 @@ public class NpcMovementControl extends AbstractControl {
                         animChannel.setAnim("Strike");
                         animChannel.setSpeed(1.0f);
                         animChannel.setLoopMode(LoopMode.Loop);
+                        spatial.addControl(new ParticleBlowControl(app, player));
                     }
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
@@ -292,7 +302,7 @@ public class NpcMovementControl extends AbstractControl {
 
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        NpcMovementControl control = new NpcMovementControl();
+        NpcMovementControl control = new NpcMovementControl(app);
         //TODO: copy parameters to new Control
         return control;
     }
@@ -311,5 +321,15 @@ public class NpcMovementControl extends AbstractControl {
         OutputCapsule out = ex.getCapsule(this);
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
+    }
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if(animName.compareTo("Strike") == 0) {
+            
+        }
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
     }
 }
