@@ -233,14 +233,18 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                     }
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
+                        int playerDefense = player.getUserData("defense");
+                        // player get stronger!
+                        player.setUserData("defense", playerDefense+2);
                         npcDie();
                     }
                     if((timeCounter - fightTimeCounter) >= 3.0f) {
                         // cause damage each 3 seconds
                         fightTimeCounter = timeCounter;
                         int damage = spatial.getUserData("damage");
+                        int defense = player.getUserData("defense");
                         int playerHealth = player.getUserData("health");
-                        playerHealth -= damage;
+                        playerHealth -= (damage - defense);
                         player.setUserData("health", playerHealth);
                         System.out.println("npc caused " + damage + " of damage to player, health now = " +
                                 playerHealth);

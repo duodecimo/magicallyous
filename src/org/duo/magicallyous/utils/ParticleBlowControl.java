@@ -86,13 +86,6 @@ public class ParticleBlowControl extends AbstractControl {
                 if (dist.length() < 0.02f) {
                     app.getRootNode().detachChild(shoot);
                     System.out.println("particle ended at distance: " + dist.length());
-                    int damage = spatial.getUserData("damage");
-                    int health = target.getUserData("health");
-                    health -= damage;
-                    if (health < 0) {
-                        health = 0;
-                    }
-                    target.setUserData("health", health);
                     spatial.removeControl(this);
                     shoot = null;
                 } else {

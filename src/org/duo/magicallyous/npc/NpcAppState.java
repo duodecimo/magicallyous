@@ -48,9 +48,11 @@ public class NpcAppState extends AbstractAppState {
             spider  = (Node) app.getAssetManager().loadModel("Models/spider.j3o");
             if (i<20) {
                 spider.scale(0.2f);
-                spider.setUserData("damage", 15);
+                spider.setUserData("damage", 8);
+                spider.setUserData("defense", 5);
             } else {
-                spider.setUserData("damage", 40);
+                spider.setUserData("damage", 20);
+                spider.setUserData("defense", 10);
             }
             spider.setUserData("health", 100);
             npcMovementControl = new NpcMovementControl(this.app);

@@ -41,7 +41,8 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("waterMagic", getShoot("waterMagic"));
         player.setUserData("earthMagic", getShoot("earthMagic"));
         player.setUserData("name", "Astofoboldo");
-        player.setUserData("damage", 5);
+        player.setUserData("damage", 8);
+        player.setUserData("defense", 5);
         player.addControl(new PlayerControl());
         player.addControl(new TerrainHeightControl());
         player.move(0.0f, 0.0f, 0.0f);
@@ -86,8 +87,8 @@ public class PlayerState extends AbstractAppState {
     public void update(float tpf) {
         timeCounter += tpf;
         int health = player.getUserData("health");
-        if(timeCounter - timeEvent > 10.0d && health < 100) {
-            health +=1;
+        if(timeCounter - timeEvent > 5.0d && health < 100) {
+            health +=2;
             player.setUserData("health", health);
             timeEvent = timeCounter;
         }

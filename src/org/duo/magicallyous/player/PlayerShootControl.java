@@ -80,8 +80,9 @@ public class PlayerShootControl extends AbstractControl {
                     ((Node) (spatial.getParent())).detachChild(shoot1);
                     ((Node) (spatial.getParent())).detachChild(shoot2);
                     int damage = spatial.getUserData("damage");
+                    int defense = target.getUserData("defense");
                     int health = target.getUserData("health");
-                    health -= damage;
+                    health -= (damage - defense);
                     if(health < 0) {
                         health = 0;
                     }
