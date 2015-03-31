@@ -17,6 +17,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.TerrainHeightControl;
+import org.duo.magicallyous.utils.ToneGodGuiState;
 
 /**
  *
@@ -61,6 +62,7 @@ public class PlayerState extends AbstractAppState {
         barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
         // start player basic key controls
         stateManager.attach(new PlayerMovement());
+        stateManager.attach(new ToneGodGuiState());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());

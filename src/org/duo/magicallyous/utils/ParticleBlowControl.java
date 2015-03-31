@@ -54,7 +54,7 @@ public class ParticleBlowControl extends AbstractControl {
                     switch (node.getName()) {
                         case "hitNode":
                             origin = node;
-                            System.out.println("hitNode found into spatial node!");
+                            //System.out.println("hitNode found into spatial node!");
                             break;
                     }
                 }
@@ -64,7 +64,7 @@ public class ParticleBlowControl extends AbstractControl {
                     switch (node.getName()) {
                         case "hitNode":
                             targetHitNode = node;
-                            System.out.println("targetHitNode found into target node!");
+                            //System.out.println("targetHitNode found into target node!");
                             break;
                     }
                 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.duo.magicallyous.player;
+package org.duo.magicallyous.utils;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -12,8 +12,10 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.math.Vector4f;
 import com.jme3.scene.Node;
 import tonegod.gui.controls.extras.Indicator;
+import tonegod.gui.controls.windows.Panel;
 import tonegod.gui.core.Element;
 import tonegod.gui.core.Screen;
 
@@ -21,7 +23,8 @@ import tonegod.gui.core.Screen;
  *
  * @author duo
  */
-public class PlayerToneGodGuiState extends AbstractAppState {
+public class ToneGodGuiState extends AbstractAppState {
+
     SimpleApplication app;
     Node player;
     Node scene;
@@ -37,7 +40,14 @@ public class PlayerToneGodGuiState extends AbstractAppState {
         player = (Node) scene.getChild("player");
         screen = new Screen(this.app);
         this.app.getGuiNode().addControl(screen);
-        indicator = new Indicator(screen, "indicator", new Vector2f(30, 90), Element.Orientation.HORIZONTAL) {
+        Panel panel = new Panel(screen, "panel",
+                new Vector2f(0, screen.getHeight() * 0.8f),
+                new Vector2f(screen.getWidth(), screen.getHeight() * 0.2f),
+                new Vector4f(14, 14, 14, 14),
+                "tonegod/gui/style/def/Window/panel_x.png");
+        screen.addElement(panel);
+        indicator = new Indicator(screen, "indicator", new Vector2f(10, 10),
+                Element.Orientation.HORIZONTAL) {
             @Override
             public void onChange(float currentValue, float currentPercentage) {
                 if (currentPercentage <= 0) {
@@ -54,21 +64,13 @@ public class PlayerToneGodGuiState extends AbstractAppState {
         indicator.setCurrentValue(100);
         indicator.setDisplayPercentage();
         indicator.setIndicatorColor(ColorRGBA.Red);
-        screen.addElement(indicator);
+        panel.addChild(indicator);
     }
 
     @Override
     public void update(float tpf) {
-        Vector3f camPos = this.app.getCamera().getScreenCoordinates(player.getWorldTranslation());
-        BoundingBox boundingBox = (BoundingBox) player.getWorldBound();
-        Vector3f playerCenter = boundingBox.getCenter();
-        float indicatorWidth = indicator.getWidth();
-        float centerX = (playerCenter.x/2) + (indicatorWidth/2);
-
         int health = getPlayerHealth();
         player.setUserData("health", health);
-
-        indicator.setLocalTranslation(camPos.x - centerX, camPos.y - indicator.getHeight()*2 , 0);
         indicator.setCurrentValue(getPlayerHealth());
     }
 
