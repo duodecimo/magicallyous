@@ -5,6 +5,8 @@
 package org.duo.magicallyous.utils;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.effect.ParticleEmitter;
+import com.jme3.effect.ParticleMesh;
 import org.duo.magicallyous.player.*;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
@@ -21,7 +23,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
-import com.jme3.scene.shape.Sphere;
 import java.io.IOException;
 
 /**
@@ -35,8 +36,8 @@ public class ParticleBlowControl extends AbstractControl {
     private Node origin, targetHitNode;
     Vector3f initialPosition;
     private final Quaternion lookRotation = new Quaternion();
-    private Geometry shoot;
-    private boolean shootStart = false;
+    Geometry emitter;
+    private boolean emitterStart = false;
 
     public ParticleBlowControl(SimpleApplication app, Spatial target) {
         super();
@@ -74,27 +75,24 @@ public class ParticleBlowControl extends AbstractControl {
             if (targetHitNode == null) {
                 targetHitNode = (Node) target;
             }
-            if(!shootStart) {
-                shootStart = true;
-                getShoot("waterMagic");
-                app.getRootNode().attachChild(shoot);
-                shoot.setLocalTranslation(origin.getWorldTranslation());
+            if(!emitterStart) {
+                emitterStart = true;
+                emitter = getParticleEmitter();
+                app.getRootNode().attachChild(emitter);
+                emitter.setLocalTranslation(origin.getWorldTranslation());
             }
             if (origin != null && targetHitNode != null) {
                 Vector3f aim = new Vector3f(targetHitNode.getWorldTranslation());
-                Vector3f dist = aim.subtract(shoot.getWorldTranslation());
+                Vector3f dist = aim.subtract(emitter.getWorldTranslation());
                 if (dist.length() < 0.02f) {
-                    app.getRootNode().detachChild(shoot);
-                    System.out.println("particle ended at distance: " + dist.length());
+                    app.getRootNode().detachChild(emitter);
                     spatial.removeControl(this);
-                    shoot = null;
+                    emitter = null;
                 } else {
                     dist.normalizeLocal();
                     lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                    shoot.setLocalRotation(lookRotation);
-                    shoot.move(dist.multLocal(4.0f * tpf));
-                    System.out.println("particle at: " + shoot.getWorldTranslation()
-                            + " distance: " + dist.length());
+                    emitter.setLocalRotation(lookRotation);
+                    emitter.move(dist.multLocal(4.0f * tpf));
                 }
             }
         }
@@ -129,19 +127,19 @@ public class ParticleBlowControl extends AbstractControl {
         //out.write(this.value, "name", defaultValue);
     }
 
-    private Spatial getShoot(String shootType) {
-        Sphere sphere = new Sphere(16, 16, 0.1f);
-        shoot = new Geometry("shoot", sphere);
-        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        if(shootType.compareTo("fireMagic") == 0) {
-            material.setColor("Color", ColorRGBA.Yellow);
-        } else if(shootType.compareTo("waterMagic") == 0) {
-            material.setColor("Color", ColorRGBA.Blue);
-        } else {
-            material.setColor("Color", ColorRGBA.Green);
-        }
-        shoot.setMaterial(material);
-        shoot.setName("shoot");
-        return shoot;
+    public Geometry getParticleEmitter() {
+        ParticleEmitter particleEmitter = new ParticleEmitter("Emitter", ParticleMesh.Type.Triangle, 200);
+        particleEmitter.setGravity(0, 0, 0);
+        particleEmitter.setLowLife(1);
+        particleEmitter.setHighLife(1);
+        particleEmitter.setImagesX(15);
+        Material material = new Material(app.getAssetManager(), "Common/MatDefs/Misc/Particle.j3md");
+        material.setTexture("Texture", app.getAssetManager().loadTexture("Effects/Smoke/Smoke.png"));
+        particleEmitter.setMaterial(material);
+        particleEmitter.setStartColor(ColorRGBA.Blue);
+        particleEmitter.setEndColor(ColorRGBA.DarkGray);
+        particleEmitter.setStartSize(0.5f);
+        particleEmitter.setEndSize(0.2f);
+        return particleEmitter;
     }
 }

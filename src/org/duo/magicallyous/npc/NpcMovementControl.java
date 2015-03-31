@@ -43,20 +43,21 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
     };
     private NpcState npcState = NpcState.WALK;
     private NpcState previousNpcState = NpcState.WALK;
-    private boolean walkRandom = true;
     private Random random;
     private final Quaternion lookRotation = new Quaternion();
     private double timeCounter = 0d;
     private double deathTimeCounter = 0d;
     private double fightTimeCounter = 0d;
-    private boolean active = false;
     // terrain bounds for npcs
     private float xmax, xmin, zmax, zmin;
     // terrain center for npcs
     private float xcenter, zcenter;
+    private long debugPositionTime = 0l;
+    private boolean active = false;
     // debug position
     private boolean debugPosition = false;
-    long debugPositionTime = 0l;
+    private boolean walkRandom = true;
+    private boolean animateAttack;
     Node player;
     SimpleApplication app;
 
@@ -121,6 +122,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
                             npcState = NpcState.ATTACK;
+                            animateAttack = true;
                             lookRotation.lookAt(dist, Vector3f.UNIT_Y);
                             spatial.setLocalRotation(lookRotation);
                             //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
@@ -226,20 +228,26 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                         }
                 } else if(npcState == NpcState.ATTACK) {
                     // check the animation
-                    if (animChannel.getAnimationName().compareTo("Strike") != 0) {
-                        animChannel.setAnim("Strike");
-                        animChannel.setSpeed(1.0f);
-                        animChannel.setLoopMode(LoopMode.Loop);
+                    if (animateAttack) {
+                        spatial.addControl(new ParticleBlowControl(app, player));
+                        //if (animChannel.getAnimationName().compareTo("Strike") != 0) {
+                            animChannel.setAnim("Strike");
+                            animChannel.setSpeed(1.0f);
+                            animChannel.setLoopMode(LoopMode.DontLoop);
+                        //}
+                        animateAttack = false;
                     }
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         int playerDefense = player.getUserData("defense");
                         // player get stronger!
                         player.setUserData("defense", playerDefense+2);
+                        spatial.removeControl(ParticleBlowControl.class);
                         npcDie();
                     }
                     if((timeCounter - fightTimeCounter) >= 3.0f) {
                         // cause damage each 3 seconds
+                        animateAttack = true;
                         fightTimeCounter = timeCounter;
                         int damage = spatial.getUserData("damage");
                         int defense = player.getUserData("defense");
@@ -329,7 +337,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if(animName.compareTo("Strike") == 0) {
-            spatial.addControl(new ParticleBlowControl(app, player));
+            
         }
     }
 
