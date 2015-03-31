@@ -41,12 +41,13 @@ public class ToneGodGuiState extends AbstractAppState {
         screen = new Screen(this.app);
         this.app.getGuiNode().addControl(screen);
         Panel panel = new Panel(screen, "panel",
-                new Vector2f(0, screen.getHeight() * 0.8f),
-                new Vector2f(screen.getWidth(), screen.getHeight() * 0.2f),
+                new Vector2f(0, screen.getHeight() * 0.9f),
+                new Vector2f(screen.getWidth(), screen.getHeight() * 0.1f),
                 new Vector4f(14, 14, 14, 14),
                 "tonegod/gui/style/def/Window/panel_x.png");
         screen.addElement(panel);
-        indicator = new Indicator(screen, "indicator", new Vector2f(10, 10),
+        indicator = new Indicator(screen, "indicator", new Vector2f(10, 10), 
+                new Vector2f(screen.getWidth() * 0.25f, screen.getHeight() * 0.05f),
                 Element.Orientation.HORIZONTAL) {
             @Override
             public void onChange(float currentValue, float currentPercentage) {
@@ -64,6 +65,8 @@ public class ToneGodGuiState extends AbstractAppState {
         indicator.setCurrentValue(100);
         indicator.setDisplayPercentage();
         indicator.setIndicatorColor(ColorRGBA.Red);
+        indicator.setTextPosition(5, 5);
+        indicator.setText("Health Bar");
         panel.addChild(indicator);
     }
 
