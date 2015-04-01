@@ -26,7 +26,6 @@ import tonegod.gui.core.Screen;
  * @author duo
  */
 public class ToneGodGuiState extends AbstractAppState {
-
     SimpleApplication app;
     Node player;
     Node scene;

@@ -44,7 +44,7 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("name", "Astofoboldo");
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
-        player.addControl(new PlayerControl());
+        player.addControl(new PlayerMotionControl());
         player.addControl(new TerrainHeightControl());
         player.move(0.0f, 0.0f, 0.0f);
         player.addControl(new HealthBarControl(this.app, player));
@@ -60,8 +60,9 @@ public class PlayerState extends AbstractAppState {
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
         scene.attachChild(barrel);
         barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
+        player.setUserData("barrel", barrel);
         // start player basic key controls
-        stateManager.attach(new PlayerMovement());
+        stateManager.attach(new PlayerInput());
         stateManager.attach(new ToneGodGuiState());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);

@@ -22,7 +22,7 @@ import org.duo.magicallyous.utils.ActionStateEnum;
  *
  * @author duo
  */
-public class PlayerMovement extends AbstractAppState implements ActionListener, AnalogListener {
+public class PlayerInput extends AbstractAppState implements ActionListener, AnalogListener {
     SimpleApplication app;
     AppStateManager stateManager;
     
@@ -53,7 +53,7 @@ public class PlayerMovement extends AbstractAppState implements ActionListener, 
         Node player = (Node) scene.getChild("player");
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
         Node swordNode = (Node) rightHandNode.getChild("sword01");
-        PlayerControl playerControl = player.getControl(PlayerControl.class);
+        PlayerMotionControl playerControl = player.getControl(PlayerMotionControl.class);
         if (playerControl.getActionState() != ActionStateEnum.ATTACK) {
             switch (name) {
                 case PlayerActionString.GOFOWARD :

@@ -25,7 +25,7 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
-import org.duo.magicallyous.player.PlayerControl;
+import org.duo.magicallyous.player.PlayerMotionControl;
 import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.ActionStateEnum;
 import org.duo.magicallyous.utils.ParticleBlowControl;
@@ -34,7 +34,7 @@ import org.duo.magicallyous.utils.ParticleBlowControl;
  *
  * @author duo
  */
-public class NpcMovementControl extends AbstractControl implements AnimEventListener {
+public class NpcMotionControl extends AbstractControl implements AnimEventListener {
     private AnimControl animControl;
     private AnimChannel animChannel;
 
@@ -61,7 +61,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
     Node player;
     SimpleApplication app;
 
-    public NpcMovementControl(SimpleApplication app) {
+    public NpcMotionControl(SimpleApplication app) {
         this.app = app;
     }
 
@@ -110,14 +110,14 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (player != null && player.getControl(PlayerControl.class).getActionState() 
+            if (player != null && player.getControl(PlayerMotionControl.class).getActionState() 
                     != ActionStateEnum.DIE && 
                     npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
                 Vector3f aim = player.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
                     // avoid attacking a player already beeing attacked
-                    if (player.getControl(PlayerControl.class).getActionState() 
+                    if (player.getControl(PlayerMotionControl.class).getActionState() 
                             != ActionStateEnum.ATTACK) {
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
@@ -127,7 +127,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                             spatial.setLocalRotation(lookRotation);
                             //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
                             //player.setLocalRotation(lookRotation);
-                            PlayerControl playerControl = player.getControl(PlayerControl.class);
+                            PlayerMotionControl playerControl = player.getControl(PlayerMotionControl.class);
                             playerControl.setTarget(spatial);
                             playerControl.setStartAttack(true);
                             playerControl.setActionState(ActionStateEnum.ATTACK);
@@ -260,7 +260,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
                     if((int) player.getUserData("health") <= 0) {
                         // player must die
                         player.removeControl(PlayerShootControl.class);
-                        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.DIE);
+                        player.getControl(PlayerMotionControl.class).setActionState(ActionStateEnum.DIE);
                         npcState = previousNpcState;
                     }
                 } else if(npcState == NpcState.DEAD) {
@@ -276,7 +276,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
     }
 
     protected void npcDie() {
-        player.getControl(PlayerControl.class).setActionState(ActionStateEnum.IDLE);
+        player.getControl(PlayerMotionControl.class).setActionState(ActionStateEnum.IDLE);
         deathTimeCounter = timeCounter;
         npcState = NpcState.DEAD;
         spatial.setCullHint(Spatial.CullHint.Always);
@@ -314,7 +314,7 @@ public class NpcMovementControl extends AbstractControl implements AnimEventList
 
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        NpcMovementControl control = new NpcMovementControl(app);
+        NpcMotionControl control = new NpcMotionControl(app);
         //TODO: copy parameters to new Control
         return control;
     }

@@ -36,7 +36,7 @@ public class NpcAppState extends AbstractAppState {
             System.err.println("player is NULL, ending game!");
             System.exit(1);
         }
-        NpcMovementControl npcMovementControl;
+        NpcMotionControl npcMovementControl;
         // atach spiders
         spiders = new ArrayList<>();
         int x = -50;
@@ -55,7 +55,7 @@ public class NpcAppState extends AbstractAppState {
                 spider.setUserData("defense", 10);
             }
             spider.setUserData("health", 100);
-            npcMovementControl = new NpcMovementControl(this.app);
+            npcMovementControl = new NpcMotionControl(this.app);
             npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);
             /*if(i==0) {
