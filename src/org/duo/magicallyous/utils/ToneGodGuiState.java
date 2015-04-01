@@ -17,6 +17,7 @@ import com.jme3.scene.Spatial;
 import tonegod.gui.controls.extras.Indicator;
 import tonegod.gui.controls.lists.Table;
 import tonegod.gui.controls.windows.Panel;
+import tonegod.gui.controls.windows.Window;
 import tonegod.gui.core.Element;
 import tonegod.gui.core.Screen;
 
@@ -50,8 +51,8 @@ public class ToneGodGuiState extends AbstractAppState {
         screen.addElement(footerPanel);
         healthBarIndicator = getHealthBarIndicator();
         footerPanel.addChild(healthBarIndicator);
-        statsTable = getStatsElement();
-        screen.addElement(statsTable);
+        Window window = getStatsElement();
+        screen.addElement(window);
     }
 
     @Override
@@ -115,18 +116,15 @@ public class ToneGodGuiState extends AbstractAppState {
         return indicator;
     }
 
-    private Table getStatsElement() {
-        Table statsTable = new Table(screen, 
+    private Window getStatsElement() {
+        statsTable = new Table(screen, 
                 new Vector2f(screen.getWidth() * 0.75f, screen.getHeight() * 0.75f), 
-                new Vector2f(screen.getWidth() * 0.2f, screen.getHeight() * 0.2f)
+                new Vector2f(screen.getWidth() * 0.15f, screen.getHeight() * 0.10f)
                 ) {
             @Override
             public void onChange() {
             }
         };
-        statsTable.setText(getPlayerName() + "'s STATS");
-        statsTable.setTextAlign(BitmapFont.Align.Center);
-        statsTable.setTextPadding(0.2f);
         statsTable.setHeadersVisible(false);
         Table.TableColumn nameColumn = new Table.TableColumn(statsTable, screen, "nameColumn");
         Table.TableColumn valueColumn = new Table.TableColumn(statsTable, screen, "valueColumn");
@@ -154,9 +152,22 @@ public class ToneGodGuiState extends AbstractAppState {
         e = (Element) defenseRow.getChild(1);
         e.setTextAlign(BitmapFont.Align.Right);
         statsTable.addRow(defenseRow, true);
-        statsTable.getElementMaterial().setColor("Color", new ColorRGBA(0.0f, 0.0f, 0.0f, 0.1f));
         statsTable.setIsMovable(true);
-        return statsTable;
+        statsTable.setCollapseChildrenOnParentCollapse(true);
+        statsTable.setAsContainerOnly();
+        Window window = new Window(screen, 
+                new Vector2f(screen.getWidth() * 0.75f, screen.getHeight() * 0.75f), 
+                new Vector2f(screen.getWidth() * 0.15f, screen.getHeight() * 0.10f)
+                );
+        window.addChild(statsTable);
+        statsTable.centerToParent();
+        window.getElementMaterial().setColor("Color", new ColorRGBA(0.0f, 0.0f, 0.0f, 0.4f));
+        window.setIsMovable(true);
+        window.setIsResizable(true);
+        window.setText(getPlayerName() + "'s STATS");
+        window.setTextAlign(BitmapFont.Align.Center);
+        window.setTextPadding(10.0f);
+        return window;
     }
 
     public String getPlayerName() {
