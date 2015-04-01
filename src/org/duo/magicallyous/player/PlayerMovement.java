@@ -90,7 +90,9 @@ public class PlayerMovement extends AbstractAppState implements ActionListener, 
                         if (rightHandNode.hasChild(swordNode)) {
                             rightHandNode.detachChild(swordNode);
                         } else {
-                            rightHandNode.attachChild(swordNode);
+                            if (swordNode != null) {
+                                rightHandNode.attachChild(swordNode);
+                            }
                         }
                     }
                     break;
