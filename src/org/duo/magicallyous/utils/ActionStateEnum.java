@@ -9,5 +9,5 @@ package org.duo.magicallyous.utils;
  * @author duo
  */
 public enum ActionStateEnum {
-    WALK, IDLE, ATTACK, DIE;
+    WALK, IDLE, BATTLE, DIE;
 }

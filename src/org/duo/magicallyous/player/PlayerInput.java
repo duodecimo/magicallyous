@@ -9,12 +9,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.input.InputManager;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.scene.Node;
 import org.duo.magicallyous.utils.ActionStateEnum;
 
@@ -25,13 +21,21 @@ import org.duo.magicallyous.utils.ActionStateEnum;
 public class PlayerInput extends AbstractAppState implements ActionListener, AnalogListener {
     SimpleApplication app;
     AppStateManager stateManager;
-    
+    Node scene;
+    Node player;
+    Node rightHandNode;
+    Node swordNode;
+
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
         this.stateManager = stateManager;
         setupKeys(app.getInputManager());
+        scene = (Node) this.app.getRootNode().getChild("Scene01");
+        player = (Node) scene.getChild("player");
+        rightHandNode = (Node) player.getChild("hand.R_attachnode");
+        swordNode = (Node) rightHandNode.getChild("sword01");
     }
     
     @Override
@@ -49,40 +53,36 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        Node scene = (Node) app.getRootNode().getChild("Scene01");
-        Node player = (Node) scene.getChild("player");
-        Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
-        Node swordNode = (Node) rightHandNode.getChild("sword01");
-        PlayerMotionControl playerControl = player.getControl(PlayerMotionControl.class);
-        if (playerControl.getActionState() != ActionStateEnum.ATTACK) {
+        PlayerMotionControl playerMotionControl = player.getControl(PlayerMotionControl.class);
+        if (playerMotionControl.getActionState() != ActionStateEnum.BATTLE) {
             switch (name) {
                 case PlayerActionMapping.MAP_GOFOWARD :
                     if (isPressed) {
-                        playerControl.setActionState(ActionStateEnum.WALK);
+                        playerMotionControl.setActionState(ActionStateEnum.WALK);
                     } else {
-                        playerControl.setActionState(ActionStateEnum.IDLE);
+                        playerMotionControl.setActionState(ActionStateEnum.IDLE);
                     }
                     break;
                 case PlayerActionMapping.MAP_STOP :
-                    playerControl.setActionState(ActionStateEnum.IDLE);
+                    playerMotionControl.setActionState(ActionStateEnum.IDLE);
                     break;
                 case PlayerActionMapping.MAP_TURNLEFT :
                     if (isPressed) {
-                        playerControl.setTurningLeft(true);
+                        playerMotionControl.setTurningLeft(true);
                     } else {
-                        playerControl.setTurningLeft(false);
+                        playerMotionControl.setTurningLeft(false);
                     }
                     break;
                 case PlayerActionMapping.MAP_TURNRIGHT :
                     if (isPressed) {
-                        playerControl.setTurningRight(true);
+                        playerMotionControl.setTurningRight(true);
                     } else {
-                        playerControl.setTurningRight(false);
+                        playerMotionControl.setTurningRight(false);
                     }
                     break;
                 case PlayerActionMapping.MAP_TOGGLEWALKSTATE :
                     if (isPressed) {
-                        playerControl.toggleWalkState();
+                        playerMotionControl.toggleWalkState();
                     }
                     break;
                 case PlayerActionMapping.MAP_USESWORD :

@@ -118,7 +118,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                 if (dist.length() < 3.0f) {
                     // avoid attacking a player already beeing attacked
                     if (player.getControl(PlayerMotionControl.class).getActionState() 
-                            != ActionStateEnum.ATTACK) {
+                            != ActionStateEnum.BATTLE) {
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
                             npcState = NpcState.ATTACK;
@@ -130,7 +130,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                             PlayerMotionControl playerControl = player.getControl(PlayerMotionControl.class);
                             playerControl.setTarget(spatial);
                             playerControl.setStartAttack(true);
-                            playerControl.setActionState(ActionStateEnum.ATTACK);
+                            playerControl.setActionState(ActionStateEnum.BATTLE);
                             fightTimeCounter = timeCounter;
                         }
                     }

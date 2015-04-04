@@ -55,7 +55,7 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
     }
 
     public void setActionState(ActionStateEnum actionState) {
-        if(actionState == ActionStateEnum.ATTACK) {
+        if(actionState == ActionStateEnum.BATTLE) {
             //previousActionState = this.actionState;
         }
         this.actionState = actionState;
@@ -85,7 +85,7 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
     protected void controlUpdate(float tpf) {
         timeCounter += (double) tpf;
         if(checkControl()) {
-            if (actionState != ActionStateEnum.ATTACK) {
+            if (actionState != ActionStateEnum.BATTLE) {
                 if (turningLeft) {
                     spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
                 } else if (turningRight) {
@@ -163,7 +163,7 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
                     System.out.println("mainchar location: " + spatial.getLocalTranslation()
                             + "    " + spatial.getWorldTranslation());
                 }
-            } else if(actionState == ActionStateEnum.ATTACK) {
+            } else if(actionState == ActionStateEnum.BATTLE) {
                 if(startAttack) {
                     startAttack = false;
                     // face target

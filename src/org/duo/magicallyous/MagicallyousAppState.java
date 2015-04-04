@@ -8,6 +8,8 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.npc.NpcAppState;
@@ -32,6 +34,9 @@ public class MagicallyousAppState extends AbstractAppState {
         this.app = (SimpleApplication) app;
         // multiplayer, so, it should not pause on lost focus
         this.app.setPauseOnLostFocus(false);
+        // use physics
+        BulletAppState bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
         this.app.getRootNode().attachChild(app.getAssetManager().loadModel("Scenes/Scene01.j3o"));
         for(Spatial spatial : this.app.getRootNode().getChildren()) {
             System.out.println("Root children: " + spatial.getName());
