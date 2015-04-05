@@ -9,14 +9,11 @@ import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
-import com.jme3.collision.CollisionResults;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import com.jme3.export.OutputCapsule;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -25,23 +22,16 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
-import org.duo.magicallyous.utils.WalkStateEnum;
+import org.duo.magicallyous.utils.CharacterMovementControl;
 
 /**
  *
  * @author duo
  */
-public class PlayerMotionControl extends AbstractControl implements AnimEventListener {
-    //Any local variables should be encapsulated by getters/setters so they
-    //appear in the SDK properties window and can be edited.
-    //Right-click a local variable to encapsulate it with getters and setters.
-    AnimControl animControl;
-    AnimChannel animChannel;
+public class PlayerBattleControl extends AbstractControl implements AnimEventListener {
+    private AnimControl animControl;
+    private AnimChannel animChannel;
     private ActionStateEnum actionState = ActionStateEnum.IDLE;
-    //private ActionStateEnum previousActionState = ActionStateEnum.IDLE;
-    private WalkStateEnum walkState = WalkStateEnum.NORMAL;
-    private boolean turningLeft = false;
-    private boolean turningRight = false;
     private double timeCounter = 0d;
     private double attackTimer = 0d;
     private boolean startAttack = false;
@@ -55,26 +45,7 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
     }
 
     public void setActionState(ActionStateEnum actionState) {
-        if(actionState == ActionStateEnum.BATTLE) {
-            //previousActionState = this.actionState;
-        }
         this.actionState = actionState;
-    }
-
-    public void toggleWalkState() {
-        if(walkState == WalkStateEnum.NORMAL) {
-            walkState = WalkStateEnum.RUN;
-        } else {
-            walkState = WalkStateEnum.NORMAL;
-        }
-    }
-
-    public void setTurningLeft(boolean turningLeft) {
-        this.turningLeft = turningLeft;
-    }
-
-    public void setTurningRight(boolean turningRight) {
-        this.turningRight = turningRight;
     }
 
     public void setStartAttack(boolean startAttack) {
@@ -85,97 +56,26 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
     protected void controlUpdate(float tpf) {
         timeCounter += (double) tpf;
         if(checkControl()) {
-            if (actionState != ActionStateEnum.BATTLE) {
-                if (turningLeft) {
-                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * 0.2f, 0.0f);
-                } else if (turningRight) {
-                    spatial.rotate(0.0f, FastMath.DEG_TO_RAD * -0.2f, 0.0f);
-                }
-            }
-            if(actionState == ActionStateEnum.WALK) {
-                if (walkState == WalkStateEnum.RUN) {
-                    if (animChannel.getAnimationName().compareTo("Run") != 0) {
-                        animChannel.setAnim("Run");
-                        animChannel.setLoopMode(LoopMode.Loop);
-                    }
-                } else {
-                    if (animChannel.getAnimationName().compareTo("Walk") != 0) {
-                        animChannel.setAnim("Walk");
-                        animChannel.setLoopMode(LoopMode.Loop);
-                    }
-                }
-                // walk foward
-                Vector3f walkDirection = Vector3f.ZERO;
-                // get foward direction
-                Vector3f fowardDirection = spatial.getWorldRotation().getRotationColumn(2);
-                if(actionState == ActionStateEnum.WALK) {
-                    // add direction
-                    walkDirection.addLocal(fowardDirection);
-                    // collision checks
-                    Ray ray = new Ray(spatial.getWorldTranslation(), fowardDirection.normalize());
-                    CollisionResults collisionResults = new CollisionResults();
-                    Spatial barrel = spatial.getUserData("barrel");
-                    if(barrel == null) {
-                        System.out.println("Null barrel!");
-                    } else {
-                        System.out.println("Barrel at " + barrel.getWorldTranslation() +
-                                " bound " + barrel.getWorldBound());
-                    }
-                    collisionResults.clear();
-                    // calculate distance to walk
-                    if(walkState == WalkStateEnum.RUN) {
-                        ray.setLimit(9.0f * tpf);
-                        System.out.println("Ray origin: " + ray.getOrigin() + 
-                            " direction: " + ray.getDirection() + 
-                            " limit: " + ray.getLimit());
-                        try {
-                            barrel.collideWith(ray, collisionResults);
-                        } catch (Exception e) {
-                            System.out.println("Collision excpetion: " + e);
-                        }
-                        if(collisionResults.size()> 0) {
-                            System.out.println("Player running into something!");
-                        } else {
-                            spatial.move(walkDirection.multLocal(9.0f).multLocal(tpf));
-                        }
-                    } else {
-                        ray.setLimit(8.0f);
-                        System.out.println("Ray origin: " + ray.getOrigin() + 
-                            " direction: " + ray.getDirection() + 
-                            " limit: " + ray.getLimit());
-                        try {
-                            barrel.collideWith(ray, collisionResults);
-                        } catch (Exception e) {
-                            System.out.println("Collision excpetion: " + e);
-                        }
-                        if(collisionResults.size()>0) {
-                            System.out.println("Player colliding with someting!");
-                        } else {
-                            spatial.move(walkDirection.multLocal(1.0f).multLocal(tpf));
-                        }
-                    }
-                }
-            } else if(actionState == ActionStateEnum.IDLE) {
-                if(animChannel.getAnimationName().compareTo("Idle")!=0) {
-                    animChannel.setAnim("Idle");
-                    animChannel.setSpeed(0.5f);
-                    animChannel.setLoopMode(LoopMode.Loop);
-                    System.out.println("mainchar location: " + spatial.getLocalTranslation()
-                            + "    " + spatial.getWorldTranslation());
-                }
-            } else if(actionState == ActionStateEnum.BATTLE) {
+            if(actionState == ActionStateEnum.BATTLE) {
                 if(startAttack) {
                     startAttack = false;
+                    Node player = (Node) spatial;
+                    CharacterMovementControl characterMovementControl = 
+                            player.getControl(CharacterMovementControl.class);
+                    // in order to stop if moving
+                   characterMovementControl.setWalkDirection(Vector3f.ZERO);
                     // face target
                     if (target != null) {
                         Vector3f aim = target.getWorldTranslation();
                         Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                        lookRotation = new Quaternion();
+                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                        characterMovementControl.setViewDirection(
+                                lookRotation.getRotationColumn(1).negate());
+                        //spatial.setLocalRotation(lookRotation);
                         System.out.println("Starting fight with target at: "
                                 + target.getWorldTranslation() + " distance: "
                                 + dist.length());
-                        lookRotation = new Quaternion();
-                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                        spatial.setLocalRotation(lookRotation);
                     } else {
                         System.out.println("Starting fight NULL target !!!!!");
                     }
@@ -217,18 +117,6 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
         }
     }
 
-    protected boolean checkControl() {
-        AnimControl control = spatial.getControl(AnimControl.class);
-        if(control != animControl) {
-            animControl = control;
-            animControl.addListener(this);
-            animChannel = animControl.createChannel();
-            animChannel.setAnim("Idle");
-            animChannel.setLoopMode(LoopMode.Loop);
-        }
-        return animControl != null;
-    }
-
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         //Only needed for rendering-related operations,
@@ -237,7 +125,7 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
     
     @Override
     public Control cloneForSpatial(Spatial spatial) {
-        PlayerMotionControl control = new PlayerMotionControl();
+        PlayerBattleControl control = new PlayerBattleControl();
         //TODO: copy parameters to new Control
         return control;
     }
@@ -284,6 +172,18 @@ public class PlayerMotionControl extends AbstractControl implements AnimEventLis
 
     @Override
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+    }
+
+    protected boolean checkControl() {
+        AnimControl control = spatial.getControl(AnimControl.class);
+        if(control != animControl) {
+            animControl = control;
+            animControl.addListener(this);
+            animChannel = animControl.createChannel();
+            animChannel.setAnim("Idle");
+            animChannel.setLoopMode(LoopMode.Loop);
+        }
+        return animControl != null;
     }
 
     public void setTarget(Spatial target) {

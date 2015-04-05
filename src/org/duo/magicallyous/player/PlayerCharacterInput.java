@@ -13,18 +13,20 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
 import org.duo.magicallyous.utils.ActionStateEnum;
+import org.duo.magicallyous.utils.CharacterMovementControl;
 
 /**
  *
  * @author duo
  */
-public class PlayerInput extends AbstractAppState implements ActionListener, AnalogListener {
+public class PlayerCharacterInput extends AbstractAppState implements ActionListener, AnalogListener {
     SimpleApplication app;
     AppStateManager stateManager;
     Node scene;
     Node player;
     Node rightHandNode;
     Node swordNode;
+    CharacterMovementControl characterMovementControl;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -36,11 +38,12 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
         player = (Node) scene.getChild("player");
         rightHandNode = (Node) player.getChild("hand.R_attachnode");
         swordNode = (Node) rightHandNode.getChild("sword01");
+        characterMovementControl = player.getControl(CharacterMovementControl.class);
     }
     
     @Override
     public void update(float tpf) {
-        //TODO: implement behavior during runtime
+        super.update(tpf);
     }
     
     @Override
@@ -53,22 +56,26 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        PlayerBattleControl playerMotionControl = player.getControl(PlayerBattleControl.class);
-        if (playerMotionControl.getActionState() != ActionStateEnum.BATTLE) {
+        if (characterMovementControl.getActionState() != ActionStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_MOVEFOWARD :
-                    if (isPressed) {
-                        playerMotionControl.setActionState(ActionStateEnum.WALK);
-                    } else {
-                        playerMotionControl.setActionState(ActionStateEnum.IDLE);
-                    }
+                    characterMovementControl.setMoveFoward(isPressed);
+                    break;
+                case PlayerMovementMapping.MAP_MOVEBACKWARD :
+                    characterMovementControl.setMoveBackward(isPressed);
                     break;
                 case PlayerMovementMapping.MAP_STOP :
-                    playerMotionControl.setActionState(ActionStateEnum.IDLE);
+                    characterMovementControl.setStopped(isPressed);
+                    break;
+                case PlayerMovementMapping.MAP_TURNRIGHT :
+                    characterMovementControl.setRotateRight(isPressed);
+                    break;
+                case PlayerMovementMapping.MAP_TURNLEFT :
+                    characterMovementControl.setRotateLeft(isPressed);
                     break;
                 case PlayerMovementMapping.MAP_TOGGLEWALKSTATE :
-                    if (isPressed) {
-                        //playerMotionControl.toggleWalkState();
+                    if(!isPressed) {
+                        characterMovementControl.toggleRunning();
                     }
                     break;
                 case PlayerMovementMapping.MAP_USESWORD :
@@ -76,6 +83,9 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                         if (rightHandNode.hasChild(swordNode)) {
                             rightHandNode.detachChild(swordNode);
                         } else {
+                            if(swordNode == null) {
+                                swordNode = player.getUserData("swordNode");
+                            }
                             if (swordNode != null) {
                                 rightHandNode.attachChild(swordNode);
                             }
@@ -89,6 +99,16 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
+        if (characterMovementControl.getActionState() != ActionStateEnum.BATTLE) {
+            switch (name) {
+                case PlayerMovementMapping.MAP_TURNLEFT :
+                    characterMovementControl.setRotateValue(value);
+                    break;
+                case PlayerMovementMapping.MAP_TURNRIGHT :
+                    characterMovementControl.setRotateValue(value);
+                    break;
+            }
+        }
     }
 
     private void setupKeys(InputManager inputManager) {
@@ -105,9 +125,13 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                 PlayerActionTrigger.TRIGGER_TURNLEFT_KEY_LEFT);
         inputManager.addListener(this, PlayerMovementMapping.MAP_TURNLEFT);
 
-//        inputManager.addMapping(PlayerMovementMapping.MAP_STOP,
-//                PlayerActionTrigger.TRIGGER_STOP_KEY_DOWN);
-//        inputManager.addListener(this, PlayerMovementMapping.MAP_STOP);
+        inputManager.addMapping(PlayerMovementMapping.MAP_MOVEBACKWARD,
+                PlayerActionTrigger.TRIGGER_MOVEBACKWARD_KEY_DOWN);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_MOVEBACKWARD);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_STOP, 
+                PlayerActionTrigger.TRIGGER_STOP_KEY_SPACE);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_STOP);
 
         inputManager.addMapping(PlayerMovementMapping.MAP_TOGGLEWALKSTATE, 
                 PlayerActionTrigger.TRIGGER_TOGGLEWALKSTATE_KEY_R);
@@ -118,5 +142,4 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
         inputManager.addListener(this, PlayerMovementMapping.MAP_USESWORD);
 
     }
-
 }

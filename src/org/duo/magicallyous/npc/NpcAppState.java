@@ -36,7 +36,7 @@ public class NpcAppState extends AbstractAppState {
             System.err.println("player is NULL, ending game!");
             System.exit(1);
         }
-        NpcMotionControl npcMovementControl;
+        NpcMotionControl npcMotionControl;
         // atach spiders
         spiders = new ArrayList<>();
         int x = -50;
@@ -55,26 +55,26 @@ public class NpcAppState extends AbstractAppState {
                 spider.setUserData("defense", 10);
             }
             spider.setUserData("health", 100);
-            npcMovementControl = new NpcMotionControl(this.app);
-            npcMovementControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
-            npcMovementControl.setNpcTerrainCenter(-100.0f, 80.0f);
+            npcMotionControl = new NpcMotionControl(this.app);
+            npcMotionControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
+            npcMotionControl.setNpcTerrainCenter(-100.0f, 80.0f);
             /*if(i==0) {
              * npcMovementControl.setDebugPosition(true);
              * }*/
             ((Node) scene).attachChild(spider);
             if(player != null) {
-                npcMovementControl.setMainChar(player);
+                npcMotionControl.setMainChar(player);
             }
             vector3f = new Vector3f(x, 0.0f, z);
-            spider.addControl(npcMovementControl);
-            vector2f = npcMovementControl.getSpawnLocation();
+            spider.addControl(npcMotionControl);
+            vector2f = npcMotionControl.getSpawnLocation();
             //System.out.println("spider spawn location = " + vector2f);
             if (vector2f.x < -30.0f && vector2f.y < 250.0f)  {
                 vector3f.x = vector2f.x;
                 vector3f.z = vector2f.y;
             }
             spider.setLocalTranslation(vector3f);
-            npcMovementControl.setActive(true);
+            npcMotionControl.setActive(true);
             spider.addControl(new HealthBarControl(this.app, spider));
             spider.addControl(new TerrainHeightControl());
             spiders.add(spider);

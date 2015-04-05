@@ -8,28 +8,32 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import org.duo.magicallyous.utils.CharacterMovementControl;
 import org.duo.magicallyous.utils.HealthBarControl;
-import org.duo.magicallyous.utils.TerrainHeightControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
 
 /**
  *
  * @author duo
  */
-public class PlayerState extends AbstractAppState {
+public class PlayerAppState extends AbstractAppState {
     private SimpleApplication app;
     private ChaseCamera chaseCamera;
     private Node player;
     private Spatial barrel;
     private double timeCounter = 0.0d;
     private double timeEvent = 0.0d;
+    Vector3f normalGravity;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -44,25 +48,39 @@ public class PlayerState extends AbstractAppState {
         player.setUserData("name", "Astofoboldo");
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
-        player.addControl(new PlayerMotionControl());
-        player.addControl(new TerrainHeightControl());
+        CharacterMovementControl characterMovementControl = new CharacterMovementControl(0.5f, 2.5f, 80.0f);
+        normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
+        characterMovementControl.setGravity(normalGravity);
         player.move(0.0f, 0.0f, 0.0f);
+        characterMovementControl.setMoveSpeed(1.0f);
+        characterMovementControl.setRunSpeed(9.0f);
+        characterMovementControl.setAbleToRun(true);
+        BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
+        bulletAppState.getPhysicsSpace().add(characterMovementControl);
+        player.addControl(characterMovementControl);
+        player.addControl(new PlayerBattleControl());
+        //player.addControl(new PlayerMotionControl());
+        //player.addControl(new TerrainHeightControl());
         player.addControl(new HealthBarControl(this.app, player));
         scene.attachChild(player);
-        // let sowrd go
+        // make sword go away
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
         Node swordNode = (Node) rightHandNode.getChild("sword01");
         if (rightHandNode.hasChild(swordNode)) {
+            player.setUserData("swordNode", swordNode);
             rightHandNode.detachChild(swordNode);
         }
-
         // add a barrel
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
         scene.attachChild(barrel);
-        barrel.setLocalTranslation(0.0f,  0.0f, -6.0f);
+        RigidBodyControl rigidBodyControl = new RigidBodyControl(10.0f);
+        barrel.addControl(rigidBodyControl);
+        bulletAppState.getPhysicsSpace().add(barrel);
+        barrel.move(0.0f,  0.0f, -6.0f);
         player.setUserData("barrel", barrel);
         // start player basic key controls
-        stateManager.attach(new PlayerInput());
+        //stateManager.attach(new PlayerInput());
+        stateManager.attach(new PlayerCharacterInput());
         stateManager.attach(new ToneGodGuiState());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
