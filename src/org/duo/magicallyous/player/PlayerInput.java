@@ -12,7 +12,7 @@ import com.jme3.input.InputManager;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
-import org.duo.magicallyous.utils.ActionStateEnum;
+import org.duo.magicallyous.utils.AnimationStateEnum;
 
 /**
  *
@@ -54,17 +54,17 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
         PlayerBattleControl playerMotionControl = player.getControl(PlayerBattleControl.class);
-        if (playerMotionControl.getActionState() != ActionStateEnum.BATTLE) {
+        if (playerMotionControl.getActionState() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_MOVEFOWARD :
                     if (isPressed) {
-                        playerMotionControl.setActionState(ActionStateEnum.WALK);
+                        playerMotionControl.setActionState(AnimationStateEnum.WALK);
                     } else {
-                        playerMotionControl.setActionState(ActionStateEnum.IDLE);
+                        playerMotionControl.setActionState(AnimationStateEnum.IDLE);
                     }
                     break;
                 case PlayerMovementMapping.MAP_STOP :
-                    playerMotionControl.setActionState(ActionStateEnum.IDLE);
+                    playerMotionControl.setActionState(AnimationStateEnum.IDLE);
                     break;
                 case PlayerMovementMapping.MAP_TOGGLEWALKSTATE :
                     if (isPressed) {

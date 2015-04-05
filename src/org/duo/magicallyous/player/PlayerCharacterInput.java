@@ -12,7 +12,7 @@ import com.jme3.input.InputManager;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
-import org.duo.magicallyous.utils.ActionStateEnum;
+import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.CharacterMovementControl;
 
 /**
@@ -56,7 +56,7 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (characterMovementControl.getActionState() != ActionStateEnum.BATTLE) {
+        if (characterMovementControl.getActionState() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_MOVEFOWARD :
                     characterMovementControl.setMoveFoward(isPressed);
@@ -99,7 +99,7 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (characterMovementControl.getActionState() != ActionStateEnum.BATTLE) {
+        if (characterMovementControl.getActionState() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_TURNLEFT :
                     characterMovementControl.setRotateValue(value);

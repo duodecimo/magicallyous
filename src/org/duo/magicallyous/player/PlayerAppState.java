@@ -59,6 +59,7 @@ public class PlayerAppState extends AbstractAppState {
         bulletAppState.getPhysicsSpace().add(characterMovementControl);
         player.addControl(characterMovementControl);
         player.addControl(new PlayerBattleControl());
+        player.addControl(new PlayerAnimationControl());
         //player.addControl(new PlayerMotionControl());
         //player.addControl(new TerrainHeightControl());
         player.addControl(new HealthBarControl(this.app, player));

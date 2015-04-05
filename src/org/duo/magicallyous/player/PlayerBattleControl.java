@@ -4,7 +4,7 @@
  */
 package org.duo.magicallyous.player;
 
-import org.duo.magicallyous.utils.ActionStateEnum;
+import org.duo.magicallyous.utils.AnimationStateEnum;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
@@ -28,10 +28,8 @@ import org.duo.magicallyous.utils.CharacterMovementControl;
  *
  * @author duo
  */
-public class PlayerBattleControl extends AbstractControl implements AnimEventListener {
-    private AnimControl animControl;
-    private AnimChannel animChannel;
-    private ActionStateEnum actionState = ActionStateEnum.IDLE;
+public class PlayerBattleControl extends AbstractControl {
+    private AnimationStateEnum animationStateEnum = AnimationStateEnum.IDLE;
     private double timeCounter = 0d;
     private double attackTimer = 0d;
     private boolean startAttack = false;
@@ -39,13 +37,14 @@ public class PlayerBattleControl extends AbstractControl implements AnimEventLis
     private boolean waitingForPrecast = false;
     private Spatial target;
     private Quaternion lookRotation;
+    private PlayerAnimationControl playerAnimationControl;
 
-    public ActionStateEnum getActionState() {
-        return actionState;
+    public AnimationStateEnum getActionState() {
+        return animationStateEnum;
     }
 
-    public void setActionState(ActionStateEnum actionState) {
-        this.actionState = actionState;
+    public void setActionState(AnimationStateEnum actionState) {
+        this.animationStateEnum = actionState;
     }
 
     public void setStartAttack(boolean startAttack) {
@@ -54,65 +53,42 @@ public class PlayerBattleControl extends AbstractControl implements AnimEventLis
 
     @Override
     protected void controlUpdate(float tpf) {
+        if(playerAnimationControl == null) {
+            playerAnimationControl = spatial.getControl(PlayerAnimationControl.class);
+        }
         timeCounter += (double) tpf;
-        if(checkControl()) {
-            if(actionState == ActionStateEnum.BATTLE) {
-                if(startAttack) {
-                    startAttack = false;
-                    Node player = (Node) spatial;
-                    CharacterMovementControl characterMovementControl = 
-                            player.getControl(CharacterMovementControl.class);
-                    // in order to stop if moving
-                   characterMovementControl.setWalkDirection(Vector3f.ZERO);
-                    // face target
-                    if (target != null) {
-                        Vector3f aim = target.getWorldTranslation();
-                        Vector3f dist = aim.subtract(spatial.getWorldTranslation());
-                        lookRotation = new Quaternion();
-                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                        characterMovementControl.setViewDirection(
-                                lookRotation.getRotationColumn(1).negate());
-                        //spatial.setLocalRotation(lookRotation);
-                        System.out.println("Starting fight with target at: "
-                                + target.getWorldTranslation() + " distance: "
-                                + dist.length());
-                    } else {
-                        System.out.println("Starting fight NULL target !!!!!");
-                    }
-                    // change anim
-                    if(animChannel.getAnimationName().compareTo("Precast")!=0) {
-                        animChannel.setAnim("Precast");
-                        animChannel.setSpeed(1.0f);
-                        animChannel.setLoopMode(LoopMode.DontLoop);
-                    }
+        if (animationStateEnum == AnimationStateEnum.BATTLE) {
+            if (startAttack) {
+                startAttack = false;
+                Node player = (Node) spatial;
+                CharacterMovementControl characterMovementControl =
+                        player.getControl(CharacterMovementControl.class);
+                // in order to stop if moving
+                characterMovementControl.setWalkDirection(Vector3f.ZERO);
+                // face target
+                if (target != null) {
+                    Vector3f aim = target.getWorldTranslation();
+                    Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                    lookRotation = new Quaternion();
+                    lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                    characterMovementControl.setViewDirection(
+                            lookRotation.getRotationColumn(1).negate());
+                    //spatial.setLocalRotation(lookRotation);
+                    System.out.println("Starting fight with target at: "
+                            + target.getWorldTranslation() + " distance: "
+                            + dist.length());
                 } else {
-                    // perform animations according to time
-                    if(waitingForCast) {
-                        //System.out.println("Waiting for cast from: " +  
-                        //        attackTimer + " now: " + timeCounter + 
-                        //        " difference: " + (timeCounter - attackTimer));
-                        if (timeCounter - attackTimer > 0.5d) {
-                            waitingForCast = false;
-                            animChannel.setAnim("Cast");
-                            animChannel.setSpeed(1.0f);
-                            animChannel.setLoopMode(LoopMode.DontLoop);
-                        }
-                    } else if (waitingForPrecast) {
-                        if (timeCounter - attackTimer > 0.8d) {
-                            waitingForPrecast = false;
-                            animChannel.setAnim("Precast");
-                            animChannel.setSpeed(1.0f);
-                            animChannel.setLoopMode(LoopMode.DontLoop);
-                        }
-                    }
+                    System.out.println("Starting fight NULL target !!!!!");
                 }
-            } else if (actionState == ActionStateEnum.DIE) {
-                if(target != null) target = null;
-                if (animChannel.getAnimationName().compareTo("Die") != 0) {
-                    animChannel.setAnim("Die");
-                    animChannel.setSpeed(0.5f);
-                    animChannel.setLoopMode(LoopMode.DontLoop);
-                }
+                // change anim
+                playerAnimationControl.setTarget(target);
+                playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+            } else {
+            }
+        } else if (animationStateEnum == AnimationStateEnum.DIE) {
+            playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.DIE);
+            if (target != null) {
+                target = null;
             }
         }
     }
@@ -144,46 +120,6 @@ public class PlayerBattleControl extends AbstractControl implements AnimEventLis
         OutputCapsule out = ex.getCapsule(this);
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
-    }
-
-    @Override
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if(animName.compareTo("Precast") == 0) {
-            //System.out.println("Start waiting for cast!");
-            waitingForCast = true;
-            waitingForPrecast = false;
-            PlayerShootControl playerShootControl = new PlayerShootControl();
-            playerShootControl.setTarget(target);
-            spatial.addControl(playerShootControl);
-            attackTimer = timeCounter;
-        } else if(animName.compareTo("Cast")==0) {
-            waitingForPrecast = true;
-            waitingForCast = false;
-            attackTimer = timeCounter;
-        } else if(animName.compareTo("Die")==0) {
-            // respawn
-            spatial.setUserData("health", 100);
-            spatial.move(0.0f, 0.0f, 0.0f);
-            spatial.setLocalTranslation(0.0f, 0.0f, 0.0f);
-            System.out.println("Player revived on " + spatial.getLocalTranslation());
-            actionState = ActionStateEnum.IDLE;
-        }
-    }
-
-    @Override
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-    }
-
-    protected boolean checkControl() {
-        AnimControl control = spatial.getControl(AnimControl.class);
-        if(control != animControl) {
-            animControl = control;
-            animControl.addListener(this);
-            animChannel = animControl.createChannel();
-            animChannel.setAnim("Idle");
-            animChannel.setLoopMode(LoopMode.Loop);
-        }
-        return animControl != null;
     }
 
     public void setTarget(Spatial target) {

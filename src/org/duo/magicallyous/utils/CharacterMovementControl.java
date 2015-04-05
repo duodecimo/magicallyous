@@ -4,20 +4,17 @@
  */
 package org.duo.magicallyous.utils;
 
-import com.jme3.animation.AnimChannel;
-import com.jme3.animation.AnimControl;
-import com.jme3.animation.AnimEventListener;
-import com.jme3.animation.LoopMode;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import org.duo.magicallyous.player.PlayerAnimationControl;
 
 /**
  *
  * @author duo
  */
-public class CharacterMovementControl extends BetterCharacterControl implements AnimEventListener {
+public class CharacterMovementControl extends BetterCharacterControl {
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -30,9 +27,8 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
     private float moveSpeed;
     private float runSpeed;
     private float rotateValue;
-    private ActionStateEnum actionState;
-    private AnimControl animControl;
-    private AnimChannel animChannel;
+    private AnimationStateEnum animationStateEnum;
+    private PlayerAnimationControl  playerAnimationControl;
 
     public CharacterMovementControl() {
     }
@@ -44,37 +40,28 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        if (actionState != ActionStateEnum.BATTLE) {
+        if (playerAnimationControl == null) {
+            playerAnimationControl = spatial.getControl(PlayerAnimationControl.class);
+        }
+        if (animationStateEnum != AnimationStateEnum.BATTLE) {
             if (isMoveFoward() || isMoveBackward()) {
-                actionState = ActionStateEnum.WALK;
+                animationStateEnum = AnimationStateEnum.WALK;
             } else {
-                actionState = ActionStateEnum.IDLE;
+                animationStateEnum = AnimationStateEnum.IDLE;
             }
             if (isStopped()) {
-                actionState = ActionStateEnum.IDLE;
+                animationStateEnum = AnimationStateEnum.IDLE;
             }
             walk();
             rotate();
-            if (checkControl()) {
-                if (actionState == ActionStateEnum.WALK) {
-                    if (ableToRun && running) {
-                        if (animChannel.getAnimationName().compareTo("Run") != 0) {
-                            animChannel.setAnim("Run");
-                            animChannel.setLoopMode(LoopMode.Loop);
-                        }
-                    } else {
-                        if (animChannel.getAnimationName().compareTo("Walk") != 0) {
-                            animChannel.setAnim("Walk");
-                            animChannel.setLoopMode(LoopMode.Loop);
-                        }
-                    }
-                } else if (actionState == ActionStateEnum.IDLE) {
-                    if (animChannel.getAnimationName().compareTo("Idle") != 0) {
-                        animChannel.setAnim("Idle");
-                        animChannel.setSpeed(0.3f);
-                        animChannel.setLoopMode(LoopMode.Loop);
-                    }
+            if (animationStateEnum == AnimationStateEnum.WALK) {
+                if (ableToRun && running) {
+                    playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.RUN);
+                } else {
+                    playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.WALK);
                 }
+            } else if (animationStateEnum == AnimationStateEnum.IDLE) {
+                playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
             }
         }
     }
@@ -155,12 +142,12 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
         this.rotateValue = rotateValue;
     }
 
-    public ActionStateEnum getActionState() {
-        return actionState;
+    public AnimationStateEnum getActionState() {
+        return animationStateEnum;
     }
 
-    public void setActionState(ActionStateEnum actionState) {
-        this.actionState = actionState;
+    public void setActionState(AnimationStateEnum actionState) {
+        this.animationStateEnum = actionState;
     }
 
     public Vector3f getSpatialFowardDir() {
@@ -202,25 +189,5 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                 (rotateValue * rotateBase), Vector3f.UNIT_Y);
         quaternion.multLocal(viewDirection);
         setViewDirection(viewDirection);
-    }
-
-    @Override
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-    }
-
-    @Override
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-    }
-
-    protected boolean checkControl() {
-        AnimControl control = spatial.getControl(AnimControl.class);
-        if(control != animControl) {
-            animControl = control;
-            animControl.addListener(this);
-            animChannel = animControl.createChannel();
-            animChannel.setAnim("Idle");
-            animChannel.setLoopMode(LoopMode.Loop);
-        }
-        return animControl != null;
     }
 }
