@@ -4,17 +4,22 @@
  */
 package org.duo.magicallyous.utils;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import org.duo.magicallyous.player.PlayerAnimationControl;
+import com.jme3.scene.Spatial;
+import org.duo.magicallyous.player.PlayerShootControl;
 
 /**
  *
  * @author duo
  */
-public class CharacterMovementControl extends BetterCharacterControl {
+public class CharacterMovementControl extends BetterCharacterControl implements AnimEventListener {
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -28,7 +33,16 @@ public class CharacterMovementControl extends BetterCharacterControl {
     private float runSpeed;
     private float rotateValue;
     private AnimationStateEnum animationStateEnum;
-    private PlayerAnimationControl  playerAnimationControl;
+    private AnimControl animControl;
+    private AnimChannel animChannel;
+    private double timeCounter = 0d;
+    private double attackTime = 0d;
+    private double deathTime = 0d;
+    private boolean startAttack = false;
+    private boolean waitingForCast = false;
+    private boolean waitingForPrecast = false;
+    private Spatial target;
+    private Quaternion lookRotation;
 
     public CharacterMovementControl() {
     }
@@ -40,30 +54,176 @@ public class CharacterMovementControl extends BetterCharacterControl {
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        if (playerAnimationControl == null) {
-            playerAnimationControl = spatial.getControl(PlayerAnimationControl.class);
-        }
-        if (animationStateEnum != AnimationStateEnum.BATTLE) {
-            if (isMoveFoward() || isMoveBackward()) {
-                animationStateEnum = AnimationStateEnum.WALK;
-            } else {
-                animationStateEnum = AnimationStateEnum.IDLE;
-            }
-            if (isStopped()) {
-                animationStateEnum = AnimationStateEnum.IDLE;
-            }
-            walk();
-            rotate();
-            if (animationStateEnum == AnimationStateEnum.WALK) {
-                if (ableToRun && running) {
-                    playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.RUN);
+        timeCounter += tpf;
+        if (checkControl()) {
+            if (animationStateEnum != AnimationStateEnum.BATTLE && 
+                    animationStateEnum != AnimationStateEnum.DIE) {
+                // decide movement state
+                if (isMoveFoward() || isMoveBackward()) {
+                    if (ableToRun && running) {
+                        animationStateEnum = AnimationStateEnum.RUN;
+                    } else {
+                        animationStateEnum = AnimationStateEnum.WALK;
+                    }
                 } else {
-                    playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.WALK);
+                    animationStateEnum = AnimationStateEnum.IDLE;
                 }
-            } else if (animationStateEnum == AnimationStateEnum.IDLE) {
-                playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
+                if (isStopped()) {
+                    animationStateEnum = AnimationStateEnum.IDLE;
+                }
+                // move character
+                walk();
+                rotate();
+            }
+            // animate character
+            if (animationStateEnum == AnimationStateEnum.IDLE) {
+                if (animChannel.getAnimationName().compareTo("Idle") != 0) {
+                    animChannel.setAnim("Idle");
+                    animChannel.setSpeed(0.2f);
+                    animChannel.setLoopMode(LoopMode.Loop);
+                }
+            } else if (animationStateEnum == AnimationStateEnum.WALK) {
+                if (animChannel.getAnimationName().compareTo("Walk") != 0) {
+                    animChannel.setAnim("Walk");
+                    animChannel.setSpeed(1.0f);
+                    animChannel.setLoopMode(LoopMode.Loop);
+                }
+            } else if (animationStateEnum == AnimationStateEnum.RUN) {
+                if (animChannel.getAnimationName().compareTo("Run") != 0) {
+                    animChannel.setAnim("Run");
+                    animChannel.setSpeed(1.0f);
+                    animChannel.setLoopMode(LoopMode.Loop);
+                }
+            } else if (animationStateEnum == AnimationStateEnum.BATTLE) {
+                if (startAttack) {
+                    startAttack = false;
+                    clearMovements();
+                    // stop if moving
+                    setWalkDirection(Vector3f.ZERO);
+                    // face target
+                    if (target != null) {
+                        Vector3f aim = target.getWorldTranslation();
+                        Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                        lookRotation = new Quaternion();
+                        lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                        setViewDirection(lookRotation.getRotationColumn(1).negate());
+                        System.out.println("Player starting fight with target at: "
+                                + target.getWorldTranslation() + " distance: "
+                                + dist.length());
+                    } else {
+                        System.out.println("Starting fight NULL target !!!!!");
+                    }
+                    // change anim
+                    if (animChannel.getAnimationName().compareTo("Precast") != 0) {
+                        animChannel.setAnim("Precast");
+                        animChannel.setSpeed(1.0f);
+                        animChannel.setLoopMode(LoopMode.DontLoop);
+                    }
+                } else { // continuing attack
+                    // perform animations according to time
+                    if (waitingForCast) {
+                        //System.out.println("Waiting for cast from: " +  
+                        //        attackTimer + " now: " + timeCounter + 
+                        //        " difference: " + (timeCounter - attackTimer));
+                        if (timeCounter - attackTime > 0.5d) {
+                            waitingForCast = false;
+                            animChannel.setAnim("Cast");
+                            animChannel.setSpeed(1.0f);
+                            animChannel.setLoopMode(LoopMode.DontLoop);
+                        }
+                    } else if (waitingForPrecast) {
+                        if (timeCounter - attackTime > 0.8d) {
+                            waitingForPrecast = false;
+                            animChannel.setAnim("Precast");
+                            animChannel.setSpeed(1.0f);
+                            animChannel.setLoopMode(LoopMode.DontLoop);
+                        }
+                    }
+                }
+            } else if (animationStateEnum == AnimationStateEnum.DIE) {
+                if (animChannel.getAnimationName().compareTo("Die") != 0) {
+                    animChannel.setAnim("Die");
+                    animChannel.setSpeed(0.5f);
+                    animChannel.setLoopMode(LoopMode.DontLoop);
+                    System.out.println("Player dying animation started!");
+                    deathTime = 0.0d;
+                } else if (deathTime > 0 && timeCounter - deathTime > 3.0d) {
+                    // respawn
+                    spatial.setUserData("health", 100);
+                    this.warp(Vector3f.ZERO);
+                    System.out.println("Player revived on " + spatial.getLocalTranslation());
+                    animationStateEnum = AnimationStateEnum.IDLE;
+                }
             }
         }
+    }
+
+    public void walk() {
+        walkDirection.set(Vector3f.ZERO);
+        float speed;
+        if(ableToRun && running) {
+            speed = runSpeed;
+        } else {
+            speed = moveSpeed;
+        }
+        if(isMoveFoward()) {
+            walkDirection.addLocal(getSpatialFowardDir().mult(speed));
+        } else if(isMoveBackward()) {
+            walkDirection.addLocal(getSpatialFowardDir().negate().mult(speed));
+        } else if(isRightStrafe()) {
+            walkDirection.addLocal(getSpatialLeftDir().negate().mult(speed));
+        } else if(isLeftStrafe()) {
+            walkDirection.addLocal(getSpatialLeftDir().mult(speed));
+        }
+        setWalkDirection(walkDirection);
+    }
+
+    public void rotate() {
+        float rotateBase = 0.0f;
+        if(isRotateRight()) {
+            rotateBase = -1.0f;
+        } else if(isRotateLeft()) {
+            rotateBase = 1.0f;
+        }
+        Quaternion quaternion = new Quaternion().fromAngleAxis(FastMath.PI * 
+                (rotateValue * rotateBase), Vector3f.UNIT_Y);
+        quaternion.multLocal(viewDirection);
+        setViewDirection(viewDirection);
+    }
+
+    @Override
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if(animName.compareTo("Precast") == 0) {
+            //System.out.println("Start waiting for cast!");
+            waitingForCast = true;
+            waitingForPrecast = false;
+            PlayerShootControl playerShootControl = new PlayerShootControl();
+            playerShootControl.setTarget(target);
+            spatial.addControl(playerShootControl);
+            attackTime = timeCounter;
+        } else if(animName.compareTo("Cast")==0) {
+            waitingForPrecast = true;
+            waitingForCast = false;
+            attackTime = timeCounter;
+        } else if(animName.compareTo("Die")==0) {
+            deathTime = timeCounter;
+        }
+    }
+
+    @Override
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+    }
+
+    protected boolean checkControl() {
+        AnimControl control = spatial.getControl(AnimControl.class);
+        if(control != animControl) {
+            animControl = control;
+            animControl.addListener(this);
+            animChannel = animControl.createChannel();
+            animChannel.setAnim("Idle");
+            animChannel.setLoopMode(LoopMode.Loop);
+        }
+        return animControl != null;
     }
 
     public boolean isMoveFoward() {
@@ -142,12 +302,12 @@ public class CharacterMovementControl extends BetterCharacterControl {
         this.rotateValue = rotateValue;
     }
 
-    public AnimationStateEnum getActionState() {
+    public AnimationStateEnum getAnimationStateEnum() {
         return animationStateEnum;
     }
 
-    public void setActionState(AnimationStateEnum actionState) {
-        this.animationStateEnum = actionState;
+    public void setAnimationStateEnum(AnimationStateEnum animationStateEnum) {
+        this.animationStateEnum = animationStateEnum;
     }
 
     public Vector3f getSpatialFowardDir() {
@@ -158,36 +318,22 @@ public class CharacterMovementControl extends BetterCharacterControl {
         return spatial.getWorldRotation().mult(Vector3f.UNIT_X);
     }
 
-    public void walk() {
-        walkDirection.set(Vector3f.ZERO);
-        float speed;
-        if(ableToRun && running) {
-            speed = runSpeed;
-        } else {
-            speed = moveSpeed;
-        }
-        if(isMoveFoward()) {
-            walkDirection.addLocal(getSpatialFowardDir().mult(speed));
-        } else if(isMoveBackward()) {
-            walkDirection.addLocal(getSpatialFowardDir().negate().mult(speed));
-        } else if(isRightStrafe()) {
-            walkDirection.addLocal(getSpatialLeftDir().negate().mult(speed));
-        } else if(isLeftStrafe()) {
-            walkDirection.addLocal(getSpatialLeftDir().mult(speed));
-        }
-        setWalkDirection(walkDirection);
+    public void setTarget(Spatial target) {
+        this.target = target;
     }
 
-    public void rotate() {
-        float rotateBase = 0.0f;
-        if(isRotateRight()) {
-            rotateBase = -1.0f;
-        } else if(isRotateLeft()) {
-            rotateBase = 1.0f;
-        }
-        Quaternion quaternion = new Quaternion().fromAngleAxis(FastMath.PI * 
-                (rotateValue * rotateBase), Vector3f.UNIT_Y);
-        quaternion.multLocal(viewDirection);
-        setViewDirection(viewDirection);
+    public void setStartAttack(boolean startAttack) {
+        this.startAttack = startAttack;
+    }
+
+    private void clearMovements() {
+        moveFoward = false;
+        moveBackward = false;
+        stopped = false;
+        rotateLeft = false;
+        rotateRight = false;
+        rightStrafe = false;
+        leftStrafe = false;
+        running = false;
     }
 }

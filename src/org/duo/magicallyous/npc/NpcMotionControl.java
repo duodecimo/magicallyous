@@ -25,7 +25,6 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
-import org.duo.magicallyous.player.PlayerBattleControl;
 import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.CharacterMovementControl;
@@ -38,6 +37,7 @@ import org.duo.magicallyous.utils.ParticleBlowControl;
 public class NpcMotionControl extends AbstractControl implements AnimEventListener {
     private AnimControl animControl;
     private AnimChannel animChannel;
+    CharacterMovementControl playerMovementControl;
 
     enum NpcState {
         WALK, RUN, ATTACK, IDLE, DEAD
@@ -48,7 +48,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     private final Quaternion lookRotation = new Quaternion();
     private double timeCounter = 0d;
     private double deathTimeCounter = 0d;
-    private double fightTimeCounter = 0d;
+    private double battleStartTime = 0d;
     // terrain bounds for npcs
     private float xmax, xmin, zmax, zmin;
     // terrain center for npcs
@@ -111,15 +111,20 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
         timeCounter += tpf;
         if (this.isActive()) {
             // check if main char is in attack range
-            if (player != null && player.getControl(CharacterMovementControl.class).getActionState() 
+            if (playerMovementControl == null) {
+                playerMovementControl =
+                        player.getControl(CharacterMovementControl.class);
+            }
+            if (player != null && playerMovementControl.getAnimationStateEnum() 
                     != AnimationStateEnum.DIE && 
                     npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
                 Vector3f aim = player.getWorldTranslation();
                 Vector3f dist = aim.subtract(spatial.getWorldTranslation());
                 if (dist.length() < 3.0f) {
                     // avoid attacking a player already beeing attacked
-                    if (player.getControl(PlayerBattleControl.class).getActionState() 
-                            != AnimationStateEnum.BATTLE) {
+                    if (playerMovementControl.getAnimationStateEnum() 
+                            != AnimationStateEnum.BATTLE &&
+                            playerMovementControl.getAnimationStateEnum() != AnimationStateEnum.DIE) {
                         if (npcState != NpcState.ATTACK) {
                             previousNpcState = npcState;
                             npcState = NpcState.ATTACK;
@@ -128,13 +133,10 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                             spatial.setLocalRotation(lookRotation);
                             //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
                             //player.setLocalRotation(lookRotation);
-                            PlayerBattleControl playerControl = player.getControl(PlayerBattleControl.class);
-                            playerControl.setTarget(spatial);
-                            playerControl.setStartAttack(true);
-                            playerControl.setActionState(AnimationStateEnum.BATTLE);
-                            player.getControl(CharacterMovementControl.class).
-                                    setActionState(AnimationStateEnum.BATTLE);
-                            fightTimeCounter = timeCounter;
+                            playerMovementControl.setTarget(spatial);
+                            playerMovementControl.setStartAttack(true);
+                            playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+                            battleStartTime = timeCounter;
                         }
                     }
                 }
@@ -248,10 +250,10 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                         spatial.removeControl(ParticleBlowControl.class);
                         npcDie();
                     }
-                    if((timeCounter - fightTimeCounter) >= 3.0f) {
+                    if((timeCounter - battleStartTime) >= 3.0f) {
                         // cause damage each 3 seconds
                         animateAttack = true;
-                        fightTimeCounter = timeCounter;
+                        battleStartTime = timeCounter;
                         int damage = spatial.getUserData("damage");
                         int defense = player.getUserData("defense");
                         int playerHealth = player.getUserData("health");
@@ -262,9 +264,14 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                     }
                     if((int) player.getUserData("health") <= 0) {
                         // player must die
+                        playerMovementControl.setAnimationStateEnum(AnimationStateEnum.DIE);
+                        playerMovementControl.setTarget(null);
                         player.removeControl(PlayerShootControl.class);
-                        player.getControl(PlayerBattleControl.class).setActionState(AnimationStateEnum.DIE);
+                        System.out.println("NPC killed target!");
                         npcState = previousNpcState;
+                        if(npcState == NpcState.ATTACK) {
+                            npcState = NpcState.IDLE;
+                        }
                     }
                 } else if(npcState == NpcState.DEAD) {
                     if(timeCounter - deathTimeCounter > 10.0d) {
@@ -279,8 +286,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     }
 
     protected void npcDie() {
-        player.getControl(PlayerBattleControl.class).setActionState(AnimationStateEnum.IDLE);
-        player.getControl(CharacterMovementControl.class).setActionState(AnimationStateEnum.IDLE);
+        playerMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
         deathTimeCounter = timeCounter;
         npcState = NpcState.DEAD;
         spatial.setCullHint(Spatial.CullHint.Always);
@@ -338,6 +344,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
         //TODO: save properties of this Control, e.g.
         //out.write(this.value, "name", defaultValue);
     }
+
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if(animName.compareTo("Strike") == 0) {

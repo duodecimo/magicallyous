@@ -43,7 +43,7 @@ public class ParticleBlowControl extends AbstractControl {
         super();
         this.app = app;
         this.target = (Node) target;
-        System.out.println("particle system started!");
+        //System.out.println("particle system started!");
     }
 
     @Override

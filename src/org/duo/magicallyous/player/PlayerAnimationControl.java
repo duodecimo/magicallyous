@@ -10,14 +10,15 @@ import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.LoopMode;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeImporter;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import org.duo.magicallyous.utils.AnimationStateEnum;
+import org.duo.magicallyous.utils.CharacterMovementControl;
 
 /**
  *
@@ -28,7 +29,8 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
     private AnimChannel animChannel;
     private AnimationStateEnum animationStateEnum;
     private double timeCounter = 0d;
-    private double attackTimer = 0d;
+    private double attackTime = 0d;
+    private double deathTime = 0d;
     private boolean startAttack = false;
     private boolean waitingForCast = false;
     private boolean waitingForPrecast = false;
@@ -37,6 +39,7 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
     @Override
     protected void controlUpdate(float tpf) {
         if (checkControl()) {
+            timeCounter += tpf;
             if (animationStateEnum == AnimationStateEnum.IDLE) {
                 if (animChannel.getAnimationName().compareTo("Idle") != 0) {
                     animChannel.setAnim("Idle");
@@ -58,7 +61,7 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
             } else if (animationStateEnum == AnimationStateEnum.BATTLE) {
                 if(startAttack) {
                     startAttack = false;
-                    Node player = (Node) spatial;
+                    System.out.println("Player starting to attack!");
                     // change anim
                     if(animChannel.getAnimationName().compareTo("Precast")!=0) {
                         animChannel.setAnim("Precast");
@@ -71,14 +74,14 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
                         //System.out.println("Waiting for cast from: " +  
                         //        attackTimer + " now: " + timeCounter + 
                         //        " difference: " + (timeCounter - attackTimer));
-                        if (timeCounter - attackTimer > 0.5d) {
+                        if (timeCounter - attackTime > 0.5d) {
                             waitingForCast = false;
                             animChannel.setAnim("Cast");
                             animChannel.setSpeed(1.0f);
                             animChannel.setLoopMode(LoopMode.DontLoop);
                         }
                     } else if (waitingForPrecast) {
-                        if (timeCounter - attackTimer > 0.8d) {
+                        if (timeCounter - attackTime > 0.8d) {
                             waitingForPrecast = false;
                             animChannel.setAnim("Precast");
                             animChannel.setSpeed(1.0f);
@@ -91,6 +94,15 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
                     animChannel.setAnim("Die");
                     animChannel.setSpeed(0.5f);
                     animChannel.setLoopMode(LoopMode.DontLoop);
+                }
+                else if (timeCounter - deathTime > 3.0d) {
+                    // respawn
+                    spatial.setUserData("health", 100);
+                    spatial.getControl(CharacterMovementControl.class).warp(Vector3f.ZERO);
+                    System.out.println("Player revived on " + spatial.getLocalTranslation());
+                    animationStateEnum = AnimationStateEnum.IDLE;
+                    spatial.getControl(PlayerBattleControl.class).setActionState(AnimationStateEnum.IDLE);
+                    spatial.getControl(CharacterMovementControl.class).setAnimationStateEnum(AnimationStateEnum.IDLE);
                 }
             }
         }
@@ -134,18 +146,13 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
             PlayerShootControl playerShootControl = new PlayerShootControl();
             playerShootControl.setTarget(target);
             spatial.addControl(playerShootControl);
-            attackTimer = timeCounter;
+            attackTime = timeCounter;
         } else if(animName.compareTo("Cast")==0) {
             waitingForPrecast = true;
             waitingForCast = false;
-            attackTimer = timeCounter;
+            attackTime = timeCounter;
         } else if(animName.compareTo("Die")==0) {
-            // respawn
-            spatial.setUserData("health", 100);
-            spatial.move(0.0f, 0.0f, 0.0f);
-            spatial.setLocalTranslation(0.0f, 0.0f, 0.0f);
-            System.out.println("Player revived on " + spatial.getLocalTranslation());
-            animationStateEnum = AnimationStateEnum.IDLE;
+            deathTime = timeCounter;
         }
     }
 
@@ -167,5 +174,9 @@ public class PlayerAnimationControl extends AbstractControl implements AnimEvent
 
     public void setTarget(Spatial target) {
         this.target = target;
+    }
+
+    public void setStartAttack(boolean startAttack) {
+        this.startAttack = startAttack;
     }
 }

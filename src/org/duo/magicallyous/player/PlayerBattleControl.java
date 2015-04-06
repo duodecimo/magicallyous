@@ -5,10 +5,6 @@
 package org.duo.magicallyous.player;
 
 import org.duo.magicallyous.utils.AnimationStateEnum;
-import com.jme3.animation.AnimChannel;
-import com.jme3.animation.AnimControl;
-import com.jme3.animation.AnimEventListener;
-import com.jme3.animation.LoopMode;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
@@ -30,11 +26,7 @@ import org.duo.magicallyous.utils.CharacterMovementControl;
  */
 public class PlayerBattleControl extends AbstractControl {
     private AnimationStateEnum animationStateEnum = AnimationStateEnum.IDLE;
-    private double timeCounter = 0d;
-    private double attackTimer = 0d;
     private boolean startAttack = false;
-    private boolean waitingForCast = false;
-    private boolean waitingForPrecast = false;
     private Spatial target;
     private Quaternion lookRotation;
     private PlayerAnimationControl playerAnimationControl;
@@ -56,7 +48,6 @@ public class PlayerBattleControl extends AbstractControl {
         if(playerAnimationControl == null) {
             playerAnimationControl = spatial.getControl(PlayerAnimationControl.class);
         }
-        timeCounter += (double) tpf;
         if (animationStateEnum == AnimationStateEnum.BATTLE) {
             if (startAttack) {
                 startAttack = false;
@@ -65,6 +56,7 @@ public class PlayerBattleControl extends AbstractControl {
                         player.getControl(CharacterMovementControl.class);
                 // in order to stop if moving
                 characterMovementControl.setWalkDirection(Vector3f.ZERO);
+                characterMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
                 // face target
                 if (target != null) {
                     Vector3f aim = target.getWorldTranslation();
@@ -74,7 +66,7 @@ public class PlayerBattleControl extends AbstractControl {
                     characterMovementControl.setViewDirection(
                             lookRotation.getRotationColumn(1).negate());
                     //spatial.setLocalRotation(lookRotation);
-                    System.out.println("Starting fight with target at: "
+                    System.out.println("Player starting fight with target at: "
                             + target.getWorldTranslation() + " distance: "
                             + dist.length());
                 } else {
@@ -83,13 +75,11 @@ public class PlayerBattleControl extends AbstractControl {
                 // change anim
                 playerAnimationControl.setTarget(target);
                 playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+                playerAnimationControl.setStartAttack(true);
             } else {
             }
         } else if (animationStateEnum == AnimationStateEnum.DIE) {
-            playerAnimationControl.setAnimationStateEnum(AnimationStateEnum.DIE);
-            if (target != null) {
-                target = null;
-            }
+            spatial.getControl(PlayerAnimationControl.class).setAnimationStateEnum(AnimationStateEnum.DIE);
         }
     }
 

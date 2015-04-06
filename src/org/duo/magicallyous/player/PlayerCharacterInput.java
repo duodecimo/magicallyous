@@ -56,7 +56,7 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (characterMovementControl.getActionState() != AnimationStateEnum.BATTLE) {
+        if (characterMovementControl.getAnimationStateEnum() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_MOVEFOWARD :
                     characterMovementControl.setMoveFoward(isPressed);
@@ -99,7 +99,7 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (characterMovementControl.getActionState() != AnimationStateEnum.BATTLE) {
+        if (characterMovementControl.getAnimationStateEnum() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_TURNLEFT :
                     characterMovementControl.setRotateValue(value);
