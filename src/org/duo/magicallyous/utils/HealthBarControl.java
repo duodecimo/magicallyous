@@ -37,8 +37,8 @@ public class HealthBarControl extends AbstractControl {
         this.app = app;
         float spatialHeight = ((BoundingBox) spatial.getWorldBound()).getYExtent() * 3.0f + (10.0f - (spatial.getLocalScale().y) * 10.0f);
         float spatialWidth  = 0.2f + (10.0f - (spatial.getLocalScale().x) * 10.0f)/4;
-        System.out.println("spatial height = " + spatialHeight + " widht = " + spatialWidth + 
-                " scale = " + spatial.getLocalScale());
+        //System.out.println("spatial height = " + spatialHeight + " widht = " + spatialWidth + 
+        //        " scale = " + spatial.getLocalScale());
         Sphere health = new Sphere(16, 16, spatialWidth + 0.1f);
         Sphere healthBg = new Sphere(16, 16, spatialWidth + 0.2f);
         Geometry healthSphere = new  Geometry("healthSphere", health);
