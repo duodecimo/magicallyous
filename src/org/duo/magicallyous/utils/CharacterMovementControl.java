@@ -43,6 +43,8 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
     private boolean waitingForPrecast = false;
     private Spatial target;
     private Quaternion lookRotation;
+    private boolean increaseHealth;
+    private boolean decreaseHealth;
 
     public CharacterMovementControl() {
     }
@@ -74,6 +76,21 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                 // move character
                 walk();
                 rotate();
+            }
+            // change health
+            if(increaseHealth) {
+                increaseHealth = false;
+                int health = spatial.getUserData("health");
+                health += 5;
+                spatial.setUserData("health", health);
+                System.out.println("Player increased health = " + health);
+                
+            } else if(decreaseHealth) {
+                decreaseHealth = false;
+                int health = spatial.getUserData("health");
+                health -= 5;
+                spatial.setUserData("health", health);
+                System.out.println("Player decreased health = " + health);
             }
             // animate character
             if (animationStateEnum == AnimationStateEnum.IDLE) {
@@ -335,5 +352,13 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
         rightStrafe = false;
         leftStrafe = false;
         running = false;
+    }
+
+    public void setIncreaseHealth(boolean increaseHealth) {
+        this.increaseHealth = increaseHealth;
+    }
+
+    public void setDecreaseHealth(boolean decreaseHealth) {
+        this.decreaseHealth = decreaseHealth;
     }
 }

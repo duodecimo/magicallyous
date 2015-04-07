@@ -65,6 +65,16 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                         characterMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
                     }
                     break;
+                case PlayerMovementMapping.MAP_INCREASEHEALTH:
+                    if (isPressed) {
+                        characterMovementControl.setIncreaseHealth(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_DECREASEHEALTH:
+                    if (isPressed) {
+                        characterMovementControl.setDecreaseHealth(true);
+                    }
+                    break;
                 case PlayerMovementMapping.MAP_STOP :
                     characterMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
                     break;
@@ -82,22 +92,6 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                                 rightHandNode.attachChild(swordNode);
                             }
                         }
-                    }
-                    break;
-                case PlayerMovementMapping.MAP_INCREASEHEALTH:
-                    if (isPressed) {
-                        int health = player.getUserData("health");
-                        health += 5;
-                        player.setUserData("health", health);
-                        System.out.println("Player health = " + health);
-                    }
-                    break;
-                case PlayerMovementMapping.MAP_DECREASEHEALTH:
-                    if (isPressed) {
-                        int health = player.getUserData("health");
-                        health -= 5;
-                        player.setUserData("health", health);
-                        System.out.println("Player health = " + health);
                     }
                     break;
                 default:
