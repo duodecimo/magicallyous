@@ -16,4 +16,6 @@ public class PlayerMovementMapping {
     public final static String MAP_STOP = "Stop";
     public final static String MAP_TOGGLEWALKSTATE = "Toggle Walk State";
     public final static String MAP_USESWORD = "Pick Sword";
+    public final static String MAP_INCREASEHEALTH = "Increase health";
+    public final static String MAP_DECREASEHEALTH = "Decrease health";
 }

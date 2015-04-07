@@ -21,4 +21,6 @@ public class PlayerActionTrigger {
     public final static Trigger TRIGGER_TURNLEFT_KEY_LEFT = new KeyTrigger(KeyInput.KEY_LEFT);
     public final static Trigger TRIGGER_TOGGLEWALKSTATE_KEY_R = new KeyTrigger(KeyInput.KEY_R);
     public final static Trigger TRIGGER_USESWORD_KEY_U = new KeyTrigger(KeyInput.KEY_U);
+    public final static Trigger TRIGGER_INCREASEHEALTH_KEY_ADD = new KeyTrigger(KeyInput.KEY_ADD);
+    public final static Trigger TRIGGER_DECREASEHEALTH_KEY_MINUS = new KeyTrigger(KeyInput.KEY_MINUS);
 }

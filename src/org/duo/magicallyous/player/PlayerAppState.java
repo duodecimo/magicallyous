@@ -48,6 +48,7 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("name", "Astofoboldo");
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
+        player.setUserData("health", 100);
         CharacterMovementControl characterMovementControl = new CharacterMovementControl(0.5f, 2.5f, 80.0f);
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
         characterMovementControl.setGravity(normalGravity);

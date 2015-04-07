@@ -13,6 +13,7 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
 import org.duo.magicallyous.utils.AnimationStateEnum;
+import org.duo.magicallyous.utils.CharacterMovementControl;
 
 /**
  *
@@ -53,18 +54,19 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        PlayerBattleControl playerMotionControl = player.getControl(PlayerBattleControl.class);
-        if (playerMotionControl.getActionState() != AnimationStateEnum.BATTLE) {
+        CharacterMovementControl characterMovementControl = 
+                player.getControl(CharacterMovementControl.class);
+        if (characterMovementControl.getAnimationStateEnum() != AnimationStateEnum.BATTLE) {
             switch (name) {
                 case PlayerMovementMapping.MAP_MOVEFOWARD :
                     if (isPressed) {
-                        playerMotionControl.setActionState(AnimationStateEnum.WALK);
+                        characterMovementControl.setAnimationStateEnum(AnimationStateEnum.WALK);
                     } else {
-                        playerMotionControl.setActionState(AnimationStateEnum.IDLE);
+                        characterMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
                     }
                     break;
                 case PlayerMovementMapping.MAP_STOP :
-                    playerMotionControl.setActionState(AnimationStateEnum.IDLE);
+                    characterMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
                     break;
                 case PlayerMovementMapping.MAP_TOGGLEWALKSTATE :
                     if (isPressed) {
@@ -80,6 +82,22 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                                 rightHandNode.attachChild(swordNode);
                             }
                         }
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_INCREASEHEALTH:
+                    if (isPressed) {
+                        int health = player.getUserData("health");
+                        health += 5;
+                        player.setUserData("health", health);
+                        System.out.println("Player health = " + health);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_DECREASEHEALTH:
+                    if (isPressed) {
+                        int health = player.getUserData("health");
+                        health -= 5;
+                        player.setUserData("health", health);
+                        System.out.println("Player health = " + health);
                     }
                     break;
                 default:
@@ -117,6 +135,12 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
                 PlayerActionTrigger.TRIGGER_USESWORD_KEY_U);
         inputManager.addListener(this, PlayerMovementMapping.MAP_USESWORD);
 
-    }
+        inputManager.addMapping(PlayerMovementMapping.MAP_INCREASEHEALTH, 
+                PlayerActionTrigger.TRIGGER_INCREASEHEALTH_KEY_ADD);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_INCREASEHEALTH);
 
+        inputManager.addMapping(PlayerMovementMapping.MAP_DECREASEHEALTH, 
+                PlayerActionTrigger.TRIGGER_DECREASEHEALTH_KEY_MINUS);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_DECREASEHEALTH);
+    }
 }
