@@ -99,11 +99,11 @@ public class NpcAppState extends AbstractAppState {
             deer  = (Node) app.getAssetManager().loadModel("Models/deer.j3o");
             if (i<10) {
                 deer.scale(0.2f);
-                deer.setUserData("damage", 8);
-                deer.setUserData("defense", 5);
-            } else {
-                deer.setUserData("damage", 20);
+                deer.setUserData("damage", 16);
                 deer.setUserData("defense", 10);
+            } else {
+                deer.setUserData("damage", 40);
+                deer.setUserData("defense", 20);
             }
             deer.setUserData("health", 100);
             npcMotionControl = new NpcMotionControl(this.app);
