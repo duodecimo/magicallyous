@@ -70,7 +70,7 @@ public class PlayerAppState extends AbstractAppState {
         // add a barrel
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
         scene.attachChild(barrel);
-        RigidBodyControl rigidBodyControl = new RigidBodyControl(10.0f);
+        RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
         barrel.addControl(rigidBodyControl);
         bulletAppState.getPhysicsSpace().add(barrel);
         barrel.move(0.0f,  0.0f, -6.0f);

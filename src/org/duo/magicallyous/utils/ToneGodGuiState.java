@@ -110,7 +110,9 @@ public class ToneGodGuiState extends AbstractAppState {
         indicator.setCurrentValue(100);
         indicator.setDisplayPercentage();
         indicator.setIndicatorColor(new ColorRGBA(1.0f, 0.0f, 0.0f, 0.4f));
-        indicator.setTextPosition(5, 5);
+        //indicator.setTextPosition(5, 5);
+        indicator.setTextVAlign(BitmapFont.VAlign.Center);
+        indicator.setTextAlign(BitmapFont.Align.Left);
         indicator.setText("Health Bar");
         return indicator;
     }
