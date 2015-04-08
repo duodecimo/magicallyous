@@ -45,12 +45,14 @@ public class PlayerShootControl extends AbstractControl {
                     break;
             }
         }
-        for(Node node : ((Node) target).descendantMatches(Node.class)) {
-            if (node != null && node.getName() != null) {
-                switch (node.getName()) {
-                    case "hitNode":
-                        targetHitNode = node;
-                        break;
+        if (target != null) {
+            for (Node node : ((Node) target).descendantMatches(Node.class)) {
+                if (node != null && node.getName() != null) {
+                    switch (node.getName()) {
+                        case "hitNode":
+                            targetHitNode = node;
+                            break;
+                    }
                 }
             }
         }

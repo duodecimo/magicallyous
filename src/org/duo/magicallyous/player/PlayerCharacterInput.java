@@ -78,6 +78,36 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
                         characterMovementControl.toggleRunning();
                     }
                     break;
+                case PlayerMovementMapping.MAP_INCREASEHEALTH:
+                    if (isPressed) {
+                        characterMovementControl.setIncreaseHealth(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_DECREASEHEALTH:
+                    if (isPressed) {
+                        characterMovementControl.setDecreaseHealth(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_INCREASEDAMAGE:
+                    if (isPressed) {
+                        characterMovementControl.setIncreaseDamage(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_DECREASEDAMAGE:
+                    if (isPressed) {
+                        characterMovementControl.setDecreaseDamage(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_INCREASEDEFENSE:
+                    if (isPressed) {
+                        characterMovementControl.setIncreaseDefense(true);
+                    }
+                    break;
+                case PlayerMovementMapping.MAP_DECREASEDEFENSE:
+                    if (isPressed) {
+                        characterMovementControl.setDecreaseDefense(true);
+                    }
+                    break;
                 case PlayerMovementMapping.MAP_USESWORD :
                     if (isPressed) {
                         if (rightHandNode.hasChild(swordNode)) {
@@ -141,5 +171,28 @@ public class PlayerCharacterInput extends AbstractAppState implements ActionList
                 PlayerActionTrigger.TRIGGER_USESWORD_KEY_U);
         inputManager.addListener(this, PlayerMovementMapping.MAP_USESWORD);
 
+        inputManager.addMapping(PlayerMovementMapping.MAP_INCREASEHEALTH, 
+                PlayerActionTrigger.TRIGGER_INCREASEHEALTH_KEY_1);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_INCREASEHEALTH);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_DECREASEHEALTH, 
+                PlayerActionTrigger.TRIGGER_DECREASEHEALTH_KEY_2);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_DECREASEHEALTH);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_INCREASEDAMAGE, 
+                PlayerActionTrigger.TRIGGER_INCREASEDAMAGE_KEY_3);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_INCREASEDAMAGE);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_DECREASEDAMAGE, 
+                PlayerActionTrigger.TRIGGER_DECREASEDAMAGE_KEY_4);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_DECREASEDAMAGE);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_INCREASEDEFENSE, 
+                PlayerActionTrigger.TRIGGER_INCREASEDEFENSE_KEY_5);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_INCREASEDEFENSE);
+
+        inputManager.addMapping(PlayerMovementMapping.MAP_DECREASEDEFENSE, 
+                PlayerActionTrigger.TRIGGER_DECREASEDEFENSE_KEY_6);
+        inputManager.addListener(this, PlayerMovementMapping.MAP_DECREASEDEFENSE);
     }
 }

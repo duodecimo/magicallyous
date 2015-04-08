@@ -59,10 +59,6 @@ public class PlayerAppState extends AbstractAppState {
         BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
         bulletAppState.getPhysicsSpace().add(characterMovementControl);
         player.addControl(characterMovementControl);
-        //player.addControl(new PlayerBattleControl());
-        //player.addControl(new PlayerAnimationControl());
-        //player.addControl(new PlayerMotionControl());
-        //player.addControl(new TerrainHeightControl());
         player.addControl(new HealthBarControl(this.app, player));
         scene.attachChild(player);
         // make sword go away

@@ -25,7 +25,6 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import java.io.IOException;
 import java.util.Random;
-import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.CharacterMovementControl;
 import org.duo.magicallyous.utils.ParticleBlowControl;
@@ -54,6 +53,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     // terrain center for npcs
     private float xcenter, zcenter;
     private long debugPositionTime = 0l;
+    private long lastEndOfBattle = 0l;
     private boolean active = false;
     // debug position
     private boolean debugPosition = false;
@@ -115,28 +115,32 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                 playerMovementControl =
                         player.getControl(CharacterMovementControl.class);
             }
-            if (player != null && playerMovementControl.getAnimationStateEnum() 
-                    != AnimationStateEnum.DIE && 
-                    npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
-                Vector3f aim = player.getWorldTranslation();
-                Vector3f dist = aim.subtract(spatial.getWorldTranslation());
-                if (dist.length() < 3.0f) {
-                    // avoid attacking a player already beeing attacked
-                    if (playerMovementControl.getAnimationStateEnum() 
-                            != AnimationStateEnum.BATTLE &&
-                            playerMovementControl.getAnimationStateEnum() != AnimationStateEnum.DIE) {
-                        if (npcState != NpcState.ATTACK) {
-                            previousNpcState = npcState;
-                            npcState = NpcState.ATTACK;
-                            animateAttack = true;
-                            lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                            spatial.setLocalRotation(lookRotation);
-                            //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
-                            //player.setLocalRotation(lookRotation);
-                            playerMovementControl.setTarget(spatial);
-                            playerMovementControl.setStartAttack(true);
-                            playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
-                            battleStartTime = timeCounter;
+            if (timeCounter - lastEndOfBattle > 10) {
+                // after battle spend at least 10 seconds without engaging
+                lastEndOfBattle = 0l;
+                if (player != null && playerMovementControl.getAnimationStateEnum()
+                        != AnimationStateEnum.DIE
+                        && npcState != NpcState.DEAD && npcState != NpcState.ATTACK) {
+                    Vector3f aim = player.getWorldTranslation();
+                    Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                    if (dist.length() < 3.0f) {
+                        // avoid attacking a player already beeing attacked
+                        if (playerMovementControl.getAnimationStateEnum()
+                                != AnimationStateEnum.BATTLE
+                                && playerMovementControl.getAnimationStateEnum() != AnimationStateEnum.DIE) {
+                            if (npcState != NpcState.ATTACK) {
+                                previousNpcState = npcState;
+                                npcState = NpcState.ATTACK;
+                                animateAttack = true;
+                                lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                                spatial.setLocalRotation(lookRotation);
+                                //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
+                                //player.setLocalRotation(lookRotation);
+                                playerMovementControl.setTarget(spatial);
+                                playerMovementControl.setStartAttack(true);
+                                playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+                                battleStartTime = timeCounter;
+                            }
                         }
                     }
                 }
@@ -245,9 +249,11 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                     int health = spatial.getUserData("health");
                     if(health <= 0) {
                         int playerDefense = player.getUserData("defense");
+                        playerMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
                         // player get stronger!
                         player.setUserData("defense", playerDefense+2);
-                        spatial.removeControl(ParticleBlowControl.class);
+                        npcRemoveBlowControls();
+                        playerMovementControl.removeShootControls();
                         npcDie();
                     }
                     if((timeCounter - battleStartTime) >= 3.0f) {
@@ -264,9 +270,9 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                     }
                     if((int) player.getUserData("health") <= 0) {
                         // player must die
-                        playerMovementControl.setAnimationStateEnum(AnimationStateEnum.DIE);
+                        npcRemoveBlowControls();
                         playerMovementControl.setTarget(null);
-                        player.removeControl(PlayerShootControl.class);
+                        playerMovementControl.removeShootControls();
                         System.out.println("NPC killed target!");
                         npcState = previousNpcState;
                         if(npcState == NpcState.ATTACK) {
@@ -286,10 +292,19 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     }
 
     protected void npcDie() {
+        playerMovementControl.setTarget(null);
         playerMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
         deathTimeCounter = timeCounter;
         npcState = NpcState.DEAD;
         spatial.setCullHint(Spatial.CullHint.Always);
+    }
+
+    protected void npcRemoveBlowControls() {
+        ParticleBlowControl particleBlowControl;
+        do {
+            particleBlowControl = spatial.getControl(ParticleBlowControl.class);
+            spatial.removeControl(particleBlowControl);
+        } while(particleBlowControl!=null);
     }
 
     protected void npcRevive() {
@@ -348,7 +363,6 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if(animName.compareTo("Strike") == 0) {
-            
         }
     }
 

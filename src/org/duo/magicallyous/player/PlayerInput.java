@@ -130,11 +130,11 @@ public class PlayerInput extends AbstractAppState implements ActionListener, Ana
         inputManager.addListener(this, PlayerMovementMapping.MAP_USESWORD);
 
         inputManager.addMapping(PlayerMovementMapping.MAP_INCREASEHEALTH, 
-                PlayerActionTrigger.TRIGGER_INCREASEHEALTH_KEY_ADD);
+                PlayerActionTrigger.TRIGGER_INCREASEHEALTH_KEY_1);
         inputManager.addListener(this, PlayerMovementMapping.MAP_INCREASEHEALTH);
 
         inputManager.addMapping(PlayerMovementMapping.MAP_DECREASEHEALTH, 
-                PlayerActionTrigger.TRIGGER_DECREASEHEALTH_KEY_MINUS);
+                PlayerActionTrigger.TRIGGER_DECREASEHEALTH_KEY_2);
         inputManager.addListener(this, PlayerMovementMapping.MAP_DECREASEHEALTH);
     }
 }

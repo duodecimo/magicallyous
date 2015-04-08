@@ -45,6 +45,10 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
     private Quaternion lookRotation;
     private boolean increaseHealth;
     private boolean decreaseHealth;
+    private boolean increaseDamage;
+    private boolean decreaseDamage;
+    private boolean increaseDefense;
+    private boolean decreaseDefense;
 
     public CharacterMovementControl() {
     }
@@ -77,20 +81,39 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                 walk();
                 rotate();
             }
-            // change health
+            // change health. damage &defense
             if(increaseHealth) {
                 increaseHealth = false;
                 int health = spatial.getUserData("health");
                 health += 5;
                 spatial.setUserData("health", health);
-                System.out.println("Player increased health = " + health);
-                
             } else if(decreaseHealth) {
                 decreaseHealth = false;
                 int health = spatial.getUserData("health");
                 health -= 5;
                 spatial.setUserData("health", health);
-                System.out.println("Player decreased health = " + health);
+            }
+            if(increaseDamage) {
+                increaseDamage = false;
+                int damage = spatial.getUserData("damage");
+                damage += 1;
+                spatial.setUserData("damage", damage);
+            } else if(decreaseDamage) {
+                decreaseDamage = false;
+                int damage = spatial.getUserData("damage");
+                damage -= 1;
+                spatial.setUserData("damage", damage);
+            }
+            if(increaseDefense) {
+                increaseDefense = false;
+                int defense = spatial.getUserData("defense");
+                defense += 1;
+                spatial.setUserData("defense", defense);
+            } else if(decreaseDefense) {
+                decreaseDefense = false;
+                int defense = spatial.getUserData("defense");
+                defense -= 1;
+                spatial.setUserData("defense", defense);
             }
             // animate character
             if (animationStateEnum == AnimationStateEnum.IDLE) {
@@ -159,6 +182,7 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                 }
             } else if (animationStateEnum == AnimationStateEnum.DIE) {
                 if (animChannel.getAnimationName().compareTo("Die") != 0) {
+                    removeShootControls();
                     animChannel.setAnim("Die");
                     animChannel.setSpeed(0.5f);
                     animChannel.setLoopMode(LoopMode.DontLoop);
@@ -360,5 +384,29 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
 
     public void setDecreaseHealth(boolean decreaseHealth) {
         this.decreaseHealth = decreaseHealth;
+    }
+
+    public void setIncreaseDamage(boolean increaseDamage) {
+        this.increaseDamage = increaseDamage;
+    }
+
+    public void setDecreaseDamage(boolean decreaseDamage) {
+        this.decreaseDamage = decreaseDamage;
+    }
+
+    public void setIncreaseDefense(boolean increaseDefense) {
+        this.increaseDefense = increaseDefense;
+    }
+
+    public void setDecreaseDefense(boolean decreaseDefense) {
+        this.decreaseDefense = decreaseDefense;
+    }
+
+    public void removeShootControls() {
+        PlayerShootControl playerShootControl;
+        do {
+            playerShootControl = spatial.getControl(PlayerShootControl.class);
+            spatial.removeControl(playerShootControl);
+        } while (playerShootControl != null);
     }
 }

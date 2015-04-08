@@ -18,4 +18,8 @@ public class PlayerMovementMapping {
     public final static String MAP_USESWORD = "Pick Sword";
     public final static String MAP_INCREASEHEALTH = "Increase health";
     public final static String MAP_DECREASEHEALTH = "Decrease health";
+    public final static String MAP_INCREASEDAMAGE = "Increase damage";
+    public final static String MAP_DECREASEDAMAGE = "Decrease damage";
+    public final static String MAP_INCREASEDEFENSE = "Increase defense";
+    public final static String MAP_DECREASEDEFENSE = "Decrease defense";
 }
