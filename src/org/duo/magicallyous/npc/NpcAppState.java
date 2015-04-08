@@ -23,6 +23,7 @@ import org.duo.magicallyous.utils.TerrainHeightControl;
 public class NpcAppState extends AbstractAppState {
     SimpleApplication app;
     List<Node> spiders;
+    List<Node> deers;
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -58,6 +59,11 @@ public class NpcAppState extends AbstractAppState {
             npcMotionControl = new NpcMotionControl(this.app);
             npcMotionControl.setNpcTerrainBounds(-30.0f, -250.0f, 250.0f, 30.0f);
             npcMotionControl.setNpcTerrainCenter(-100.0f, 80.0f);
+            npcMotionControl.setNpcAnimationAttack("Strike");
+            npcMotionControl.setNpcAnimationDead(null);
+            npcMotionControl.setNpcAnimationIdle(null);
+            npcMotionControl.setNpcAnimationRun(null);
+            npcMotionControl.setNpcAnimationWalk("Walk_1");
             /*if(i==0) {
              * npcMovementControl.setDebugPosition(true);
              * }*/
@@ -81,6 +87,57 @@ public class NpcAppState extends AbstractAppState {
             x-=3;
             z+=3;
         }
+
+        // atach deers
+        deers = new ArrayList<>();
+        x = 50;
+        z = -50;
+        //Vector3f vector3f;
+        //Vector2f vector2f;
+        Node deer;
+        for(int i=0; i<11; i++) {
+            deer  = (Node) app.getAssetManager().loadModel("Models/deer.j3o");
+            if (i<10) {
+                deer.scale(0.2f);
+                deer.setUserData("damage", 8);
+                deer.setUserData("defense", 5);
+            } else {
+                deer.setUserData("damage", 20);
+                deer.setUserData("defense", 10);
+            }
+            deer.setUserData("health", 100);
+            npcMotionControl = new NpcMotionControl(this.app);
+            npcMotionControl.setNpcTerrainBounds(250.0f, 30.0f, -30.0f, -250.0f);
+            npcMotionControl.setNpcTerrainCenter(100.0f, -80.0f);
+            npcMotionControl.setNpcAnimationAttack("EatHi");
+            npcMotionControl.setNpcAnimationDead(null);
+            npcMotionControl.setNpcAnimationIdle(null);
+            npcMotionControl.setNpcAnimationRun(null);
+            npcMotionControl.setNpcAnimationWalk("Walk");
+            /*if(i==0) {
+             * npcMovementControl.setDebugPosition(true);
+             * }*/
+            ((Node) scene).attachChild(deer);
+            if(player != null) {
+                npcMotionControl.setMainChar(player);
+            }
+            vector3f = new Vector3f(x, 0.0f, z);
+            deer.addControl(npcMotionControl);
+            vector2f = npcMotionControl.getSpawnLocation();
+            //System.out.println("spider spawn location = " + vector2f);
+            if (vector2f.x < 250.0f && vector2f.y < -30.0f)  {
+                vector3f.x = vector2f.x;
+                vector3f.z = vector2f.y;
+            }
+            deer.setLocalTranslation(vector3f);
+            npcMotionControl.setActive(true);
+            deer.addControl(new HealthBarControl(this.app, deer));
+            deer.addControl(new TerrainHeightControl());
+            deers.add(deer);
+            x-=3;
+            z+=3;
+        }
+    
     }
     
     @Override

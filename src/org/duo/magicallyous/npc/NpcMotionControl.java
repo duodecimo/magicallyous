@@ -38,9 +38,34 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     private AnimChannel animChannel;
     PlayerActionControl playerMovementControl;
 
+    public void setNpcAnimationWalk(String npcAnimationWalk) {
+        this.npcAnimationWalk = npcAnimationWalk;
+    }
+
+    public void setNpcAnimationRun(String npcAnimationRun) {
+        this.npcAnimationRun = npcAnimationRun;
+    }
+
+    public void setNpcAnimationAttack(String npcAnimationAttack) {
+        this.npcAnimationAttack = npcAnimationAttack;
+    }
+
+    public void setNpcAnimationIdle(String npcAnimationIdle) {
+        this.npcAnimationIdle = npcAnimationIdle;
+    }
+
+    public void setNpcAnimationDead(String npcAnimationDead) {
+        this.npcAnimationDead = npcAnimationDead;
+    }
+
     enum NpcState {
         WALK, RUN, ATTACK, IDLE, DEAD
     };
+    private String npcAnimationWalk;
+    private String npcAnimationRun;
+    private String npcAnimationAttack;
+    private String npcAnimationIdle;
+    private String npcAnimationDead;
     private NpcState npcState = NpcState.WALK;
     private NpcState previousNpcState = NpcState.WALK;
     private Random random;
@@ -52,7 +77,6 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     private float xmax, xmin, zmax, zmin;
     // terrain center for npcs
     private float xcenter, zcenter;
-    private long debugPositionTime = 0l;
     private long lastEndOfBattle = 0l;
     private boolean active = false;
     // debug position
@@ -115,36 +139,39 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                 playerMovementControl =
                         player.getControl(PlayerActionControl.class);
             }
-            if (timeCounter - lastEndOfBattle > 10) {
-                // after battle spend at least 10 seconds without engaging
-                lastEndOfBattle = 0l;
-                if (player != null && 
-                        playerMovementControl.getAnimationStateEnum()
-                        != AnimationStateEnum.DIE &&
-                        playerMovementControl.getAnimationStateEnum() 
-                        != AnimationStateEnum.BATTLE
-                        && npcState != NpcState.DEAD && 
-                        npcState != NpcState.ATTACK) {
-                    Vector3f aim = player.getWorldTranslation();
-                    Vector3f dist = aim.subtract(spatial.getWorldTranslation());
-                    if (dist.length() < 3.0f) {
-                        // avoid attacking a player already beeing attacked
-                        if (npcState != NpcState.ATTACK) {
-                            previousNpcState = npcState;
-                            npcState = NpcState.ATTACK;
-                            animateAttack = true;
-                            lookRotation.lookAt(dist, Vector3f.UNIT_Y);
-                            spatial.setLocalRotation(lookRotation);
-                            //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
-                            //player.setLocalRotation(lookRotation);
-                            playerMovementControl.setTarget(spatial);
-                            playerMovementControl.setStartAttack(true);
-                            playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
-                            battleStartTime = timeCounter;
-                            System.out.println("NPC start attacking player from distance: " + dist.length());
+            if (playerOnBound()) {
+                if (timeCounter - lastEndOfBattle > 10) {
+                    // after battle spend at least 10 seconds without engaging
+                    lastEndOfBattle = 0l;
+                    if (player != null
+                            && playerMovementControl.getAnimationStateEnum()
+                            != AnimationStateEnum.DIE
+                            && playerMovementControl.getAnimationStateEnum()
+                            != AnimationStateEnum.BATTLE
+                            && npcState != NpcState.DEAD
+                            && npcState != NpcState.ATTACK) {
+                        Vector3f aim = player.getWorldTranslation();
+                        Vector3f dist = aim.subtract(spatial.getWorldTranslation());
+                        if (dist.length() < 3.0f) {
+                            // avoid attacking a player already beeing attacked
+                            if (npcState != NpcState.ATTACK) {
+                                previousNpcState = npcState;
+                                npcState = NpcState.ATTACK;
+                                animateAttack = true;
+                                lookRotation.lookAt(dist, Vector3f.UNIT_Y);
+                                spatial.setLocalRotation(lookRotation);
+                                //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
+                                //player.setLocalRotation(lookRotation);
+                                playerMovementControl.setTarget(spatial);
+                                playerMovementControl.setStartAttack(true);
+                                playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+                                battleStartTime = timeCounter;
+                                System.out.println("NPC start attacking player from distance: " + dist.length());
+                            }
                         }
                     }
                 }
+            } else {
             }
             // randomly toggle between walk and idle each 20 seconds
             if (((long) timeCounter) % 20 == 0) {
@@ -172,8 +199,8 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
             if (checkControl()) {
                 if (npcState == NpcState.WALK) {
                     // check the animation
-                    if (animChannel.getAnimationName().compareTo("Walk_1") != 0) {
-                        animChannel.setAnim("Walk_1");
+                    if (animChannel.getAnimationName().compareTo(npcAnimationWalk) != 0) {
+                        animChannel.setAnim(npcAnimationWalk);
                         animChannel.setSpeed(0.5f);
                         animChannel.setLoopMode(LoopMode.Loop);
                     }
@@ -240,8 +267,8 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                     // check the animation
                     if (animateAttack) {
                         spatial.addControl(new ParticleBlowControl(app, player));
-                        //if (animChannel.getAnimationName().compareTo("Strike") != 0) {
-                            animChannel.setAnim("Strike");
+                        //if (animChannel.getAnimationName().compareTo(npcAnimationAttack) != 0) {
+                            animChannel.setAnim(npcAnimationAttack);
                             animChannel.setSpeed(1.0f);
                             animChannel.setLoopMode(LoopMode.DontLoop);
                         //}
@@ -327,7 +354,7 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
             animControl = control;
             animControl.addListener(this);
             animChannel = animControl.createChannel();
-            animChannel.setAnim("Walk_1");
+            animChannel.setAnim(npcAnimationWalk);
             animChannel.setLoopMode(LoopMode.Loop);
         }
         return animControl != null;
@@ -370,5 +397,13 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
 
     @Override
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+    }
+
+    private boolean playerOnBound() {
+        Vector3f vector3f = player.getWorldTranslation();
+        if(vector3f.x <= xmax && vector3f.x >= xmin && vector3f.z <= zmax && vector3f.z >= zmin) {
+            return true;
+        }
+        return false;
     }
 }
