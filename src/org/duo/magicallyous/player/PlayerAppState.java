@@ -18,7 +18,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
-import org.duo.magicallyous.utils.CharacterMovementControl;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
 
@@ -49,16 +48,16 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
         player.setUserData("health", 100);
-        CharacterMovementControl characterMovementControl = new CharacterMovementControl(0.5f, 2.5f, 80.0f);
+        PlayerActionControl playerActionControl = new PlayerActionControl(0.5f, 2.5f, 80.0f);
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
-        characterMovementControl.setGravity(normalGravity);
+        playerActionControl.setGravity(normalGravity);
         player.move(0.0f, 0.0f, 0.0f);
-        characterMovementControl.setMoveSpeed(1.0f);
-        characterMovementControl.setRunSpeed(9.0f);
-        characterMovementControl.setAbleToRun(true);
+        playerActionControl.setMoveSpeed(1.0f);
+        playerActionControl.setRunSpeed(9.0f);
+        playerActionControl.setAbleToRun(true);
         BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
-        bulletAppState.getPhysicsSpace().add(characterMovementControl);
-        player.addControl(characterMovementControl);
+        bulletAppState.getPhysicsSpace().add(playerActionControl);
+        player.addControl(playerActionControl);
         player.addControl(new HealthBarControl(this.app, player));
         scene.attachChild(player);
         // make sword go away
@@ -78,7 +77,7 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("barrel", barrel);
         // start player basic key controls
         //stateManager.attach(new PlayerInput());
-        stateManager.attach(new PlayerCharacterInput());
+        stateManager.attach(new PlayerActionInput());
         stateManager.attach(new ToneGodGuiState());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);

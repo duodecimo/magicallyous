@@ -8,7 +8,7 @@ package org.duo.magicallyous.player;
  *
  * @author duo
  */
-public class PlayerMovementMapping {
+public class PlayerActionMapping {
     public final static String MAP_MOVEFOWARD = "Go Foward";
     public final static String MAP_MOVEBACKWARD = "Go Backward";
     public final static String MAP_TURNRIGHT = "Turn Right";

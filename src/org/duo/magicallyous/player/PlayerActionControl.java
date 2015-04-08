@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.duo.magicallyous.utils;
+package org.duo.magicallyous.player;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
@@ -14,12 +14,13 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.player.PlayerShootControl;
+import org.duo.magicallyous.utils.AnimationStateEnum;
 
 /**
  *
  * @author duo
  */
-public class CharacterMovementControl extends BetterCharacterControl implements AnimEventListener {
+public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener {
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -49,11 +50,13 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
     private boolean decreaseDamage;
     private boolean increaseDefense;
     private boolean decreaseDefense;
+    private PlayerShootControl playerShootControl;
 
-    public CharacterMovementControl() {
+
+    public PlayerActionControl() {
     }
 
-    public CharacterMovementControl(float radius, float height, float mass) {
+    public PlayerActionControl(float radius, float height, float mass) {
         super(radius, height, mass);
     }
 
@@ -165,14 +168,14 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                         //System.out.println("Waiting for cast from: " +  
                         //        attackTimer + " now: " + timeCounter + 
                         //        " difference: " + (timeCounter - attackTimer));
-                        if (timeCounter - attackTime > 0.5d) {
+                        if (timeCounter - attackTime > 0.3d) {
                             waitingForCast = false;
                             animChannel.setAnim("Cast");
                             animChannel.setSpeed(1.0f);
                             animChannel.setLoopMode(LoopMode.DontLoop);
                         }
                     } else if (waitingForPrecast) {
-                        if (timeCounter - attackTime > 0.8d) {
+                        if (timeCounter - attackTime > 0.3d) {
                             waitingForPrecast = false;
                             animChannel.setAnim("Precast");
                             animChannel.setSpeed(1.0f);
@@ -191,6 +194,8 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
                 } else if (deathTime > 0 && timeCounter - deathTime > 3.0d) {
                     // respawn
                     spatial.setUserData("health", 100);
+                    //spatial.move(Vector3f.ZERO);
+                    spatial.setLocalTranslation(Vector3f.ZERO);
                     this.warp(Vector3f.ZERO);
                     System.out.println("Player revived on " + spatial.getLocalTranslation());
                     animationStateEnum = AnimationStateEnum.IDLE;
@@ -238,10 +243,13 @@ public class CharacterMovementControl extends BetterCharacterControl implements 
             //System.out.println("Start waiting for cast!");
             waitingForCast = true;
             waitingForPrecast = false;
-            PlayerShootControl playerShootControl = new PlayerShootControl();
-            playerShootControl.setTarget(target);
-            spatial.addControl(playerShootControl);
-            attackTime = timeCounter;
+            playerShootControl = spatial.getControl(PlayerShootControl.class);
+            if (playerShootControl == null && target != null) {
+                playerShootControl = new PlayerShootControl();
+                playerShootControl.setTarget(target);
+                spatial.addControl(playerShootControl);
+                attackTime = timeCounter;
+            }
         } else if(animName.compareTo("Cast")==0) {
             waitingForPrecast = true;
             waitingForCast = false;
