@@ -1,6 +1,7 @@
 package org.duo.magicallyous;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 
 /**
@@ -10,19 +11,33 @@ import com.jme3.system.AppSettings;
 public class Main extends SimpleApplication {
     private MagicallyousAppState magicallyousAppState;
     private UnderworldAppState underworldAppState;
-    boolean isUnderworld = true;
+    boolean isUnderworld = false;
 
     
     public Main() {
     }
 
     public void switchAppState() {
+        Node node;
         if(isUnderworld) {
             stateManager.detach(underworldAppState);
+            underworldAppState.cleanup();
+            magicallyousAppState = new MagicallyousAppState();
             stateManager.attach(magicallyousAppState);
+            node = (Node) getRootNode().getChild("New Scene");
+            if (node != null) {
+                getRootNode().detachChild(node);
+                System.out.println("Scene01 detached!");
+            }
         } else {
             stateManager.detach(magicallyousAppState);
+            underworldAppState = new UnderworldAppState();
             stateManager.attach(underworldAppState);
+            node = (Node) getRootNode().getChild("Scene01");
+            if (node != null) {
+                getRootNode().detachChild(node);
+                System.out.println("Underworld detached!");
+            }
         }
       isUnderworld = !isUnderworld;  
     }
@@ -40,9 +55,10 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         setDisplayStatView(false);
-        underworldAppState = new UnderworldAppState();
+        //underworldAppState = new UnderworldAppState();
+        //stateManager.attach(underworldAppState);
         magicallyousAppState = new MagicallyousAppState();
-        stateManager.attach(underworldAppState);
+        stateManager.attach(magicallyousAppState);
     }
   }
 
