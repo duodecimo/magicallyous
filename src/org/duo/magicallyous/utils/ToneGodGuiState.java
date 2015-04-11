@@ -9,11 +9,16 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapFont;
+import com.jme3.input.event.MouseButtonEvent;
+import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector4f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import org.duo.magicallyous.MagicallyousAppState;
+import org.duo.magicallyous.Main;
+import tonegod.gui.controls.buttons.Button;
 import tonegod.gui.controls.extras.Indicator;
 import tonegod.gui.controls.lists.Table;
 import tonegod.gui.controls.windows.Panel;
@@ -29,6 +34,7 @@ public class ToneGodGuiState extends AbstractAppState {
     SimpleApplication app;
     Node player;
     Node scene;
+    Node underworld;
     private Screen screen;
     Indicator healthBarIndicator;
     Table statsTable;
@@ -41,7 +47,12 @@ public class ToneGodGuiState extends AbstractAppState {
         this.app = (SimpleApplication) app;
         System.out.println("Starting toneGod!");
         scene = (Node) this.app.getRootNode().getChild("Scene01");
-        player = (Node) scene.getChild("player");
+        underworld = (Node) this.app.getRootNode().getChild("New Scene");
+        if (scene != null) {
+            player = (Node) scene.getChild("player");
+        } else {
+            player = (Node) underworld.getChild("player");
+        }
         playerDamage = getPlayerDamage();
         playerDefense = getPlayerDefense();
         screen = new Screen(this.app);
@@ -52,6 +63,33 @@ public class ToneGodGuiState extends AbstractAppState {
         footerPanel.addChild(healthBarIndicator);
         Window window = getStatsElement();
         screen.addElement(window);
+        Button revive = new Button(screen, new Vector2f(screen.getWidth()/2, screen.getHeight()/2)) {
+            @Override
+            public void onButtonMouseLeftDown(MouseButtonEvent mbe, boolean bln) {
+                ((Main) app).switchAppState();
+            }
+            
+            @Override
+            public void onButtonMouseRightDown(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonMouseLeftUp(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonMouseRightUp(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonFocus(MouseMotionEvent mme) {
+            }
+            
+            @Override
+            public void onButtonLostFocus(MouseMotionEvent mme) {
+            }
+        };
+        screen.addElement(revive);
     }
 
     @Override

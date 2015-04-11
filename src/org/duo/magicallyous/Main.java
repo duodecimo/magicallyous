@@ -8,9 +8,23 @@ import com.jme3.system.AppSettings;
  * @author duo
  */
 public class Main extends SimpleApplication {
+    private MagicallyousAppState magicallyousAppState;
+    private UnderworldAppState underworldAppState;
+    boolean isUnderworld = true;
 
     
     public Main() {
+    }
+
+    public void switchAppState() {
+        if(isUnderworld) {
+            stateManager.detach(underworldAppState);
+            stateManager.attach(magicallyousAppState);
+        } else {
+            stateManager.detach(magicallyousAppState);
+            stateManager.attach(underworldAppState);
+        }
+      isUnderworld = !isUnderworld;  
     }
 
     public static void main(String[] args) {
@@ -26,7 +40,9 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         setDisplayStatView(false);
-        stateManager.attach(new MagicallyousAppState());
+        underworldAppState = new UnderworldAppState();
+        magicallyousAppState = new MagicallyousAppState();
+        stateManager.attach(underworldAppState);
+    }
   }
 
-}

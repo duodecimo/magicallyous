@@ -38,6 +38,7 @@ public class PlayerAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
+        Node underworld = (Node) this.app.getRootNode().getChild("New Scene");
         Node scene = (Node) this.app.getRootNode().getChild("Scene01");
         player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
@@ -59,7 +60,11 @@ public class PlayerAppState extends AbstractAppState {
         bulletAppState.getPhysicsSpace().add(playerActionControl);
         player.addControl(playerActionControl);
         player.addControl(new HealthBarControl(this.app, player));
-        scene.attachChild(player);
+        if(scene != null) {
+            scene.attachChild(player);
+        } else if(underworld != null) {
+            underworld.attachChild(player);
+        }
         // make sword go away
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
         Node swordNode = (Node) rightHandNode.getChild("sword01");
@@ -69,15 +74,19 @@ public class PlayerAppState extends AbstractAppState {
         }
         // add a barrel
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
-        scene.attachChild(barrel);
-        RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
-        barrel.addControl(rigidBodyControl);
-        bulletAppState.getPhysicsSpace().add(barrel);
-        barrel.move(0.0f,  0.0f, -6.0f);
-        player.setUserData("barrel", barrel);
+        if(barrel != null && scene != null) {
+            scene.attachChild(barrel);
+            RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
+            barrel.addControl(rigidBodyControl);
+            bulletAppState.getPhysicsSpace().add(barrel);
+            barrel.move(0.0f,  0.0f, -6.0f);
+            player.setUserData("barrel", barrel);
+        }
         // start player basic key controls
         //stateManager.attach(new PlayerInput());
-        stateManager.attach(new PlayerActionInput());
+        if (scene != null) {
+            stateManager.attach(new PlayerActionInput());
+        }
         stateManager.attach(new ToneGodGuiState());
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
