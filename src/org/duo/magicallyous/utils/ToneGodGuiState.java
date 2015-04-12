@@ -5,7 +5,6 @@
 package org.duo.magicallyous.utils;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.font.BitmapFont;
@@ -30,9 +29,9 @@ import tonegod.gui.core.Screen;
  * @author duo
  */
 public class ToneGodGuiState extends AbstractAppState {
-    SimpleApplication app;
+    Main app;
     Node player;
-    Node scene;
+    Node actualScene;
     Node underworld;
     private Screen screen;
     Indicator healthBarIndicator;
@@ -43,15 +42,10 @@ public class ToneGodGuiState extends AbstractAppState {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
-        this.app = (SimpleApplication) app;
+        this.app = (Main) app;
         System.out.println("Starting toneGod!");
-        scene = (Node) this.app.getRootNode().getChild("Scene01");
-        underworld = (Node) this.app.getRootNode().getChild("underworldScene");
-        if (scene != null) {
-            player = (Node) scene.getChild("player");
-        } else {
-            player = (Node) underworld.getChild("player");
-        }
+        actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
+        player = (Node) actualScene.getChild("player");
         playerDamage = getPlayerDamage();
         playerDefense = getPlayerDefense();
         screen = new Screen(this.app);
@@ -62,33 +56,10 @@ public class ToneGodGuiState extends AbstractAppState {
         footerPanel.addChild(healthBarIndicator);
         Window window = getStatsElement();
         screen.addElement(window);
-        Button revive = new Button(screen, new Vector2f(screen.getWidth()/2, screen.getHeight()/2)) {
-            @Override
-            public void onButtonMouseLeftDown(MouseButtonEvent mbe, boolean bln) {
-                ((Main) app).switchAppState();
-            }
-            
-            @Override
-            public void onButtonMouseRightDown(MouseButtonEvent mbe, boolean bln) {
-            }
-            
-            @Override
-            public void onButtonMouseLeftUp(MouseButtonEvent mbe, boolean bln) {
-            }
-            
-            @Override
-            public void onButtonMouseRightUp(MouseButtonEvent mbe, boolean bln) {
-            }
-            
-            @Override
-            public void onButtonFocus(MouseMotionEvent mme) {
-            }
-            
-            @Override
-            public void onButtonLostFocus(MouseMotionEvent mme) {
-            }
-        };
-        screen.addElement(revive);
+        if (this.app.getActualSceneName().equals(this.app.getUnderworldSceneName())) {
+            Button revive = getReviveButton();
+            screen.addElement(revive);
+        }
     }
 
     @Override
@@ -206,6 +177,37 @@ public class ToneGodGuiState extends AbstractAppState {
         window.setTextAlign(BitmapFont.Align.Center);
         window.setTextPadding(10.0f);
         return window;
+    }
+
+    private Button getReviveButton() {
+        Button revive = new Button(screen, new Vector2f(screen.getWidth()* 0.50f, screen.getHeight()* 0.20f)) {
+            @Override
+            public void onButtonMouseLeftDown(MouseButtonEvent mbe, boolean bln) {
+                ((Main) app).switchAppState();
+            }
+            
+            @Override
+            public void onButtonMouseRightDown(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonMouseLeftUp(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonMouseRightUp(MouseButtonEvent mbe, boolean bln) {
+            }
+            
+            @Override
+            public void onButtonFocus(MouseMotionEvent mme) {
+            }
+            
+            @Override
+            public void onButtonLostFocus(MouseMotionEvent mme) {
+            }
+        };
+        revive.setLabelText("Revive");
+        return revive;
     }
 
     public String getPlayerName() {

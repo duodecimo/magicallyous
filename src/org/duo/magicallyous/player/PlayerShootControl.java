@@ -105,6 +105,19 @@ public class PlayerShootControl extends AbstractControl {
     }
 
     @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+         if (spatial != null) {
+            if (shoot1 != null) {
+                ((Node) (spatial.getParent())).detachChild(shoot1);
+            }
+            if (shoot2 != null) {
+                ((Node) (spatial.getParent())).detachChild(shoot2);
+            }
+         }
+    }
+
+    @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
         //Only needed for rendering-related operations,
         //not called when spatial is culled.

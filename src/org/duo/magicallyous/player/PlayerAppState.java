@@ -5,7 +5,6 @@
 package org.duo.magicallyous.player;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
@@ -18,15 +17,17 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import org.duo.magicallyous.Main;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
+import tonegod.gui.core.Screen;
 
 /**
  *
  * @author duo
  */
 public class PlayerAppState extends AbstractAppState {
-    private SimpleApplication app;
+    private Main app;
     private ChaseCamera chaseCamera;
     private Node player;
     private Spatial barrel;
@@ -37,9 +38,9 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
-        this.app = (SimpleApplication) app;
-        Node underworld = (Node) this.app.getRootNode().getChild("underworldScene");
-        Node scene = (Node) this.app.getRootNode().getChild("Scene01");
+        this.app = (Main) app;
+        Node actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
+        actualScene.setName(this.app.getActualSceneName());
         player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
         player.setUserData("fireMagic", getShoot("fireMagic"));
@@ -49,7 +50,7 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
         player.setUserData("health", 100);
-        PlayerActionControl playerActionControl = new PlayerActionControl(0.5f, 2.5f, 80.0f);
+        PlayerActionControl playerActionControl = new PlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
         playerActionControl.setGravity(normalGravity);
         player.move(0.0f, 0.0f, 0.0f);
@@ -60,11 +61,7 @@ public class PlayerAppState extends AbstractAppState {
         bulletAppState.getPhysicsSpace().add(playerActionControl);
         player.addControl(playerActionControl);
         player.addControl(new HealthBarControl(this.app, player));
-        if(scene != null) {
-            scene.attachChild(player);
-        } else if(underworld != null) {
-            underworld.attachChild(player);
-        }
+        actualScene.attachChild(player);
         // make sword go away
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
         Node swordNode = (Node) rightHandNode.getChild("sword01");
@@ -74,8 +71,8 @@ public class PlayerAppState extends AbstractAppState {
         }
         // add a barrel
         barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
-        if(barrel != null && scene != null) {
-            scene.attachChild(barrel);
+        if(barrel != null && actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
+            actualScene.attachChild(barrel);
             RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
             barrel.addControl(rigidBodyControl);
             bulletAppState.getPhysicsSpace().add(barrel);
@@ -84,8 +81,18 @@ public class PlayerAppState extends AbstractAppState {
         }
         // start player basic key controls
         //stateManager.attach(new PlayerInput());
-        if (scene != null) {
+        if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
+            PlayerActionInput playerActionInput = 
+                    stateManager.getState(PlayerActionInput.class);
+            if (playerActionInput != null) {
+                stateManager.detach(playerActionInput);
+            }
             stateManager.attach(new PlayerActionInput());
+        }
+        ToneGodGuiState toneGodGuiState = stateManager.getState(ToneGodGuiState.class);
+        if (toneGodGuiState != null) {
+            stateManager.detach(toneGodGuiState);
+            this.app.getGuiNode().removeControl(Screen.class);
         }
         stateManager.attach(new ToneGodGuiState());
         // start camera

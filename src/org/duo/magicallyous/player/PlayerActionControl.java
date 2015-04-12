@@ -13,6 +13,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
+import org.duo.magicallyous.Main;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 
 /**
@@ -20,6 +21,7 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
  * @author duo
  */
 public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener {
+    private Main app;
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -55,8 +57,9 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     public PlayerActionControl() {
     }
 
-    public PlayerActionControl(float radius, float height, float mass) {
+    public PlayerActionControl(Main app, float radius, float height, float mass) {
         super(radius, height, mass);
+        this.app = app;
     }
 
     @Override
@@ -190,14 +193,15 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
                     animChannel.setLoopMode(LoopMode.DontLoop);
                     System.out.println("Player dying animation started!");
                     deathTime = 0.0d;
-                } else if (deathTime > 0 && timeCounter - deathTime > 3.0d) {
-                    // respawn
-                    spatial.setUserData("health", 100);
+                } else if (deathTime > 0 && timeCounter - deathTime > 5.0d) {
+                    // go to underworld
+                    app.switchAppState();
+                    //spatial.setUserData("health", 100);
                     //spatial.move(Vector3f.ZERO);
-                    spatial.setLocalTranslation(Vector3f.ZERO);
-                    this.warp(Vector3f.ZERO);
-                    System.out.println("Player revived on " + spatial.getLocalTranslation());
-                    animationStateEnum = AnimationStateEnum.IDLE;
+                    //spatial.setLocalTranslation(Vector3f.ZERO);
+                    //this.warp(Vector3f.ZERO);
+                    //System.out.println("Player revived on " + spatial.getLocalTranslation());
+                    //animationStateEnum = AnimationStateEnum.IDLE;
                 }
             }
         }

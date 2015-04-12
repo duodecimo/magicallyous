@@ -11,35 +11,38 @@ import com.jme3.system.AppSettings;
 public class Main extends SimpleApplication {
     private MagicallyousAppState magicallyousAppState;
     private UnderworldAppState underworldAppState;
-    boolean isUnderworld = false;
+    private String actualSceneName = "";
+    private final String magicallyousSceneName = "Scene01";
+    private final String underworldSceneName = "underworldScene";
 
     
     public Main() {
+        actualSceneName = magicallyousSceneName;
     }
 
     public void switchAppState() {
         Node node;
-        if(isUnderworld) {
+        if(actualSceneName.equals(underworldSceneName)) {
+            actualSceneName = magicallyousSceneName;
             stateManager.detach(underworldAppState);
             underworldAppState.cleanup();
             magicallyousAppState = new MagicallyousAppState();
             stateManager.attach(magicallyousAppState);
-            node = (Node) getRootNode().getChild("underworldScene");
+            node = (Node) getRootNode().getChild(underworldSceneName);
             if (node != null) {
                 getRootNode().detachChild(node);
-                System.out.println("Scene01 detached!");
             }
         } else {
+            actualSceneName = underworldSceneName;
             stateManager.detach(magicallyousAppState);
+            magicallyousAppState.cleanup();
             underworldAppState = new UnderworldAppState();
             stateManager.attach(underworldAppState);
-            node = (Node) getRootNode().getChild("Scene01");
+            node = (Node) getRootNode().getChild(magicallyousSceneName);
             if (node != null) {
                 getRootNode().detachChild(node);
-                System.out.println("Underworld detached!");
             }
         }
-      isUnderworld = !isUnderworld;  
     }
 
     public static void main(String[] args) {
@@ -59,6 +62,18 @@ public class Main extends SimpleApplication {
         //stateManager.attach(underworldAppState);
         magicallyousAppState = new MagicallyousAppState();
         stateManager.attach(magicallyousAppState);
+    }
+
+    public String getActualSceneName() {
+        return actualSceneName;
+    }
+
+    public String getMagicallyousSceneName() {
+        return magicallyousSceneName;
+    }
+
+    public String getUnderworldSceneName() {
+        return underworldSceneName;
     }
   }
 
