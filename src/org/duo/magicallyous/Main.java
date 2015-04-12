@@ -25,23 +25,23 @@ public class Main extends SimpleApplication {
         if(actualSceneName.equals(underworldSceneName)) {
             actualSceneName = magicallyousSceneName;
             stateManager.detach(underworldAppState);
-            underworldAppState.cleanup();
-            magicallyousAppState = new MagicallyousAppState();
-            stateManager.attach(magicallyousAppState);
             node = (Node) getRootNode().getChild(underworldSceneName);
             if (node != null) {
                 getRootNode().detachChild(node);
             }
+            underworldAppState.cleanup();
+            magicallyousAppState = new MagicallyousAppState();
+                        stateManager.attach(magicallyousAppState);
         } else {
             actualSceneName = underworldSceneName;
             stateManager.detach(magicallyousAppState);
-            magicallyousAppState.cleanup();
-            underworldAppState = new UnderworldAppState();
-            stateManager.attach(underworldAppState);
             node = (Node) getRootNode().getChild(magicallyousSceneName);
             if (node != null) {
                 getRootNode().detachChild(node);
             }
+            magicallyousAppState.cleanup();
+            underworldAppState = new UnderworldAppState();
+            stateManager.attach(underworldAppState);
         }
     }
 

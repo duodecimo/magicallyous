@@ -93,6 +93,7 @@ public class PlayerAppState extends AbstractAppState {
         if (toneGodGuiState != null) {
             stateManager.detach(toneGodGuiState);
             this.app.getGuiNode().removeControl(Screen.class);
+            this.app.getGuiNode().detachAllChildren();
         }
         stateManager.attach(new ToneGodGuiState());
         // start camera
