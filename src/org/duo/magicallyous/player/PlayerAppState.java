@@ -38,7 +38,7 @@ public class PlayerAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
-        Node underworld = (Node) this.app.getRootNode().getChild("New Scene");
+        Node underworld = (Node) this.app.getRootNode().getChild("underworldScene");
         Node scene = (Node) this.app.getRootNode().getChild("Scene01");
         player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");

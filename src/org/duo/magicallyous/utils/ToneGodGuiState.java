@@ -16,7 +16,6 @@ import com.jme3.math.Vector2f;
 import com.jme3.math.Vector4f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import org.duo.magicallyous.MagicallyousAppState;
 import org.duo.magicallyous.Main;
 import tonegod.gui.controls.buttons.Button;
 import tonegod.gui.controls.extras.Indicator;
@@ -47,7 +46,7 @@ public class ToneGodGuiState extends AbstractAppState {
         this.app = (SimpleApplication) app;
         System.out.println("Starting toneGod!");
         scene = (Node) this.app.getRootNode().getChild("Scene01");
-        underworld = (Node) this.app.getRootNode().getChild("New Scene");
+        underworld = (Node) this.app.getRootNode().getChild("underworldScene");
         if (scene != null) {
             player = (Node) scene.getChild("player");
         } else {

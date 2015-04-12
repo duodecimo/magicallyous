@@ -20,8 +20,13 @@ import org.duo.magicallyous.player.PlayerAppState;
  */
 public class UnderworldAppState extends AbstractAppState {
     private SimpleApplication app;
-    private Node underWorld;
+    private Node underworld;
     private Node boat;
+    private Node terrainNode;
+
+    public Spatial getTerrainNode() {
+        return terrainNode;
+    }
 
     public Spatial getBoat() {
         return boat;
@@ -37,23 +42,21 @@ public class UnderworldAppState extends AbstractAppState {
         BulletAppState bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         this.app.getRootNode().attachChild(app.getAssetManager().loadModel("Scenes/Underworld.j3o"));
+        // disable flycam
+        this.app.getFlyByCamera().setEnabled(false);
+        underworld = (Node) this.app.getRootNode().getChild("underworldScene");
+        terrainNode = (Node) ((Node) underworld).getChild("terrainNode");
+        terrainNode.addControl(new RigidBodyControl(0.0f));
+        bulletAppState.getPhysicsSpace().add(terrainNode);
+        
+        boat = (Node) ((Node) underworld).getChild("boat");
+        boat.addControl(new RigidBodyControl(0.0f));
+        bulletAppState.getPhysicsSpace().add(boat.getControl(RigidBodyControl.class));
+
         for(Spatial spatial : this.app.getRootNode().getChildren()) {
             System.out.println("Root children: " + spatial.getName());
         }
-        // disable flycam
-        this.app.getFlyByCamera().setEnabled(false);
-        underWorld = (Node) this.app.getRootNode().getChild("New Scene");
-        for(Spatial spatial : underWorld.descendantMatches(Node.class)) {
-            System.out.println("New Scene descendant: "  + spatial.getName());
-            if(spatial.getName().equals("Models/boat.j3o")) {
-                boat = (Node) spatial;
-            }
-        }
-        if(boat != null) {
-            RigidBodyControl rigidBodyControl = new RigidBodyControl(0.0f);
-            boat.addControl(rigidBodyControl);
-            bulletAppState.getPhysicsSpace().add(boat);
-        }
+        
         // PlayerAppState to initialize player
         stateManager.attach(new PlayerAppState());
     }

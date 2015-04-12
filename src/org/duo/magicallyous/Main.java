@@ -24,7 +24,7 @@ public class Main extends SimpleApplication {
             underworldAppState.cleanup();
             magicallyousAppState = new MagicallyousAppState();
             stateManager.attach(magicallyousAppState);
-            node = (Node) getRootNode().getChild("New Scene");
+            node = (Node) getRootNode().getChild("underworldScene");
             if (node != null) {
                 getRootNode().detachChild(node);
                 System.out.println("Scene01 detached!");
