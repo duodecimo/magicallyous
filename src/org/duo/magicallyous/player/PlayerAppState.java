@@ -91,6 +91,7 @@ public class PlayerAppState extends AbstractAppState {
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
+        chaseCamera.setUpVector(Vector3f.UNIT_Y);
         chaseCamera.setSmoothMotion(true);
     }
     
