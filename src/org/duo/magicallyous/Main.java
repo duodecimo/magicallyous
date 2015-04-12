@@ -30,6 +30,7 @@ public class Main extends SimpleApplication {
                 getRootNode().detachChild(node);
             }
             underworldAppState.cleanup();
+            getInputManager().clearMappings();
             magicallyousAppState = new MagicallyousAppState();
                         stateManager.attach(magicallyousAppState);
         } else {
@@ -40,6 +41,7 @@ public class Main extends SimpleApplication {
                 getRootNode().detachChild(node);
             }
             magicallyousAppState.cleanup();
+            getInputManager().clearMappings();
             underworldAppState = new UnderworldAppState();
             stateManager.attach(underworldAppState);
         }

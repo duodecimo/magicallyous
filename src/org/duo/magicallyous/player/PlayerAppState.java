@@ -28,6 +28,7 @@ import tonegod.gui.core.Screen;
  */
 public class PlayerAppState extends AbstractAppState {
     private Main app;
+    Node actualScene;
     private ChaseCamera chaseCamera;
     private Node player;
     private Spatial barrel;
@@ -39,7 +40,7 @@ public class PlayerAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (Main) app;
-        Node actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
+        actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
         actualScene.setName(this.app.getActualSceneName());
         player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
@@ -85,7 +86,9 @@ public class PlayerAppState extends AbstractAppState {
             PlayerActionInput playerActionInput = 
                     stateManager.getState(PlayerActionInput.class);
             if (playerActionInput != null) {
+                //playerActionInput.cleanupKeys(this.app.getInputManager());
                 stateManager.detach(playerActionInput);
+                playerActionInput.cleanup();
             }
             stateManager.attach(new PlayerActionInput());
         }
@@ -133,6 +136,9 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void cleanup() {
         super.cleanup();
+        if(actualScene != null) {
+            actualScene.detachAllChildren();
+        }
         //TODO: clean up what you initialized in the initialize method,
         //e.g. remove all spatials from rootNode
         //this is called on the OpenGL thread after the AppState has been detached
