@@ -12,8 +12,10 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.network.Message;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.Main;
+import org.duo.magicallyous.net.util.PlayerActionStateMessage;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 
 /**
@@ -52,6 +54,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private boolean increaseDefense;
     private boolean decreaseDefense;
     private PlayerShootControl playerShootControl;
+    private PlayerActionStateMessage playerActionStateMessage;
 
 
     public PlayerActionControl() {
@@ -205,6 +208,37 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
                 }
             }
         }
+        // send state message to server
+        playerActionStateMessage = new PlayerActionStateMessage();
+        playerActionStateMessage.setAbleToRun(ableToRun);
+        playerActionStateMessage.setAnimationStateEnum(animationStateEnum);
+        playerActionStateMessage.setAttackTime(attackTime);
+        playerActionStateMessage.setDeathTime(deathTime);
+        playerActionStateMessage.setDecreaseDamage(decreaseDamage);
+        playerActionStateMessage.setIncreaseDamage(increaseDamage);
+        playerActionStateMessage.setDecreaseDefense(decreaseDefense);
+        playerActionStateMessage.setIncreaseDefense(increaseDefense);
+        playerActionStateMessage.setDecreaseHealth(decreaseHealth);
+        playerActionStateMessage.setIncreaseHealth(increaseHealth);
+        playerActionStateMessage.setLeftStrafe(leftStrafe);
+        playerActionStateMessage.setLookRotation(lookRotation);
+        playerActionStateMessage.setMoveBackward(moveBackward);
+        playerActionStateMessage.setMoveFoward(moveFoward);
+        playerActionStateMessage.setMoveSpeed(moveSpeed);
+        playerActionStateMessage.setPlayerShootControl(playerShootControl);
+        playerActionStateMessage.setRightStrafe(rightStrafe);
+        playerActionStateMessage.setRotateLeft(rotateLeft);
+        playerActionStateMessage.setRotateRight(rotateRight);
+        playerActionStateMessage.setRotateValue(rotateValue);
+        playerActionStateMessage.setRunSpeed(runSpeed);
+        playerActionStateMessage.setRunning(running);
+        playerActionStateMessage.setStartAttack(startAttack);
+        playerActionStateMessage.setStopped(stopped);
+        playerActionStateMessage.setTarget(target);
+        playerActionStateMessage.setTimeCounter(timeCounter);
+        playerActionStateMessage.setWaitingForCast(waitingForCast);
+        playerActionStateMessage.setWaitingForPrecast(waitingForPrecast);
+        this.app.getMagicallyousClient().send((Message) playerActionStateMessage);
     }
 
     public void walk() {

@@ -17,6 +17,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import java.util.ArrayList;
+import java.util.List;
 import org.duo.magicallyous.Main;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
@@ -27,10 +29,12 @@ import tonegod.gui.core.Screen;
  * @author duo
  */
 public class PlayerAppState extends AbstractAppState {
+    AppStateManager stateManager;
     private Main app;
     Node actualScene;
     private ChaseCamera chaseCamera;
-    private Node player;
+    private Node mainPlayer;
+    private List<Node> otherPlayers;
     private Spatial barrel;
     private double timeCounter = 0.0d;
     private double timeEvent = 0.0d;
@@ -39,18 +43,48 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
+        this.stateManager = stateManager;
         this.app = (Main) app;
         actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
         actualScene.setName(this.app.getActualSceneName());
-        player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
+        this.app.getFlyByCamera().setEnabled(false);
+        mainPlayer = createPlayer(true, "Astofoboldo");
+        createPlayer(false, "Miforonaldo");
+        // add a barrel
+        barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
+        if(barrel != null && actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
+            actualScene.attachChild(barrel);
+            RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
+            barrel.addControl(rigidBodyControl);
+            BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
+            bulletAppState.getPhysicsSpace().add(barrel);
+            barrel.move(0.0f,  0.0f, -6.0f);
+            mainPlayer.setUserData("barrel", barrel);
+        }
+        ToneGodGuiState toneGodGuiState = stateManager.getState(ToneGodGuiState.class);
+        if (toneGodGuiState != null) {
+            stateManager.detach(toneGodGuiState);
+            this.app.getGuiNode().removeControl(Screen.class);
+            this.app.getGuiNode().detachAllChildren();
+        }
+        stateManager.attach(new ToneGodGuiState());
+    }
+
+    private Node createPlayer(boolean mainPlayer, String playerName) {
+        if(otherPlayers == null) {
+            otherPlayers = new ArrayList<>();
+        }
+        Node player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
         player.setUserData("fireMagic", getShoot("fireMagic"));
         player.setUserData("waterMagic", getShoot("waterMagic"));
         player.setUserData("earthMagic", getShoot("earthMagic"));
-        player.setUserData("name", "Astofoboldo");
+        player.setUserData("name", playerName);
         player.setUserData("damage", 8);
         player.setUserData("defense", 5);
         player.setUserData("health", 100);
+        player.setUserData("level", 1);
+        player.setUserData("points", 0);
         PlayerActionControl playerActionControl = new PlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
         playerActionControl.setGravity(normalGravity);
@@ -61,7 +95,6 @@ public class PlayerAppState extends AbstractAppState {
         BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
         bulletAppState.getPhysicsSpace().add(playerActionControl);
         player.addControl(playerActionControl);
-        player.addControl(new HealthBarControl(this.app, player));
         actualScene.attachChild(player);
         // make sword go away
         Node rightHandNode = (Node) player.getChild("hand.R_attachnode");
@@ -70,42 +103,31 @@ public class PlayerAppState extends AbstractAppState {
             player.setUserData("swordNode", swordNode);
             rightHandNode.detachChild(swordNode);
         }
-        // add a barrel
-        barrel = app.getAssetManager().loadModel("Models/barrel.j3o");
-        if(barrel != null && actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
-            actualScene.attachChild(barrel);
-            RigidBodyControl rigidBodyControl = new RigidBodyControl(30.0f);
-            barrel.addControl(rigidBodyControl);
-            bulletAppState.getPhysicsSpace().add(barrel);
-            barrel.move(0.0f,  0.0f, -6.0f);
-            player.setUserData("barrel", barrel);
-        }
-        // start player basic key controls
-        //stateManager.attach(new PlayerInput());
-        if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
-            PlayerActionInput playerActionInput = 
-                    stateManager.getState(PlayerActionInput.class);
-            if (playerActionInput != null) {
-                //playerActionInput.cleanupKeys(this.app.getInputManager());
-                stateManager.detach(playerActionInput);
-                playerActionInput.cleanup();
+        if(mainPlayer) {
+            player.addControl(new HealthBarControl(this.app, player));
+            // start player basic key controls
+            //stateManager.attach(new PlayerInput());
+            if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
+                PlayerActionInput playerActionInput =
+                        stateManager.getState(PlayerActionInput.class);
+                if (playerActionInput != null) {
+                    //playerActionInput.cleanupKeys(this.app.getInputManager());
+                    stateManager.detach(playerActionInput);
+                    playerActionInput.cleanup();
+                }
+                stateManager.attach(new PlayerActionInput());
             }
-            stateManager.attach(new PlayerActionInput());
+            // start camera
+            this.app.getFlyByCamera().setEnabled(false);
+            chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
+            chaseCamera.setUpVector(Vector3f.UNIT_Y);
+            chaseCamera.setSmoothMotion(true);
+        } else {
+            otherPlayers.add(player);
         }
-        ToneGodGuiState toneGodGuiState = stateManager.getState(ToneGodGuiState.class);
-        if (toneGodGuiState != null) {
-            stateManager.detach(toneGodGuiState);
-            this.app.getGuiNode().removeControl(Screen.class);
-            this.app.getGuiNode().detachAllChildren();
-        }
-        stateManager.attach(new ToneGodGuiState());
-        // start camera
-        this.app.getFlyByCamera().setEnabled(false);
-        chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
-        chaseCamera.setUpVector(Vector3f.UNIT_Y);
-        chaseCamera.setSmoothMotion(true);
-    }
-    
+        return player;
+   }
+
     Spatial getShoot(String shootType) {
         Sphere sphere = new Sphere(16, 16, 0.2f);
         Geometry shoot = new Geometry("shoot", sphere);
@@ -125,10 +147,10 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         timeCounter += tpf;
-        int health = player.getUserData("health");
+        int health = mainPlayer.getUserData("health");
         if(timeCounter - timeEvent > 5.0d && health < 100) {
             health +=2;
-            player.setUserData("health", health);
+            mainPlayer.setUserData("health", health);
             timeEvent = timeCounter;
         }
     }

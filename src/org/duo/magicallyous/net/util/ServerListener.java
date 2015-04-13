@@ -21,6 +21,9 @@ public class ServerListener implements MessageListener<HostedConnection> {
       System.out.println("Server received '" + 
               gameMessage.getGameMessage() + 
               "' from client #" + source.getId() );
+    } else if(message instanceof PlayerActionStateMessage) {
+        PlayerActionStateMessage playerActionStateMessage = 
+                (PlayerActionStateMessage) message;
     }
   }
 }

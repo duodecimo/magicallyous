@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.util.ClientListener;
 import org.duo.magicallyous.net.util.GameMessage;
+import org.duo.magicallyous.net.util.PlayerActionStateMessage;
 
 /**
  *
@@ -78,6 +79,7 @@ public class Main extends SimpleApplication {
             magicallyousClient = Network.connectToServer(serverIp, port);
             magicallyousClient.start();
             Serializer.registerClass(GameMessage.class);
+            Serializer.registerClass(PlayerActionStateMessage.class);
             magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
             magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
             System.out.println("Application connected to server " + 
