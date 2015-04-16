@@ -20,6 +20,8 @@ import java.util.Properties;
 /**
  *
  * @author duo
+ * 
+ * @see http://pontov.com.br/site/java/48-java2d/327-criando-uma-interface-ao-usuario-usando-nifty-gui
  */
 public class LoginAppState extends AbstractAppState implements Controller {
     Main app;
