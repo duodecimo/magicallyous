@@ -10,6 +10,7 @@ import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import java.util.List;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
+import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 
 /**
  *
@@ -37,6 +38,8 @@ public class ServerListener implements MessageListener<HostedConnection> {
                     databaseManager = new DatabaseManager();
                 }
                 databaseManager.createAccount(magicallyousAccount);
+                source.send(new ServerServiceOutcomeMessage(
+                        ServerServiceOutcomeMessage.Service.ACCOUNT_REGISTER_OK));
                 List<MagicallyousAccount> accounts = databaseManager.getAccounts();
                 System.out.println("There are " + accounts.size() + " accounts registered.");
                 for(MagicallyousAccount account : accounts) {
@@ -45,6 +48,8 @@ public class ServerListener implements MessageListener<HostedConnection> {
                     System.out.println("  password: " + account.getPassword());
                 }
             } catch (Exception e) {
+                source.send(new ServerServiceOutcomeMessage(
+                        ServerServiceOutcomeMessage.Service.ACCOUNT_REGISTER_FAIL));
                 System.out.println("Error creating account!" + e);
             }
         }

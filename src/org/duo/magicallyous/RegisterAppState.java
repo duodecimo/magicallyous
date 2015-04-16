@@ -7,14 +7,17 @@ package org.duo.magicallyous;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.network.Client;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Label;
 import de.lessvoid.nifty.controls.TextField;
-import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
+import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 
 /**
@@ -23,7 +26,7 @@ import org.duo.magicallyous.net.util.MagicallyousAccount;
  * 
  * @see http://pontov.com.br/site/java/48-java2d/327-criando-uma-interface-ao-usuario-usando-nifty-gui
  */
-public class RegisterAppState extends AbstractAppState implements ScreenController {
+public class RegisterAppState extends AbstractAppState implements ScreenController, MessageListener<Client> {
     Main app;
     TextField tfName;
     TextField tfEmail;
@@ -48,6 +51,7 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
         //nifty.setDebugOptionPanelColors(true);
         this.app.getGuiViewPort().addProcessor(niftyJmeDisplay);
         this.app.getInputManager().setCursorVisible(true);
+        this.app.getMagicallyousClient().addMessageListener(this, ServerServiceOutcomeMessage.class);
     }
 
     @Override
@@ -100,5 +104,21 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
 
     @Override
     public void onEndScreen() {
+    }
+
+    @Override
+    public void messageReceived(Client source, Message message) {
+        if(message instanceof ServerServiceOutcomeMessage) {
+            ServerServiceOutcomeMessage serverServiceOutcomeMessage = (ServerServiceOutcomeMessage) message;
+            if(serverServiceOutcomeMessage.getService() == 
+                    ServerServiceOutcomeMessage.Service.ACCOUNT_REGISTER_OK) {
+                lbCheck.setText("Account registering success!");
+                System.out.println("Account registering confirmation received!!!!!");
+            } else if(serverServiceOutcomeMessage.getService() == 
+                    ServerServiceOutcomeMessage.Service.ACCOUNT_REGISTER_FAIL) {
+                lbCheck.setText("Account registering failure!");
+                System.out.println("Account registering failure received!!!!!");
+            }
+        }
     }
 }
