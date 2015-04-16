@@ -2,9 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.duo.magicallyous.net.util;
+package org.duo.magicallyous.net.message;
 
 import com.jme3.math.Quaternion;
+import com.jme3.network.AbstractMessage;
+import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.player.PlayerShootControl;
 import org.duo.magicallyous.utils.AnimationStateEnum;
@@ -13,7 +15,8 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
  *
  * @author aluno
  */
-public class PlayerActionStateMessage {
+@Serializable
+public class PlayerActionStateMessage extends AbstractMessage {
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;

@@ -4,9 +4,12 @@
  */
 package org.duo.magicallyous.net.util;
 
+import org.duo.magicallyous.net.message.PlayerActionStateMessage;
+import org.duo.magicallyous.net.message.GameMessage;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
+import org.duo.magicallyous.net.message.UserRegisterMessage;
 
 /**
  *
@@ -25,6 +28,13 @@ public class ServerListener implements MessageListener<HostedConnection> {
         } else if (message instanceof PlayerActionStateMessage) {
             PlayerActionStateMessage playerActionStateMessage =
                     (PlayerActionStateMessage) message;
+        } else if (message instanceof UserRegisterMessage) {
+            UserRegisterMessage userRegisterMessage =
+                    (UserRegisterMessage) message;
+            System.out.println("Server received user register request message!");
+            System.out.println("  >> name    : " + userRegisterMessage.getMagicallyousUser().getName());
+            System.out.println("  >> email   : " + userRegisterMessage.getMagicallyousUser().getEmail());
+            System.out.println("  >> password: " + userRegisterMessage.getMagicallyousUser().getPassword());
         }
     }
 }

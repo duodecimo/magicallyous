@@ -15,7 +15,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.network.Message;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.Main;
-import org.duo.magicallyous.net.util.PlayerActionStateMessage;
+import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 
 /**

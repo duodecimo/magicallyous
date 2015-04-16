@@ -4,6 +4,7 @@
  */
 package org.duo.magicallyous.net.util;
 
+import org.duo.magicallyous.net.message.GameMessage;
 import com.jme3.network.Client;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
