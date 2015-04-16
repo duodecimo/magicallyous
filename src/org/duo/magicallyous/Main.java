@@ -1,7 +1,6 @@
 package org.duo.magicallyous;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.network.AbstractMessage;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
@@ -12,9 +11,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
-import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.net.message.UserRegisterMessage;
 import org.duo.magicallyous.net.util.ClientListener;
+import org.duo.magicallyous.net.util.MagicallyousUser;
 
 /**
  *
@@ -81,19 +80,20 @@ public class Main extends SimpleApplication {
             magicallyousClient = Network.connectToServer(serverIp, port);
             magicallyousClient.start();
             Serializer.registerClass(GameMessage.class);
-            //Serializer.registerClass(PlayerActionStateMessage.class);
             Serializer.registerClass(UserRegisterMessage.class);
+            Serializer.registerClass(MagicallyousUser.class);
             magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
+            magicallyousClient.addMessageListener(new ClientListener(), UserRegisterMessage.class);
             magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
             System.out.println("Application connected to server "
                     + serverIp + " port " + port);
+            RegisterAppState registerAppState = new RegisterAppState();
+            stateManager.attach(registerAppState);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         //LoginAppState loginAppState = new LoginAppState();
         //stateManager.attach(loginAppState);
-        RegisterAppState registerAppState = new RegisterAppState();
-        stateManager.attach(registerAppState);
         //underworldAppState = new UnderworldAppState();
         //stateManager.attach(underworldAppState);
         //magicallyousAppState = new MagicallyousAppState();
@@ -122,10 +122,5 @@ public class Main extends SimpleApplication {
 
     public int getPort() {
         return port;
-    }
-
-    public void sendMessage(AbstractMessage message) {
-        System.out.println("Main: About to send message: " + message.toString());
-        magicallyousClient.send(message);
     }
 }

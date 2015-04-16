@@ -4,10 +4,13 @@
  */
 package org.duo.magicallyous.net.util;
 
+import com.jme3.network.serializing.Serializable;
+
 /**
  *
  * @author duo
  */
+@Serializable
 public class MagicallyousUser {
     private Integer id;
     private String name;
@@ -15,11 +18,18 @@ public class MagicallyousUser {
     private String email;
 
     public Integer getId() {
+        if(id == null) {
+            id = new Integer(0);
+        }
         return id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        if(id == null) {
+            this.id = new Integer(0);
+        } else {
+            this.id = id;
+        }
     }
 
     public String getName() {

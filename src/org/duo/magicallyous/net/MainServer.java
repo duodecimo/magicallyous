@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
-import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.net.message.UserRegisterMessage;
+import org.duo.magicallyous.net.util.MagicallyousUser;
 import org.duo.magicallyous.net.util.ServerListener;
 
 /**
@@ -32,9 +32,9 @@ public class MainServer extends SimpleApplication {
             magicallyousServer = Network.createServer(port);
             magicallyousServer.start();
             Serializer.registerClass(GameMessage.class);
-            Serializer.registerClass(PlayerActionStateMessage.class);
+            Serializer.registerClass(UserRegisterMessage.class);
+            Serializer.registerClass(MagicallyousUser.class);
             magicallyousServer.addMessageListener(new ServerListener(), GameMessage.class);
-            magicallyousServer.addMessageListener(new ServerListener(), PlayerActionStateMessage.class);
             magicallyousServer.addMessageListener(new ServerListener(), UserRegisterMessage.class);
             System.out.println("MagicallyousServer started on port " + port);
         } catch (IOException ex) {

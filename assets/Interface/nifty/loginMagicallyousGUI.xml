@@ -54,13 +54,13 @@
                              align="center" valign="top"
                              font="Interface/Fonts/LiberationSans.fnt" 
                              color="#ffffff">
-                        <interact onClick="login()"/>
+                        <interact onRelease="login()"/>
                     </control>
                     <control id="exitButton" name="button" label="Exit" 
                              align="center" valign="bottom"
                              font="Interface/Fonts/LiberationSans.fnt" 
                              color="#ffffff">
-                        <interact onClick="exit()"/>
+                        <interact onRelease="exit()"/>
                     </control>
             </panel>
         </layer>

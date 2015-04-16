@@ -59,13 +59,13 @@
                              align="center" valign="top"
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
-                        <interact onClick="register()"/>
+                        <interact onRelease="register()"/>
                     </control>
                     <control id="ReturnButton" name="button" label="Return" 
                              align="center" valign="bottom"
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
-                        <interact onClick="back()"/>
+                        <interact onRelease="back()"/>
                     </control>
             </panel>
         </layer>
