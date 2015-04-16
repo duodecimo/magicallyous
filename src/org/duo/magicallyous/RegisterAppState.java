@@ -9,7 +9,9 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.controls.Label;
 import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.duo.magicallyous.net.message.UserRegisterMessage;
@@ -27,6 +29,7 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
     TextField tfEmail;
     TextField tfPassword;
     TextField tfPassword2;
+    Label lbCheck;
     NiftyJmeDisplay niftyJmeDisplay;
     Nifty nifty;
     
@@ -60,16 +63,21 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
 
     public synchronized void register() {
         if (this.app != null) {
-            System.out.println("Register pressed. Name: " + tfName.getDisplayedText()
-                    + " Email: " + tfEmail.getDisplayedText()
-                    + " password: " + tfPassword.getDisplayedText()
-                    + " password2: " + tfPassword2.getDisplayedText());
-            MagicallyousUser magicallyousUser = new MagicallyousUser();
-            magicallyousUser.setId(new Integer(0));
-            magicallyousUser.setEmail(tfEmail.getDisplayedText());
-            magicallyousUser.setName(tfName.getDisplayedText());
-            magicallyousUser.setPassword(tfPassword.getDisplayedText());
-            this.app.getMagicallyousClient().send(new UserRegisterMessage(magicallyousUser));
+            if (tfPassword.getRealText().equals(tfPassword2.getRealText())) {
+                System.out.println("Register pressed. Name: " + tfName.getDisplayedText()
+                        + " Email: " + tfEmail.getDisplayedText()
+                        + " password: " + tfPassword.getRealText()
+                        + " password2: " + tfPassword2.getRealText());
+                MagicallyousUser magicallyousUser = new MagicallyousUser();
+                magicallyousUser.setId(new Integer(0));
+                magicallyousUser.setEmail(tfEmail.getDisplayedText());
+                magicallyousUser.setName(tfName.getDisplayedText());
+                magicallyousUser.setPassword(tfPassword.getRealText());
+                this.app.getMagicallyousClient().send(new UserRegisterMessage(magicallyousUser));
+                lbCheck.setText("Request sent!");
+            } else {
+                lbCheck.setText("Passwords must be equal, try again!");
+            }
         }
     }
 
@@ -87,6 +95,7 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
         tfEmail = (TextField) nifty.getScreen("start").findNiftyControl("tfEmail", TextField.class);
         tfPassword = (TextField) nifty.getScreen("start").findNiftyControl("tfPassword", TextField.class);
         tfPassword2 = (TextField) nifty.getScreen("start").findNiftyControl("tfPassword2", TextField.class);
+        lbCheck = (Label) nifty.getScreen("start").findNiftyControl("lbCheck", Label.class);
     }
 
     @Override

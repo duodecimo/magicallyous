@@ -12,10 +12,9 @@
         <layer id="background" backgroundcolor="#0000f" childLayout="center">
             <image  filename="Interface/nifty/start-background.png"/>
         </layer>
-        <layer id="foreground" childLayout="vertical" controller="org.duo.magicallyous.RegisterAppState">
+        <layer id="foreground" childLayout="vertical">
             <panel id="topPanel" height="10%" width="100%" align="center" valign="center" 
-                    childLayout="center" visibleToMouse="true">
-                <interact onClick="quit()"/>
+                    childLayout="vertical">
                 <text id="text01" font="Interface/Fonts/Liberation25Serif.fnt" color="#ffffff" 
                       text="Magicallyous - The game!" 
                       align="center" valign="center" />
@@ -45,12 +44,16 @@
                     <control id="tfEmail" name="textfield" width="50%" text="" 
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff" align="left" valign="center"/>
-                    <control id="tfPassword" name="textfield" width="50%" text="" 
+                    <control id="tfPassword" name="textfield" passwordChar="*" 
+                             width="50%" text="" 
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff" align="left" valign="center"/>
-                    <control id="tfPassword2" name="textfield" width="50%" text="" 
+                    <control id="tfPassword2" name="textfield" passwordChar="*" 
+                             width="50%" text="" 
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff" align="left" valign="center"/>
+                    <control id="lbCheck" name ="label" text="Checking!"
+                            color="#ff0000" width="50%" align="left" valign="center"/>
                 </panel>
             </panel>
             <panel id="bottomPanel" height="20%" width="100%" align="center" valign="center" 
