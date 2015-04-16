@@ -36,14 +36,15 @@ public class DatabaseManager {
     }
 
     private void checkTables() {
-        checkUserTable();
+        checkAccountTable();
         checkPlayerTable();
     }
 
-    private void checkUserTable() {
+    private void checkAccountTable() {
+        String cmd = "";
         try {
-            String cmd = "CREATE TABLE user("
-                    + "id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+            cmd = "CREATE TABLE account ("
+                    + "id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
                     + "name VARCHAR(255), "
                     + "password VARCHAR(255), "
                     + "email VARCHAR(255)"
@@ -51,50 +52,53 @@ public class DatabaseManager {
             checkStatement();
             statement.execute(cmd);
         } catch (SQLException ex) {
-            System.out.println("Error creating table user: " + ex);
+            System.out.println("Error creating table account: " + ex);
+            System.out.println("  >> sql: " + cmd);
         }
     }
 
     private void checkPlayerTable() {
+        String cmd = "";
         try {
-            String cmd = "CREATE TABLE player("
-                    + "id INT NOT NULL GENERATED ALWAYS AS IDENTITY, "
+            cmd = "CREATE TABLE player("
+                    + "id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
                     + "name VARCHAR(255), "
                     + "assetName VARCHAR(255), "
                     + "level INT, "
                     + "points INT, "
                     + "damage INT, "
                     + "defense INT, "
-                    + "user INT NOT NULL CONSTRAINT user_foreign_key " 
-                    + "REFERENCES user ON DELETE CASCADE ON UPDATE RESTRICT"
+                    + "account INT NOT NULL CONSTRAINT account_foreign_key " 
+                    + "REFERENCES account ON DELETE CASCADE ON UPDATE RESTRICT"
                     + ")";
             checkStatement();
             statement.execute(cmd);
         } catch (SQLException ex) {
             System.out.println("Error creating table player: " + ex);
+            System.out.println("  >> sql: " + cmd);
         }
     }
 
-    public MagicallyousUser getUser(String name, String password) {
-        MagicallyousUser magicallyousUser = null;
-            String cmd = "SELECT * FROM user "
+    public MagicallyousAccount getAccount(String name, String password) {
+        MagicallyousAccount magicallyousAccount = null;
+            String cmd = "SELECT * FROM account "
                 + "WHERE name = " + name + ", "
                     + "password = " + password;
         try {
             ResultSet resultSet = statement.executeQuery(cmd);
             while(resultSet.next()) {
-                magicallyousUser = new MagicallyousUser();
-                magicallyousUser.setId(resultSet.getInt("id"));
-                magicallyousUser.setName(resultSet.getString("name"));
-                magicallyousUser.setPassword(resultSet.getString("password"));
-                magicallyousUser.setEmail(resultSet.getString("email"));
+                magicallyousAccount = new MagicallyousAccount();
+                magicallyousAccount.setId(resultSet.getInt("id"));
+                magicallyousAccount.setName(resultSet.getString("name"));
+                magicallyousAccount.setPassword(resultSet.getString("password"));
+                magicallyousAccount.setEmail(resultSet.getString("email"));
             }
         } catch (SQLException sQLException) {
-            magicallyousUser = null;
-            System.out.println("Error getting user : " + sQLException);
+            magicallyousAccount = null;
+            System.out.println("Error getting account : " + sQLException);
             System.out.println("sql command: " + cmd);
         }
-        return magicallyousUser;
+        return magicallyousAccount;
     }
 
     public List<MagicallyousPlayer> getPlayers(int client) {
@@ -120,53 +124,78 @@ public class DatabaseManager {
                 magicallyousPlayers.add(magicallyousPlayer);
             }
         } catch (SQLException ex) {
-            System.out.println("Error getting user : " + ex);
+            System.out.println("Error getting account : " + ex);
             System.out.println("sql command: " + cmd);
         }
         return magicallyousPlayers;
     }
 
-    public void createUser(MagicallyousUser magicallyousUser) {
+    public void createAccount(MagicallyousAccount magicallyousAccount) {
         checkTables();
-        String cmd = "INSERT INTO user values("
+        String cmd = "INSERT INTO account values("
                 + "default, "
-                + "'" + magicallyousUser.getName() + "'" + ", "
-                + "'" + magicallyousUser.getPassword()+ "'" + ", "
-                + "'" + magicallyousUser.getEmail()+ "'" + ")";
+                + "'" + magicallyousAccount.getName() + "'" + ", "
+                + "'" + magicallyousAccount.getPassword()+ "'" + ", "
+                + "'" + magicallyousAccount.getEmail()+ "'" + ")";
         try {
             statement.execute(cmd);
         } catch (SQLException ex) {
-            System.out.println("Error creating user : " + ex);
+            System.out.println("Error creating account : " + ex);
             System.out.println("sql command: " + cmd);
         }
     }
 
-    public void updateUser(MagicallyousUser magicallyousUser) {
+    public List<MagicallyousAccount> getAccounts() {
+        List<MagicallyousAccount> accounts = null;
+        String cmd = "SELECT * FROM account ORDER BY name ";
         checkTables();
-        String cmd = "UPDATE user "
+        try {
+            MagicallyousAccount magicallyousAccount;
+            ResultSet resultSet = statement.executeQuery(cmd);
+            while (resultSet.next()) {
+                magicallyousAccount = new MagicallyousAccount();
+                magicallyousAccount.setId(resultSet.getInt("id"));
+                magicallyousAccount.setName(resultSet.getString("name"));
+                magicallyousAccount.setEmail(resultSet.getString("email"));
+                magicallyousAccount.setPassword(resultSet.getString("password"));
+                if (accounts == null) {
+                    accounts = new ArrayList<>();
+                }
+                accounts.add(magicallyousAccount);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error getting accounts : " + ex);
+            System.out.println("sql command: " + cmd);
+        }
+        return accounts;
+    }
+
+    public void updateAccount(MagicallyousAccount magicallyousAccount) {
+        checkTables();
+        String cmd = "UPDATE account "
                 + "SET name = "
-                + "'" + magicallyousUser.getName() + "'" + ", "
+                + "'" + magicallyousAccount.getName() + "'" + ", "
                 + "password = "
-                + "'" + magicallyousUser.getPassword() + "'" + ", "
+                + "'" + magicallyousAccount.getPassword() + "'" + ", "
                 + "email = "
-                + "'" + magicallyousUser.getEmail()+ "' "
-                + "WHERE id = " + magicallyousUser.getId();
+                + "'" + magicallyousAccount.getEmail()+ "' "
+                + "WHERE id = " + magicallyousAccount.getId();
         try {
             statement.execute(cmd);
         } catch (SQLException ex) {
-            System.out.println("Error updating user : " + ex);
+            System.out.println("Error updating account : " + ex);
             System.out.println("sql command: " + cmd);
         }
     }
 
-    public void deleteUser(MagicallyousUser magicallyousUser) {
+    public void deleteAccount(MagicallyousAccount magicallyousAccount) {
         checkTables();
-        String cmd = "DELETE FROM user "
-                + "WHERE id = " + magicallyousUser.getId();
+        String cmd = "DELETE FROM account "
+                + "WHERE id = " + magicallyousAccount.getId();
         try {
             statement.execute(cmd);
         } catch (SQLException ex) {
-            System.out.println("Error deleting user : " + ex);
+            System.out.println("Error deleting account : " + ex);
             System.out.println("sql command: " + cmd);
         }
     }

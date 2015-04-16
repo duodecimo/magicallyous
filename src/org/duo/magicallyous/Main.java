@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
-import org.duo.magicallyous.net.message.UserRegisterMessage;
+import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.util.ClientListener;
-import org.duo.magicallyous.net.util.MagicallyousUser;
+import org.duo.magicallyous.net.util.MagicallyousAccount;
 
 /**
  *
@@ -80,10 +80,10 @@ public class Main extends SimpleApplication {
             magicallyousClient = Network.connectToServer(serverIp, port);
             magicallyousClient.start();
             Serializer.registerClass(GameMessage.class);
-            Serializer.registerClass(UserRegisterMessage.class);
-            Serializer.registerClass(MagicallyousUser.class);
+            Serializer.registerClass(AccountRegisterMessage.class);
+            Serializer.registerClass(MagicallyousAccount.class);
             magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
-            magicallyousClient.addMessageListener(new ClientListener(), UserRegisterMessage.class);
+            magicallyousClient.addMessageListener(new ClientListener(), AccountRegisterMessage.class);
             magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
             System.out.println("Application connected to server "
                     + serverIp + " port " + port);

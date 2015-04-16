@@ -14,8 +14,8 @@ import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import org.duo.magicallyous.net.message.UserRegisterMessage;
-import org.duo.magicallyous.net.util.MagicallyousUser;
+import org.duo.magicallyous.net.message.AccountRegisterMessage;
+import org.duo.magicallyous.net.util.MagicallyousAccount;
 
 /**
  *
@@ -68,12 +68,12 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
                         + " Email: " + tfEmail.getDisplayedText()
                         + " password: " + tfPassword.getRealText()
                         + " password2: " + tfPassword2.getRealText());
-                MagicallyousUser magicallyousUser = new MagicallyousUser();
+                MagicallyousAccount magicallyousUser = new MagicallyousAccount();
                 magicallyousUser.setId(new Integer(0));
                 magicallyousUser.setEmail(tfEmail.getDisplayedText());
                 magicallyousUser.setName(tfName.getDisplayedText());
                 magicallyousUser.setPassword(tfPassword.getRealText());
-                this.app.getMagicallyousClient().send(new UserRegisterMessage(magicallyousUser));
+                this.app.getMagicallyousClient().send(new AccountRegisterMessage(magicallyousUser));
                 lbCheck.setText("Request sent!");
             } else {
                 lbCheck.setText("Passwords must be equal, try again!");

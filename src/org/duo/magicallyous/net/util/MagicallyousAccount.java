@@ -11,7 +11,7 @@ import com.jme3.network.serializing.Serializable;
  * @author duo
  */
 @Serializable
-public class MagicallyousUser {
+public class MagicallyousAccount {
     private Integer id;
     private String name;
     private String password;
