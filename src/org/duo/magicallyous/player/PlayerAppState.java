@@ -19,6 +19,8 @@ import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.List;
 import org.duo.magicallyous.Main;
+import org.duo.magicallyous.player.local.LocalPlayerActionControl;
+import org.duo.magicallyous.player.remote.RemotePlayerActionControl;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
 import tonegod.gui.core.Screen;
@@ -53,7 +55,7 @@ public class PlayerAppState extends AbstractAppState {
     }
 
     private Node addLocalPlayer(String playerName) {
-        Node player = createPlayer(playerName);
+        Node player = createPlayer(playerName, false);
         player.addControl(new HealthBarControl(this.app, player));
         // start player basic key controls
         //stateManager.attach(new PlayerInput());
@@ -83,15 +85,15 @@ public class PlayerAppState extends AbstractAppState {
     }
 
     private Node addRemotePlayer(String playerName) {
-        Node player = createPlayer(playerName);
+        Node player = createPlayer(playerName, true);
+        if(remotePlayers == null) {
+            remotePlayers = new ArrayList<>();
+        }
         remotePlayers.add(player);
         return player;
     }
 
-    private Node createPlayer(String playerName) {
-        if(remotePlayers == null) {
-            remotePlayers = new ArrayList<>();
-        }
+    private Node createPlayer(String playerName, boolean isRemote) {
         Node player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
         player.setUserData("fireMagic", getShoot("fireMagic"));
@@ -103,13 +105,18 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("health", 100);
         player.setUserData("level", 1);
         player.setUserData("points", 0);
-        PlayerActionControl playerActionControl = new PlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
+        PlayerActionControl playerActionControl;
+        if(isRemote) {
+            playerActionControl = new RemotePlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
+        } else {
+            playerActionControl = new LocalPlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
+            ((LocalPlayerActionControl) playerActionControl).setMoveSpeed(1.0f);
+            ((LocalPlayerActionControl) playerActionControl).setRunSpeed(9.0f);
+            ((LocalPlayerActionControl) playerActionControl).setAbleToRun(true);
+        }
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
         playerActionControl.setGravity(normalGravity);
         player.move(0.0f, 0.0f, 0.0f);
-        playerActionControl.setMoveSpeed(1.0f);
-        playerActionControl.setRunSpeed(9.0f);
-        playerActionControl.setAbleToRun(true);
         BulletAppState bulletAppState = this.app.getStateManager().getState(BulletAppState.class);
         bulletAppState.getPhysicsSpace().add(playerActionControl);
         player.addControl(playerActionControl);

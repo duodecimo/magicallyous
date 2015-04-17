@@ -12,7 +12,8 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
 import org.duo.magicallyous.Main;
-import org.duo.magicallyous.utils.AnimationStateEnum;
+import org.duo.magicallyous.player.local.LocalPlayerActionControl;
+import org.duo.magicallyous.utils.GeneralStateEnum;
 
 /**
  *
@@ -25,7 +26,7 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
     Node player;
     Node rightHandNode;
     Node swordNode;
-    PlayerActionControl playerActionControl;
+    LocalPlayerActionControl localPlayerActionControl;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -37,7 +38,7 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
         player = (Node) actualScene.getChild("player");
         rightHandNode = (Node) player.getChild("hand.R_attachnode");
         swordNode = (Node) rightHandNode.getChild("sword01");
-        playerActionControl = player.getControl(PlayerActionControl.class);
+        localPlayerActionControl = player.getControl(LocalPlayerActionControl.class);
     }
     
     @Override
@@ -55,56 +56,56 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (playerActionControl.getAnimationStateEnum() != AnimationStateEnum.BATTLE) {
+        if (localPlayerActionControl.getGeneralStateEnum() != GeneralStateEnum.BATTLE) {
             switch (name) {
                 case PlayerActionMapping.MAP_MOVEFOWARD :
-                    playerActionControl.setMoveFoward(isPressed);
+                    localPlayerActionControl.setMoveFoward(isPressed);
                     break;
                 case PlayerActionMapping.MAP_MOVEBACKWARD :
-                    playerActionControl.setMoveBackward(isPressed);
+                    localPlayerActionControl.setMoveBackward(isPressed);
                     break;
                 case PlayerActionMapping.MAP_STOP :
-                    playerActionControl.setStopped(isPressed);
+                    localPlayerActionControl.setStopped(isPressed);
                     break;
                 case PlayerActionMapping.MAP_TURNRIGHT :
-                    playerActionControl.setRotateRight(isPressed);
+                    localPlayerActionControl.setRotateRight(isPressed);
                     break;
                 case PlayerActionMapping.MAP_TURNLEFT :
-                    playerActionControl.setRotateLeft(isPressed);
+                    localPlayerActionControl.setRotateLeft(isPressed);
                     break;
                 case PlayerActionMapping.MAP_TOGGLEWALKSTATE :
                     if(!isPressed) {
-                        playerActionControl.toggleRunning();
+                        localPlayerActionControl.toggleRunning();
                     }
                     break;
                 case PlayerActionMapping.MAP_INCREASEHEALTH:
                     if (isPressed) {
-                        playerActionControl.setIncreaseHealth(true);
+                        localPlayerActionControl.setIncreaseHealth(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_DECREASEHEALTH:
                     if (isPressed) {
-                        playerActionControl.setDecreaseHealth(true);
+                        localPlayerActionControl.setDecreaseHealth(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_INCREASEDAMAGE:
                     if (isPressed) {
-                        playerActionControl.setIncreaseDamage(true);
+                        localPlayerActionControl.setIncreaseDamage(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_DECREASEDAMAGE:
                     if (isPressed) {
-                        playerActionControl.setDecreaseDamage(true);
+                        localPlayerActionControl.setDecreaseDamage(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_INCREASEDEFENSE:
                     if (isPressed) {
-                        playerActionControl.setIncreaseDefense(true);
+                        localPlayerActionControl.setIncreaseDefense(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_DECREASEDEFENSE:
                     if (isPressed) {
-                        playerActionControl.setDecreaseDefense(true);
+                        localPlayerActionControl.setDecreaseDefense(true);
                     }
                     break;
                 case PlayerActionMapping.MAP_USESWORD :
@@ -128,13 +129,13 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (playerActionControl.getAnimationStateEnum() != AnimationStateEnum.BATTLE) {
+        if (localPlayerActionControl.getGeneralStateEnum() != GeneralStateEnum.BATTLE) {
             switch (name) {
                 case PlayerActionMapping.MAP_TURNLEFT :
-                    playerActionControl.setRotateValue(value);
+                    localPlayerActionControl.setRotateValue(value);
                     break;
                 case PlayerActionMapping.MAP_TURNRIGHT :
-                    playerActionControl.setRotateValue(value);
+                    localPlayerActionControl.setRotateValue(value);
                     break;
             }
         }

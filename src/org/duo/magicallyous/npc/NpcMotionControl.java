@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.Random;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.player.PlayerActionControl;
+import org.duo.magicallyous.player.local.LocalPlayerActionControl;
+import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.ParticleBlowControl;
 
 /**
@@ -146,8 +148,8 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                     if (player != null
                             && playerMovementControl.getAnimationStateEnum()
                             != AnimationStateEnum.DIE
-                            && playerMovementControl.getAnimationStateEnum()
-                            != AnimationStateEnum.BATTLE
+                            && playerMovementControl.getGeneralStateEnum()
+                            != GeneralStateEnum.BATTLE
                             && npcState != NpcState.DEAD
                             && npcState != NpcState.ATTACK) {
                         Vector3f aim = player.getWorldTranslation();
@@ -162,9 +164,14 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                                 spatial.setLocalRotation(lookRotation);
                                 //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
                                 //player.setLocalRotation(lookRotation);
-                                playerMovementControl.setTarget(spatial);
-                                playerMovementControl.setStartAttack(true);
-                                playerMovementControl.setAnimationStateEnum(AnimationStateEnum.BATTLE);
+                                if (playerMovementControl instanceof LocalPlayerActionControl) {
+                                    ((LocalPlayerActionControl) 
+                                            playerMovementControl).setTarget(spatial);
+                                    ((LocalPlayerActionControl) 
+                                            playerMovementControl).setStartAttack(true);
+                                    ((LocalPlayerActionControl) 
+                                            playerMovementControl).setGeneralStateEnum(GeneralStateEnum.BATTLE);
+                                }
                                 battleStartTime = timeCounter;
                                 System.out.println("NPC start attacking player from distance: " + dist.length());
                             }
@@ -300,7 +307,10 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                         // player must die
                         npcRemoveBlowControls();
                         playerMovementControl.removeShootControls();
-                        playerMovementControl.setTarget(null);
+                        if (playerMovementControl instanceof LocalPlayerActionControl) {
+                            ((LocalPlayerActionControl) 
+                                    playerMovementControl).setTarget(null);
+                        }
                         playerMovementControl.setAnimationStateEnum(AnimationStateEnum.DIE);
                         System.out.println("NPC killed target!");
                         npcState = previousNpcState;
@@ -321,7 +331,10 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     }
 
     protected void npcDie() {
-        playerMovementControl.setTarget(null);
+        if (playerMovementControl instanceof LocalPlayerActionControl) {
+                            ((LocalPlayerActionControl) 
+                                    playerMovementControl).setTarget(null);
+        }
         playerMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
         deathTimeCounter = timeCounter;
         npcState = NpcState.DEAD;

@@ -8,6 +8,6 @@ package org.duo.magicallyous.utils;
  *
  * @author duo
  */
-public enum AnimationStateEnum {
-    WALK, RUN, IDLE, DIE, PRECAST, CAST;
+public enum GeneralStateEnum {
+    NORMAL, BATTLE, DEAD;
 }
