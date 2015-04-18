@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
+import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 import org.duo.magicallyous.net.util.ServerListener;
@@ -37,9 +38,11 @@ public class MainServer extends SimpleApplication {
             Serializer.registerClass(AccountRegisterMessage.class);
             Serializer.registerClass(MagicallyousAccount.class);
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
+            Serializer.registerClass(LoginRequestMessage.class);
             // register listeners
             magicallyousServer.addMessageListener(new ServerListener(), GameMessage.class);
             magicallyousServer.addMessageListener(new ServerListener(), AccountRegisterMessage.class);
+            magicallyousServer.addMessageListener(new ServerListener(), LoginRequestMessage.class);
             System.out.println("MagicallyousServer started on port " + port);
         } catch (IOException ex) {
             Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);

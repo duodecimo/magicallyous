@@ -17,20 +17,21 @@ import java.util.List;
  * @author duo
  */
 public class DatabaseManager {
+
     private Connection connection;
     private Statement statement;
-    
+
     private void checkConnection() throws SQLException {
-        if(connection == null) {
+        if (connection == null) {
             connection = DriverManager.
-                            getConnection("jdbc:derby:database/magicallyousDB;create=true", 
-                                    "server", "magiservercallyous");
+                    getConnection("jdbc:derby:database/magicallyousDB;create=true",
+                    "server", "magiservercallyous");
         }
     }
 
     private void checkStatement() throws SQLException {
         checkConnection();
-        if(statement == null) {
+        if (statement == null) {
             statement = connection.createStatement();
         }
     }
@@ -68,7 +69,7 @@ public class DatabaseManager {
                     + "points INT, "
                     + "damage INT, "
                     + "defense INT, "
-                    + "account INT NOT NULL CONSTRAINT account_foreign_key " 
+                    + "account INT NOT NULL CONSTRAINT account_foreign_key "
                     + "REFERENCES account ON DELETE CASCADE ON UPDATE RESTRICT"
                     + ")";
             checkStatement();
@@ -79,19 +80,27 @@ public class DatabaseManager {
         }
     }
 
-    public MagicallyousAccount getAccount(String name, String password) {
+    public MagicallyousAccount getAccount(String email, String password) {
         MagicallyousAccount magicallyousAccount = null;
-            String cmd = "SELECT * FROM account "
-                + "WHERE name = " + name + ", "
-                    + "password = " + password;
+        checkTables();
+        String cmd = "SELECT * FROM account "
+                + "WHERE email = '" + email.trim() + "' AND "
+                + "password = '" + password.trim() + "'";
+        System.out.println("Researching account with command: " + cmd);
         try {
             ResultSet resultSet = statement.executeQuery(cmd);
-            while(resultSet.next()) {
+            System.out.println("Looking for account. Command: " + cmd);
+            int count = 0;
+            while (resultSet.next()) {
+                count++;
                 magicallyousAccount = new MagicallyousAccount();
                 magicallyousAccount.setId(resultSet.getInt("id"));
                 magicallyousAccount.setName(resultSet.getString("name"));
                 magicallyousAccount.setPassword(resultSet.getString("password"));
                 magicallyousAccount.setEmail(resultSet.getString("email"));
+            }
+            if (count == 0) {
+                System.out.println("No account found!");
             }
         } catch (SQLException sQLException) {
             magicallyousAccount = null;
@@ -135,8 +144,8 @@ public class DatabaseManager {
         String cmd = "INSERT INTO account values("
                 + "default, "
                 + "'" + magicallyousAccount.getName() + "'" + ", "
-                + "'" + magicallyousAccount.getPassword()+ "'" + ", "
-                + "'" + magicallyousAccount.getEmail()+ "'" + ")";
+                + "'" + magicallyousAccount.getPassword() + "'" + ", "
+                + "'" + magicallyousAccount.getEmail() + "'" + ")";
         try {
             statement.execute(cmd);
         } catch (SQLException ex) {
@@ -178,7 +187,7 @@ public class DatabaseManager {
                 + "password = "
                 + "'" + magicallyousAccount.getPassword() + "'" + ", "
                 + "email = "
-                + "'" + magicallyousAccount.getEmail()+ "' "
+                + "'" + magicallyousAccount.getEmail() + "' "
                 + "WHERE id = " + magicallyousAccount.getId();
         try {
             statement.execute(cmd);
@@ -205,10 +214,10 @@ public class DatabaseManager {
         String cmd = "INSERT INTO player values("
                 + "default, "
                 + "'" + magicallyousPlayer.getName() + "'" + ", "
-                + "'" + magicallyousPlayer.getPlayerAssetName()+ "'" + ", "
-                + " " + magicallyousPlayer.getLevel()+ " " + ", "
-                + " " + magicallyousPlayer.getPoints()+ " " + ", "
-                + " " + magicallyousPlayer.getDamage()+ " " + ", "
+                + "'" + magicallyousPlayer.getPlayerAssetName() + "'" + ", "
+                + " " + magicallyousPlayer.getLevel() + " " + ", "
+                + " " + magicallyousPlayer.getPoints() + " " + ", "
+                + " " + magicallyousPlayer.getDamage() + " " + ", "
                 + " " + magicallyousPlayer.getDefense() + " " + ")";
         try {
             statement.execute(cmd);
@@ -224,13 +233,13 @@ public class DatabaseManager {
                 + "SET name = "
                 + "'" + magicallyousPlayer.getName() + "'" + ", "
                 + "assetName = "
-                + "'" + magicallyousPlayer.getPlayerAssetName()+ "'" + ", "
+                + "'" + magicallyousPlayer.getPlayerAssetName() + "'" + ", "
                 + "level = "
-                + " " + magicallyousPlayer.getLevel()+ " " + ", "
+                + " " + magicallyousPlayer.getLevel() + " " + ", "
                 + "points = "
-                + " " + magicallyousPlayer.getPoints()+ " " + ", "
+                + " " + magicallyousPlayer.getPoints() + " " + ", "
                 + "damage = "
-                + " " + magicallyousPlayer.getDamage()+ " " + ", "
+                + " " + magicallyousPlayer.getDamage() + " " + ", "
                 + "defense = "
                 + " " + magicallyousPlayer.getDefense() + " " + ", "
                 + "WHERE id = " + magicallyousPlayer.getPlayerId();

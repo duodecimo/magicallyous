@@ -13,9 +13,19 @@ import com.jme3.network.serializing.Serializable;
  */
 @Serializable
 public class ServerServiceOutcomeMessage extends AbstractMessage {
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
     public static enum Service {ACCOUNT_REGISTER_OK, ACCOUNT_REGISTER_FAIL, 
+    LOGIN_ACCEPTED, LOGIN_FAILED,
     PLAYER_REGISTER_OK, PLAYER_REGISTER_FAIL};
     private Service service;
+    private String response;
 
     public ServerServiceOutcomeMessage() {
     }

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
+import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
@@ -85,23 +86,24 @@ public class Main extends SimpleApplication {
             Serializer.registerClass(AccountRegisterMessage.class);
             Serializer.registerClass(MagicallyousAccount.class);
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
+            Serializer.registerClass(LoginRequestMessage.class);
             // register listeners
             magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
             
             magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
             System.out.println("Application connected to server "
                     + serverIp + " port " + port);
-            RegisterAppState registerAppState = new RegisterAppState();
-            stateManager.attach(registerAppState);
+            //RegisterAppState registerAppState = new RegisterAppState();
+            //stateManager.attach(registerAppState);
+            LoginAppState loginAppState = new LoginAppState();
+            stateManager.attach(loginAppState);
+            //underworldAppState = new UnderworldAppState();
+            //stateManager.attach(underworldAppState);
+            //magicallyousAppState = new MagicallyousAppState();
+            //stateManager.attach(magicallyousAppState);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //LoginAppState loginAppState = new LoginAppState();
-        //stateManager.attach(loginAppState);
-        //underworldAppState = new UnderworldAppState();
-        //stateManager.attach(underworldAppState);
-        //magicallyousAppState = new MagicallyousAppState();
-        //stateManager.attach(magicallyousAppState);
     }
 
     public String getActualSceneName() {

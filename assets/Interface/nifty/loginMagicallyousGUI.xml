@@ -4,63 +4,64 @@
     <!-- start screen -->
     <!-- +++++++++++++++++++++++++++++++++++++++ -->
 
-    <useStyles filename="nifty-default-styles.xml" />
-    <useControls filename="nifty-default-controls.xml" />
+    <useStyles filename="nifty-default-styles.xml"/>
+    <!--useStyles filename="nifty-style-black.xml" /-->
+    <useControls filename="nifty-default-controls.xml"/>
 
 
-    <screen id="start" controller="org.duo.magicallyous.Main">
+    <screen id="start" controller="org.duo.magicallyous.LoginAppState">
         <layer id="background" backgroundcolor="#0000f" childLayout="center">
             <image  filename="Interface/nifty/start-background.png"/>
         </layer>
-        <layer id="foreground" childLayout="vertical" controller="org.duo.magicallyous.LoginAppState">
+        <layer id="foreground" childLayout="vertical">
             <panel id="topPanel" height="10%" width="100%" align="center" valign="center" 
-                    childLayout="center" visibleToMouse="true">
-                <interact onClick="quit()"/>
-                <effect>
-                    <onStartScreen name="move" mode="in" direction="top" length="250" 
-                                   startDelay="0" inherit="true"/>
-                    <onEndScreen name="move" mode="out" direction="bottom" length="250" 
-                                 startDelay="0" inherit="true"/>
-                    <onHover name="pulsate" scaleFactor="0.008" startColor="#f600" 
-                             endColor="#fffff" post="true"/>
-                </effect>
-                <text id="text" font="Interface/Fonts/Liberation25Serif.fnt" color="#ffffff" 
+                    childLayout="vertical">
+                <text id="text00" font="Interface/Fonts/Liberation25Serif.fnt" color="#ffffff" 
+                      text="" 
+                      align="center" valign="center" />
+                <text id="text01" font="Interface/Fonts/Liberation25Serif.fnt" color="#ffffff" 
                       text="Magicallyous - The game!" 
+                      align="center" valign="center" />
+                <text id="text02" font="Interface/Fonts/LiberationSerif18Bold.fnt" color="#ffffff" 
+                      text="Login Service" 
                       align="center" valign="center" />
             </panel>
             <panel id="middlePanel" height="60%" width="100%" align="center" valign="center" 
                     childLayout="horizontal" visibleToMouse="true">
                 <panel id="middleLeftPanel" height="60%" width="30%" align="left" valign="center"
                     childLayout="vertical">
-                    <text id="lbEmail" text="Email" font="Interface/Fonts/LiberationSans.fnt" 
+                    <text id="lbEmail" text="Email" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                            color="#ffffff" align="right" valign="center"/>
-                    <text id="lbPassword" text="Password" font="Interface/Fonts/LiberationSans.fnt" 
+                    <text id="lbPassword" text="Password" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                            color="#ffffff" align="right" valign="center"/>
                 </panel>
                 <panel id="middleCenterPanel" height="60%" width="2%"/>
                 <panel id="middleRightPanel" height="60%" width="50%" align="right" valign="center"
                     childLayout="vertical">
-                    <control id="tfEmail" name="textfield" width="50%" text="teste" 
-                             font="Interface/Fonts/LiberationSans.fnt" 
+                    <control id="tfEmail" name="textfield" width="50%" text="" 
+                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff" align="left" valign="center"/>
-                    <control id="tfPassword" name="textfield" width="50%" text="teste2" 
-                             font="Interface/Fonts/LiberationSans.fnt" 
+                    <control id="tfPassword" name="textfield" passwordChar="*" 
+                             width="50%" text="" 
+                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff" align="left" valign="center"/>
+                    <control id="lbCheck" name ="label" text="Checking!"
+                            color="#ff0000" width="70%" align="left" valign="center"/>
                 </panel>
             </panel>
             <panel id="bottomPanel" height="20%" width="100%" align="center" valign="center" 
                     childLayout="vertical" visibleToMouse="true">
                     <control id="loginButton" name="button" label="Login" 
                              align="center" valign="top"
-                             font="Interface/Fonts/LiberationSans.fnt" 
+                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
                         <interact onRelease="login()"/>
                     </control>
-                    <control id="exitButton" name="button" label="Exit" 
+                    <control id="ReturnButton" name="button" label="Return" 
                              align="center" valign="bottom"
-                             font="Interface/Fonts/LiberationSans.fnt" 
+                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
-                        <interact onRelease="exit()"/>
+                        <interact onRelease="back()"/>
                     </control>
             </panel>
         </layer>
