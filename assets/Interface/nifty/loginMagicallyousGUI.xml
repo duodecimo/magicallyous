@@ -57,11 +57,11 @@
                              color="#ffffff">
                         <interact onRelease="login()"/>
                     </control>
-                    <control id="ReturnButton" name="button" label="Return" 
+                    <control id="RegisterButton" name="button" label="Register new user" 
                              align="center" valign="bottom"
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
-                        <interact onRelease="back()"/>
+                        <interact onRelease="register()"/>
                     </control>
             </panel>
         </layer>

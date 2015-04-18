@@ -4,7 +4,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
-import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import java.io.IOException;
@@ -34,33 +33,6 @@ public class Main extends SimpleApplication {
 
     public Main() {
         actualSceneName = magicallyousSceneName;
-    }
-
-    public void switchAppState() {
-        Node node;
-        if (actualSceneName.equals(underworldSceneName)) {
-            actualSceneName = magicallyousSceneName;
-            stateManager.detach(underworldAppState);
-            node = (Node) getRootNode().getChild(underworldSceneName);
-            if (node != null) {
-                getRootNode().detachChild(node);
-            }
-            underworldAppState.cleanup();
-            getInputManager().clearMappings();
-            magicallyousAppState = new MagicallyousAppState();
-            stateManager.attach(magicallyousAppState);
-        } else {
-            actualSceneName = underworldSceneName;
-            stateManager.detach(magicallyousAppState);
-            node = (Node) getRootNode().getChild(magicallyousSceneName);
-            if (node != null) {
-                getRootNode().detachChild(node);
-            }
-            magicallyousAppState.cleanup();
-            getInputManager().clearMappings();
-            underworldAppState = new UnderworldAppState();
-            stateManager.attach(underworldAppState);
-        }
     }
 
     public static void main(String[] args) {
@@ -93,10 +65,13 @@ public class Main extends SimpleApplication {
             magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
             System.out.println("Application connected to server "
                     + serverIp + " port " + port);
+
+            NiftyAppState niftyAppState = new NiftyAppState();
+            stateManager.attach(niftyAppState);
+            //LoginAppState loginAppState = new LoginAppState();
             //RegisterAppState registerAppState = new RegisterAppState();
             //stateManager.attach(registerAppState);
-            LoginAppState loginAppState = new LoginAppState();
-            stateManager.attach(loginAppState);
+            //stateManager.attach(loginAppState);
             //underworldAppState = new UnderworldAppState();
             //stateManager.attach(underworldAppState);
             //magicallyousAppState = new MagicallyousAppState();
@@ -129,4 +104,5 @@ public class Main extends SimpleApplication {
     public int getPort() {
         return port;
     }
+
 }

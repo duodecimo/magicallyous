@@ -116,7 +116,7 @@ public class LocalPlayerActionControl extends PlayerActionControl {
                 deathTime = 0.0d;
             } else if (deathTime > 0 && getTimeCounter() - deathTime > 5.0d) {
                 // go to underworld
-                getApp().switchAppState();
+                //getApp().switchAppState(new MagicallyousAppState());
             }
         } else if (getGeneralStateEnum() == GeneralStateEnum.BATTLE) {
             if (startAttack) {

@@ -10,10 +10,10 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.network.Client;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Label;
 import de.lessvoid.nifty.controls.TextField;
+import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
@@ -31,24 +31,12 @@ public class LoginAppState extends AbstractAppState implements ScreenController,
     TextField tfEmail;
     TextField tfPassword;
     Label lbCheck;
-    NiftyJmeDisplay niftyJmeDisplay;
-    Nifty nifty;
+    Element loginPopupElement;
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (Main) app;
-        this.app.getFlyByCamera().setEnabled(false);
-
-        niftyJmeDisplay = 
-                new NiftyJmeDisplay(this.app.getAssetManager(), 
-                this.app.getInputManager(), 
-                this.app.getAudioRenderer(), this.app.getViewPort());
-        nifty = niftyJmeDisplay.getNifty();
-        nifty.fromXml("Interface/nifty/loginMagicallyousGUI.xml", "start", this);
-        //nifty.setDebugOptionPanelColors(true);
-        this.app.getGuiViewPort().addProcessor(niftyJmeDisplay);
-        this.app.getInputManager().setCursorVisible(true);
         this.app.getMagicallyousClient().addMessageListener(this, ServerServiceOutcomeMessage.class);
     }
 
@@ -78,8 +66,9 @@ public class LoginAppState extends AbstractAppState implements ScreenController,
         }
     }
 
-    public void back() {
-        System.out.println("Back pressed!");
+    public void register() {
+        System.out.println("Register new user button pressed!");
+        //app.switchAppState(new RegisterAppState());
     }
 
     @Override

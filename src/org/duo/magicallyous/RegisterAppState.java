@@ -42,15 +42,6 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
         this.app = (Main) app;
         this.app.getFlyByCamera().setEnabled(false);
 
-        niftyJmeDisplay = 
-                new NiftyJmeDisplay(this.app.getAssetManager(), 
-                this.app.getInputManager(), 
-                this.app.getAudioRenderer(), this.app.getViewPort());
-        nifty = niftyJmeDisplay.getNifty();
-        nifty.fromXml("Interface/nifty/registerMagicallyousGUI.xml", "start", this);
-        //nifty.setDebugOptionPanelColors(true);
-        this.app.getGuiViewPort().addProcessor(niftyJmeDisplay);
-        this.app.getInputManager().setCursorVisible(true);
         this.app.getMagicallyousClient().addMessageListener(this, ServerServiceOutcomeMessage.class);
     }
 
@@ -63,6 +54,11 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
     @Override
     public void cleanup() {
         super.cleanup();
+        nifty.getEventService().clearAllSubscribers();
+        this.app.getGuiViewPort().removeProcessor(niftyJmeDisplay);
+        niftyJmeDisplay.cleanup();
+        nifty.executeEndOfFrameElementActions();
+        //nifty.exit();
     }
 
     public synchronized void register() {
@@ -86,7 +82,8 @@ public class RegisterAppState extends AbstractAppState implements ScreenControll
     }
 
     public void back() {
-        System.out.println("Back pressed!");
+        System.out.println("Return to login pressed!");
+        //app.switchAppState(new LoginAppState());
     }
 
     @Override

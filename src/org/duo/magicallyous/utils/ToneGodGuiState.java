@@ -183,7 +183,7 @@ public class ToneGodGuiState extends AbstractAppState {
         Button revive = new Button(screen, new Vector2f(screen.getWidth()* 0.50f, screen.getHeight()* 0.20f)) {
             @Override
             public void onButtonMouseLeftDown(MouseButtonEvent mbe, boolean bln) {
-                ((Main) app).switchAppState();
+                //((Main) app).switchAppState(new MagicallyousAppState());
             }
             
             @Override

@@ -64,7 +64,7 @@
                              color="#ffffff">
                         <interact onRelease="register()"/>
                     </control>
-                    <control id="ReturnButton" name="button" label="Return" 
+                    <control id="ReturnButton" name="button" label="Return to login" 
                              align="center" valign="bottom"
                              font="Interface/Fonts/LiberationSerif18Bold.fnt" 
                              color="#ffffff">
