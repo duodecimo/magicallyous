@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Sat Apr 18 12:02:17 BRT 2015:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.3.0 - (1405108): instance a816c00e-014c-cd0d-352e-000006866440 
+Sun Apr 19 16:20:39 BRT 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.3.0 - (1405108): instance a816c00e-014c-d320-1d4d-0000061dd808 
 on database directory /home/duo/jmonkeyProjects/freeGames/magicallyous/database/magicallyousDB  with class loader sun.misc.Launcher$AppClassLoader@713c817 
 Loaded from file:/home/duo/Development/jmonkeyplatform/jdk/db/lib/derby.jar
 java.vendor=Oracle Corporation

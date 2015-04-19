@@ -59,6 +59,7 @@ public class Main extends SimpleApplication {
             Serializer.registerClass(MagicallyousAccount.class);
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
+
             // register listeners
             magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
             
