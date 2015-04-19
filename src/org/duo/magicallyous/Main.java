@@ -7,6 +7,7 @@ import com.jme3.network.serializing.Serializer;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
@@ -32,6 +33,31 @@ public class Main extends SimpleApplication {
     private final String underworldSceneName = "underworldScene";
 
     public Main() {
+        Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().
+                    getResourceAsStream("resources/net/client/network.properties"));
+            magicallyousClient = Network.connectToServer(
+                    properties.getProperty("server.name", "Magicallyous Server"), 
+                    Integer.parseInt(properties.getProperty("server.version", "1")),
+                    properties.getProperty("server.address", "localhost"),
+                    Integer.parseInt(properties.getProperty("server.port", "5465")));
+            magicallyousClient.start();
+            // register serializable messages classes
+            Serializer.registerClass(GameMessage.class);
+            Serializer.registerClass(AccountRegisterMessage.class);
+            Serializer.registerClass(MagicallyousAccount.class);
+            Serializer.registerClass(ServerServiceOutcomeMessage.class);
+            Serializer.registerClass(LoginRequestMessage.class);
+            // register listeners
+            magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
+            
+            magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
+            System.out.println("Application connected to server "
+                    + serverIp + " port " + port);
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        }
         actualSceneName = magicallyousSceneName;
     }
 
@@ -47,39 +73,13 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        port = 5465;
-        serverIp = "localhost";
         //setDisplayStatView(false);
-        try {
-            magicallyousClient = Network.connectToServer(serverIp, port);
-            magicallyousClient.start();
-            // register serializable messages classes
-            Serializer.registerClass(GameMessage.class);
-            Serializer.registerClass(AccountRegisterMessage.class);
-            Serializer.registerClass(MagicallyousAccount.class);
-            Serializer.registerClass(ServerServiceOutcomeMessage.class);
-            Serializer.registerClass(LoginRequestMessage.class);
-
-            // register listeners
-            magicallyousClient.addMessageListener(new ClientListener(), GameMessage.class);
-            
-            magicallyousClient.send(new GameMessage("New client (me) on Magicallyous!"));
-            System.out.println("Application connected to server "
-                    + serverIp + " port " + port);
-
             NiftyAppState niftyAppState = new NiftyAppState();
             stateManager.attach(niftyAppState);
-            //LoginAppState loginAppState = new LoginAppState();
-            //RegisterAppState registerAppState = new RegisterAppState();
-            //stateManager.attach(registerAppState);
-            //stateManager.attach(loginAppState);
             //underworldAppState = new UnderworldAppState();
             //stateManager.attach(underworldAppState);
             //magicallyousAppState = new MagicallyousAppState();
             //stateManager.attach(magicallyousAppState);
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public String getActualSceneName() {

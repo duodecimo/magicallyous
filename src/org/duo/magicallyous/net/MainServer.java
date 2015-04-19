@@ -10,6 +10,7 @@ import com.jme3.network.Server;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.system.JmeContext;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.duo.magicallyous.net.message.GameMessage;
@@ -27,9 +28,23 @@ public class MainServer extends SimpleApplication {
     private Server magicallyousServer;
     private int port;
 
+    public MainServer() {
+        Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().
+                    getResourceAsStream("resources/net/server/serverNetwork.properties"));
+            magicallyousServer = Network.createServer(
+                    properties.getProperty("server.name", "Magicallyous Server"), 
+                    Integer.parseInt(properties.getProperty("server.version", "1")),
+                    Integer.parseInt(properties.getProperty("server.port", "5465")),
+                    Integer.parseInt(properties.getProperty("server.port", "5465")));
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     @Override
     public void simpleInitApp() {
-        port = 5465;
         try {
             magicallyousServer = Network.createServer(port);
             magicallyousServer.start();
