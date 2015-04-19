@@ -11,8 +11,4 @@ import static org.duo.magicallyous.NiftyController.app;
  * @author duo
  */
 public class MagicallyousScreenController extends NiftyController {
-    public void quit() {
-        System.out.println("Action quit !!!!");
-        app.stop();
-    }
 }

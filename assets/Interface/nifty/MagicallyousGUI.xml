@@ -14,5 +14,8 @@
         <layer id="optionsLayer" childLayout="vertical" backgroundColor="#0000">
             <control name="options" id="options" align="center" visible="false"/>
         </layer>
+        <layer id="loginLayer" childLayout="vertical" backgroundColor="#0000">
+            <control name="login" id="login" align="center" visible="true"/>
+        </layer>
     </screen>
 </nifty>

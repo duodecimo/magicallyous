@@ -12,7 +12,6 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.renderer.ViewPort;
 import de.lessvoid.nifty.Nifty;
 
 /**

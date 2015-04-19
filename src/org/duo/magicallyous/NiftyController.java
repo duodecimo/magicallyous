@@ -31,13 +31,11 @@ public abstract  class NiftyController implements ScreenController {
         app = regapp;
     }
 
-    /*
-    static void quit() {
+    public void quit() {
         System.out.println("Action quit !!!!");
         app.stop();
     }
-    */
-    
+
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.nifty = nifty;

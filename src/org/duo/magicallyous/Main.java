@@ -49,7 +49,7 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
         port = 5465;
         serverIp = "localhost";
-        setDisplayStatView(false);
+        //setDisplayStatView(false);
         try {
             magicallyousClient = Network.connectToServer(serverIp, port);
             magicallyousClient.start();
