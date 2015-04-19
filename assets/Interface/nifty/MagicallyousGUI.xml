@@ -11,11 +11,10 @@
     <screen id="start" controller="org.duo.magicallyous.MagicallyousScreenController">
         <layer id="layer0" childLayout="absolute" backgroundColor="#000f">
         </layer>
-        <layer id="optionsLayer" childLayout="vertical" backgroundColor="#0000">
-            <control name="options" id="options" align="center" visible="false"/>
-        </layer>
-        <layer id="loginLayer" childLayout="vertical" backgroundColor="#0000">
-            <control name="login" id="login" align="center" visible="true"/>
+        <layer id="optionsLayer" childLayout="horizontal" backgroundColor="#0000">
+            <control name="options" id="options" align="left" visible="false"/>
+            <control name="login" id="login" align="right" visible="false"/>
+            <control name="register" id="register" align="right" visible="false"/>
         </layer>
     </screen>
 </nifty>

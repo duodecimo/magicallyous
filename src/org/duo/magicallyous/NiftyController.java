@@ -16,15 +16,41 @@ public abstract  class NiftyController implements ScreenController {
     Nifty nifty;
     Screen screen;
     boolean magicallyousMenuVisible;
+    boolean magicallyousLoginDialogVisible;
+    boolean magicallyousRegisterDialogVisible;
     static Main app;
 
-    public void toggleOptionsMenu() {
-        if (magicallyousMenuVisible) {
+    public final void toggleOptionsMenu() {
+        if (!magicallyousMenuVisible) {
             nifty.getCurrentScreen().findElementByName("options").show();
         } else {
             nifty.getCurrentScreen().findElementByName("options").hide();
         }
         magicallyousMenuVisible = !magicallyousMenuVisible;
+    }
+
+    public final void toggleLoginDialog() {
+        if (!magicallyousLoginDialogVisible) {
+            nifty.getCurrentScreen().findElementByName("login").show();
+        } else {
+            nifty.getCurrentScreen().findElementByName("login").hide();
+        }
+        magicallyousLoginDialogVisible = !magicallyousLoginDialogVisible;
+    }
+
+    public final void toggleRegisterDialog() {
+        if (!magicallyousRegisterDialogVisible) {
+            nifty.getCurrentScreen().findElementByName("register").show();
+            if(magicallyousLoginDialogVisible) {
+                toggleLoginDialog();
+            }
+        } else {
+            nifty.getCurrentScreen().findElementByName("register").hide();
+            if(!magicallyousLoginDialogVisible) {
+                toggleLoginDialog();
+            }
+        }
+        magicallyousRegisterDialogVisible = !magicallyousRegisterDialogVisible;
     }
 
     static void registerApp (Main regapp) {
@@ -34,6 +60,7 @@ public abstract  class NiftyController implements ScreenController {
     public void quit() {
         System.out.println("Action quit !!!!");
         app.stop();
+        System.exit(0);
     }
 
     @Override

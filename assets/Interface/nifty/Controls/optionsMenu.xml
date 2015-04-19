@@ -1,62 +1,133 @@
 <nifty-controls>
     <controlDefinition name="options">
-        <panel id="optionsPanel" childLayout="vertical" width="30%" 
-               height="60%" align="left" valign="center" 
+        <panel id="optionsPanel" childLayout="vertical" width="40%" 
+               height="30%" align="center" valign="top" 
                backgroundColor="#333f">
-            <panel childLayout="horizontal" width="30%" height="30px" 
+            <panel childLayout="horizontal" width="100%" height="30px" 
                    align="center">
-                <control name="label" id="title" align="center" 
-                         text="Options" width="*"/>
-\               <control name="button" id="closeButton" align="right" 
+                <text id="txOptions" text="OPTIONS" font="Interface/Fonts/Liberation25Serif.fnt" 
+                    color="#ffffff" align="center" valign="center" width = "*"/>
+                <control name="button" id="closeButton" align="right" 
                          label="x" height="30px" width="30px" >
                     <interact onClick="toggleOptionsMenu()"/>
                 </control>
             </panel>
+            <panel height="10px"/>
+            <control name="button" id="loginDialogButton" align="center" 
+                    label="Login" height="30px" width="150px" >
+                 <interact onClick="toggleLoginDialog()"/>
+            </control>
             <control name="button" id="quitButton" align="center" 
                      label="Quit" height="30px" width="150px">
                 <interact onClick="quit()"/>
             </control>
-            <panel height="2px"/>
         </panel>
     </controlDefinition>
     <controlDefinition name="login">
-        <panel id="loginTopPanel" height="60%" width="30%" align="center" valign="center" 
-                   childLayout="horizontal">
-            <panel id="loginTopLeftPanel" height="60%" width="15%" align="left" valign="center"
-                       childLayout="vertical">
-                <text id="lbEmail" text="Email" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                          color="#ffffff" align="right" valign="center"/>
-                <text id="lbPassword" text="Password" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                          color="#ffffff" align="right" valign="center"/>
+        <panel id="loginPanel" height="30%" width="30%" align="center" 
+            valign="top" childLayout="vertical" backgroundColor="#333f">
+            <text id="txLogin" text="LOGIN" font="Interface/Fonts/Liberation25Serif.fnt" 
+               color="#ffffff" align="center" valign="center"/>
+            <panel height="10px"/>
+            <panel id="loginTopPanel" height="30%" width="100%" align="center" valign="center" 
+               childLayout="horizontal">
+                <panel id="loginTopLeftPanel" height="100%" width="30%" align="left" valign="center"
+                   childLayout="vertical">
+                    <text id="lbEmail" text="Email" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                    <text id="lbPassword" text="Password" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                </panel>
+                <panel width="10px"/>
+                <panel id="loginTopRightPanel" height="100%" width="50%" align="right" valign="center"
+                   childLayout="vertical">
+                    <control id="tfEmail" name="textfield" text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                    <control id="tfPassword" name="textfield" passwordChar="*" 
+                         text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                </panel>
             </panel>
-            <panel id="loginTopCenterPanel" height="60%" width="2%"/>
-            <panel id="loginTopRightPanel" height="60%" width="15%" align="right" valign="center"
-                       childLayout="vertical">
-                <control id="tfEmail" name="textfield" width="15%" text="" 
-                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                             color="#ffffff" align="left" valign="center"/>
-                <control id="tfPassword" name="textfield" passwordChar="*" 
-                             width="15%" text="" 
-                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                             color="#ffffff" align="left" valign="center"/>
-                <control id="lbCheck" name ="label" text="Checking!"
-                             color="#ff0000" width="15%" align="left" valign="center"/>
+            <panel id="loginBottomPanel" height="30%" width="100%" align="center" valign="center" 
+               childLayout="vertical">
+                <control id="lbCheck" name ="label" text="Register if you do not have an account."
+                     color="#ff0000" align="center" valign="center"/>
+                <panel height="10px"/>
+                <control id="loginButton" name="button" label="Login" 
+                     align="center" valign="center"
+                     font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                     color="#ffffff">
+                    <interact onRelease="login()"/>
+                </control>
+                <panel height="10px"/>
+                <control id="RegisterButton" name="button" label="Register" 
+                     align="center" valign="center"
+                     font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                     color="#ffffff">
+                    <interact onRelease="toggleRegisterDialog()"/>
+                </control>
             </panel>
         </panel>
-        <panel id="loginBottomPanel" height="20%" width="30%" align="center" valign="center" 
+    </controlDefinition>
+    <controlDefinition name="register">
+        <panel id="RegisterPanel" height="30%" width="30%" align="center" 
+            valign="top" childLayout="vertical" backgroundColor="#333f">
+            <text id="txRegister" text="REGISTER NEW USER" font="Interface/Fonts/Liberation25Serif.fnt" 
+               color="#ffffff" align="center" valign="center"/>
+            <panel height="10px"/>
+            <panel id="registerTopPanel" height="40%" width="100%" align="center" valign="center" 
+               childLayout="horizontal">
+                <panel id="registerTopLeftPanel" height="100%" width="30%" align="left" valign="center"
                    childLayout="vertical">
-            <control id="loginButton" name="button" label="Login" 
-                             align="center" valign="top"
-                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                             color="#ffffff">
-                <interact onRelease="login()"/>
-            </control>
-            <control id="RegisterButton" name="button" label="Register new user" 
-                             align="center" valign="bottom"
-                             font="Interface/Fonts/LiberationSerif18Bold.fnt" 
-                             color="#ffffff">
-                <interact onRelease="register()"/>
-            </control>
+                    <text id="lbRegName" text="Name" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                    <text id="lbRegEmail" text="Email" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                    <text id="lbRegPassword" text="Password" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                    <text id="lbRegPassword2" text="Repeat pw" font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                      color="#ffffff" align="right" valign="center"/>
+                </panel>
+                <panel width="10px"/>
+                <panel id="registerTopRightPanel" height="100%" width="50%" align="right" valign="center"
+                   childLayout="vertical">
+                    <control id="tfRegName" name="textfield" text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                    <control id="tfRegEmail" name="textfield" text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                    <control id="tfRegPassword" name="textfield" passwordChar="*" 
+                         text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                    <control id="tfRegPassword2" name="textfield" passwordChar="*" 
+                         text="" 
+                         font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                         color="#ffffff" align="left" valign="center"/>
+                </panel>
+            </panel>
+            <panel id="registerBottomPanel" height="20%" width="100%" align="center" valign="center" 
+               childLayout="vertical">
+                <control id="lbRegCheck" name ="label" text=""
+                     color="#ff0000" align="center" valign="center"/>
+                <panel height="10px"/>
+                <control id="sendButton" name="button" label="Send" 
+                     align="center" valign="center"
+                     font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                     color="#ffffff">
+                    <interact onRelease="register()"/>
+                </control>
+                <panel height="10px"/>
+                <control id="BackButton" name="button" label="Back" 
+                     align="center" valign="center"
+                     font="Interface/Fonts/LiberationSerif18Bold.fnt" 
+                     color="#ffffff">
+                    <interact onRelease="toggleRegisterDialog()"/>
+                </control>
+            </panel>
         </panel>
     </controlDefinition>
 </nifty-controls>
