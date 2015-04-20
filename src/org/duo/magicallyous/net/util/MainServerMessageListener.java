@@ -9,6 +9,7 @@ import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import java.util.List;
+import org.duo.magicallyous.net.MainServer;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
@@ -17,8 +18,13 @@ import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
  *
  * @author aluno
  */
-public class ServerListener implements MessageListener<HostedConnection> {
+public class MainServerMessageListener implements MessageListener<HostedConnection> {
     DatabaseManager databaseManager;
+    MainServer mainServer;
+
+    public MainServerMessageListener(MainServer mainServer) {
+        this.mainServer = mainServer;
+    }
 
     @Override
     public void messageReceived(HostedConnection source, Message message) {

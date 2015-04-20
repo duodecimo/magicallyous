@@ -13,7 +13,7 @@ import com.jme3.network.MessageListener;
  *
  * @author aluno
  */
-public class ClientListener implements MessageListener<Client> {
+public class ClientMessageListener implements MessageListener<Client> {
 
     @Override
     public void messageReceived(Client source, Message message) {

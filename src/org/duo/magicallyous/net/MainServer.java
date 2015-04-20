@@ -5,6 +5,8 @@
 package org.duo.magicallyous.net;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.network.ConnectionListener;
+import com.jme3.network.HostedConnection;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import com.jme3.network.serializing.Serializer;
@@ -18,7 +20,7 @@ import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
-import org.duo.magicallyous.net.util.ServerListener;
+import org.duo.magicallyous.net.util.MainServerMessageListener;
 
 /**
  *
@@ -38,6 +40,27 @@ public class MainServer extends SimpleApplication {
                     Integer.parseInt(properties.getProperty("server.version", "1")),
                     Integer.parseInt(properties.getProperty("server.port", "5465")),
                     Integer.parseInt(properties.getProperty("server.port", "5465")));
+            magicallyousServer.addConnectionListener(new ConnectionListener() {
+               @Override
+                public void connectionAdded(Server server, HostedConnection conn) {
+                }
+
+                @Override
+                public void connectionRemoved(Server server, HostedConnection conn) {
+                }
+            });
+            // register messages classes
+            Serializer.registerClass(GameMessage.class);
+            Serializer.registerClass(AccountRegisterMessage.class);
+            Serializer.registerClass(MagicallyousAccount.class);
+            Serializer.registerClass(ServerServiceOutcomeMessage.class);
+            Serializer.registerClass(LoginRequestMessage.class);
+            magicallyousServer.addMessageListener(new MainServerMessageListener(this), 
+                    GameMessage.class, AccountRegisterMessage.class, 
+                    MagicallyousAccount.class, ServerServiceOutcomeMessage.class,
+                    LoginRequestMessage.class);
+            magicallyousServer.start();
+            System.out.println("MagicallyousServer started on port " + port);
         } catch (IOException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
@@ -45,23 +68,6 @@ public class MainServer extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        try {
-            magicallyousServer = Network.createServer(port);
-            magicallyousServer.start();
-            // register messages classes
-            Serializer.registerClass(GameMessage.class);
-            Serializer.registerClass(AccountRegisterMessage.class);
-            Serializer.registerClass(MagicallyousAccount.class);
-            Serializer.registerClass(ServerServiceOutcomeMessage.class);
-            Serializer.registerClass(LoginRequestMessage.class);
-            // register listeners
-            magicallyousServer.addMessageListener(new ServerListener(), GameMessage.class);
-            magicallyousServer.addMessageListener(new ServerListener(), AccountRegisterMessage.class);
-            magicallyousServer.addMessageListener(new ServerListener(), LoginRequestMessage.class);
-            System.out.println("MagicallyousServer started on port " + port);
-        } catch (IOException ex) {
-            Logger.getLogger(MainServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     public static void main(String[] args) {
@@ -71,9 +77,5 @@ public class MainServer extends SimpleApplication {
 
     public Server getMagicallyousServer() {
         return magicallyousServer;
-    }
-
-    public int getPort() {
-        return port;
     }
 }
