@@ -4,7 +4,7 @@
  */
 package org.duo.magicallyous.net.util;
 
-import org.duo.magicallyous.net.message.GameMessage;
+import org.duo.magicallyous.net.message.WelcomeMessage;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
@@ -28,9 +28,9 @@ public class MainServerMessageListener implements MessageListener<HostedConnecti
 
     @Override
     public void messageReceived(HostedConnection source, Message message) {
-        if (message instanceof GameMessage) {
+        if (message instanceof WelcomeMessage) {
             // do something with the message
-            GameMessage gameMessage = (GameMessage) message;
+            WelcomeMessage gameMessage = (WelcomeMessage) message;
             System.out.println("Server received '"
                     + gameMessage.getGameMessage()
                     + "' from client #" + source.getId());

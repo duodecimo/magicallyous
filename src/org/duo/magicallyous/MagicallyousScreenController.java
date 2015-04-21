@@ -14,6 +14,7 @@ import de.lessvoid.nifty.screen.Screen;
 import static org.duo.magicallyous.NiftyController.app;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
+import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 
@@ -36,6 +37,7 @@ public class MagicallyousScreenController extends NiftyController implements Mes
 
     public final void initMessageListener() {
         if (!registeredMessageListener) {
+            app.getMagicallyousClient().addMessageListener(this, LoginResponseMessage.class);
             app.getMagicallyousClient().addMessageListener(this, ServerServiceOutcomeMessage.class);
             registeredMessageListener = true;
         }
@@ -103,20 +105,22 @@ public class MagicallyousScreenController extends NiftyController implements Mes
 
     @Override
     public void messageReceived(Client source, Message message) {
-        if(message instanceof ServerServiceOutcomeMessage) {
+        if(message instanceof LoginResponseMessage) {
+            LoginResponseMessage loginResponseMessage = (LoginResponseMessage) message;
+            if(loginResponseMessage.getMagicallyousUser().getId() > 0) {
+                // login accepted
+                app.setLocalPlayerId(loginResponseMessage.getMagicallyousUser().getId());
+                app.setMagicallyousClientConnectionId(loginResponseMessage.getClientId());
+                lbCheck.setText("Login successfull!");
+            } else {
+                app.setLocalPlayerId(new Integer(-1));
+                app.setMagicallyousClientConnectionId(new Integer(-1));
+                lbCheck.setText("Login failed! You mau try again ...");
+            }
+        } else if(message instanceof ServerServiceOutcomeMessage) {
             ServerServiceOutcomeMessage serverServiceOutcomeMessage = 
                     (ServerServiceOutcomeMessage) message;
             if(serverServiceOutcomeMessage.getService() == 
-                    ServerServiceOutcomeMessage.Service.LOGIN_ACCEPTED) {
-                lbCheck.setText(serverServiceOutcomeMessage.getResponse());
-                System.out.println("Login success received: !" + 
-                        serverServiceOutcomeMessage.getResponse());
-            } else if(serverServiceOutcomeMessage.getService() == 
-                    ServerServiceOutcomeMessage.Service.LOGIN_FAILED) {
-                lbCheck.setText(serverServiceOutcomeMessage.getResponse());
-                System.out.println("Login failed : " + 
-                        serverServiceOutcomeMessage.getResponse());
-            } else if(serverServiceOutcomeMessage.getService() == 
                     ServerServiceOutcomeMessage.Service.ACCOUNT_REGISTER_OK) {
                 lbRegCheck.setText("Account registering success!");
                 System.out.println("Account registering confirmation received!!!!!");

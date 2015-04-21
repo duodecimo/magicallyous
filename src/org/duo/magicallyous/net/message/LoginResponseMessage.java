@@ -13,17 +13,26 @@ import org.duo.magicallyous.net.util.MagicallyousAccount;
  * @author aluno
  */
 @Serializable
-public class LoginRequestMessage extends AbstractMessage {
+public class LoginResponseMessage extends AbstractMessage {
     private MagicallyousAccount magicallyousUser;
+    private Integer clientId;
 
-    public LoginRequestMessage() {
+    public LoginResponseMessage() {
     }
 
-    public LoginRequestMessage(MagicallyousAccount magicallyousUser) {
+    public LoginResponseMessage(MagicallyousAccount magicallyousUser) {
         this.magicallyousUser = magicallyousUser;
     }
 
     public MagicallyousAccount getMagicallyousUser() {
         return magicallyousUser;
+    }
+
+    public Integer getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
     }
 }

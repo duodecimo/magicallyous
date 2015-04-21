@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.duo.magicallyous.net.message.GameMessage;
+import org.duo.magicallyous.net.message.WelcomeMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
+import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientMessageListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
@@ -22,10 +23,9 @@ import org.duo.magicallyous.net.util.MagicallyousAccount;
  * @author duo
  */
 public class Main extends SimpleApplication {
-
     private Client magicallyousClient;
-    private String serverIp;
-    private int port;
+    private Integer magicallyousClientConnectionId;
+    private Integer localPlayerId;
     private MagicallyousAppState magicallyousAppState;
     private UnderworldAppState underworldAppState;
     private String actualSceneName = "";
@@ -41,17 +41,18 @@ public class Main extends SimpleApplication {
                     properties.getProperty("server.name", "Magicallyous Server"),
                     Integer.parseInt(properties.getProperty("server.version", "1")),
                     properties.getProperty("server.address", "localhost"),
-                    Integer.parseInt(properties.getProperty("server.port", "5465")));
+                    Integer.parseInt(properties.getProperty("server.port", "5465")), 
+                    Integer.parseInt(properties.getProperty("server.port", "5466")));
             // register serializable messages classes
-            Serializer.registerClass(GameMessage.class);
+            Serializer.registerClass(WelcomeMessage.class);
             Serializer.registerClass(AccountRegisterMessage.class);
             Serializer.registerClass(MagicallyousAccount.class);
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
+            Serializer.registerClass(LoginResponseMessage.class);
             // register listeners
-            magicallyousClient.addMessageListener(new ClientMessageListener(), GameMessage.class);
+            magicallyousClient.addMessageListener(new ClientMessageListener(), WelcomeMessage.class);
             magicallyousClient.start();
-            magicallyousClient.send(new GameMessage("New client on Magicallyous!"));
             System.out.println("Application connected to server " 
                     + "name: " + properties.getProperty("server.name") 
                     + " address: " + properties.getProperty("server.address") 
@@ -99,11 +100,19 @@ public class Main extends SimpleApplication {
         return magicallyousClient;
     }
 
-    public String getServerIp() {
-        return serverIp;
+    public Integer getMagicallyousClientConnectionId() {
+        return magicallyousClientConnectionId;
     }
 
-    public int getPort() {
-        return port;
+    public void setMagicallyousClientConnectionId(Integer magicallyousClientConnectionId) {
+        this.magicallyousClientConnectionId = magicallyousClientConnectionId;
+    }
+
+    public Integer getLocalPlayerId() {
+        return localPlayerId;
+    }
+
+    public void setLocalPlayerId(Integer localPlayerId) {
+        this.localPlayerId = localPlayerId;
     }
 }

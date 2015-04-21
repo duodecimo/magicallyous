@@ -15,9 +15,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.duo.magicallyous.net.message.GameMessage;
+import org.duo.magicallyous.net.message.WelcomeMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
+import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 import org.duo.magicallyous.net.util.MainServerMessageListener;
@@ -39,7 +40,7 @@ public class MainServer extends SimpleApplication {
                     properties.getProperty("server.name", "Magicallyous Server"), 
                     Integer.parseInt(properties.getProperty("server.version", "1")),
                     Integer.parseInt(properties.getProperty("server.port", "5465")),
-                    Integer.parseInt(properties.getProperty("server.port", "5465")));
+                    Integer.parseInt(properties.getProperty("server.port", "5466")));
             magicallyousServer.addConnectionListener(new ConnectionListener() {
                @Override
                 public void connectionAdded(Server server, HostedConnection conn) {
@@ -50,14 +51,15 @@ public class MainServer extends SimpleApplication {
                 }
             });
             // register messages classes
-            Serializer.registerClass(GameMessage.class);
+            Serializer.registerClass(WelcomeMessage.class);
             Serializer.registerClass(AccountRegisterMessage.class);
             Serializer.registerClass(MagicallyousAccount.class);
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
+            Serializer.registerClass(LoginResponseMessage.class);
             magicallyousServer.addMessageListener(new MainServerMessageListener(this), 
-                    GameMessage.class, AccountRegisterMessage.class, 
-                    MagicallyousAccount.class, ServerServiceOutcomeMessage.class,
+                    AccountRegisterMessage.class, 
+                    MagicallyousAccount.class, 
                     LoginRequestMessage.class);
             magicallyousServer.start();
             System.out.println("MagicallyousServer started on port " + port);

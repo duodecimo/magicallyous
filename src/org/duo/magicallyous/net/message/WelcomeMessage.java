@@ -12,13 +12,13 @@ import com.jme3.network.serializing.Serializable;
  * @author aluno
  */
 @Serializable
-public class GameMessage extends AbstractMessage {
+public class WelcomeMessage extends AbstractMessage {
     private String gameMessage;
 
-    public GameMessage() {
+    public WelcomeMessage() {
     }
 
-    public GameMessage(String gameMessage) {
+    public WelcomeMessage(String gameMessage) {
         this.gameMessage = gameMessage;
     }
 
