@@ -38,6 +38,7 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
         rightHandNode = (Node) player.getChild("hand.R_attachnode");
         swordNode = (Node) rightHandNode.getChild("sword01");
         localPlayerActionControl = player.getControl(PlayerActionControl.class);
+        localPlayerActionControl.setGeneralStateEnum(GeneralStateEnum.NORMAL);
     }
     
     @Override

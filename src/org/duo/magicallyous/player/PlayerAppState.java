@@ -56,7 +56,7 @@ public class PlayerAppState extends AbstractAppState {
         Node player = createPlayer(playerName, false);
         player.addControl(new HealthBarControl(this.app, player));
         // start player basic key controls
-        //stateManager.attach(new PlayerInput());
+        //stateManager.attach(new PlayerActionInput());
         if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
             PlayerActionInput playerActionInput =
                     stateManager.getState(PlayerActionInput.class);
