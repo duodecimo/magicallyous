@@ -84,8 +84,8 @@ public class Main extends SimpleApplication {
         //stateManager.attach(underworldAppState);
         magicallyousAppState = new MagicallyousAppState();
         stateManager.attach(magicallyousAppState);
-        stateManager.attach(new PlayerAppState());
-        stateManager.attach(new NpcAppState());
+        //stateManager.attach(new PlayerAppState());
+        //stateManager.attach(new NpcAppState());
     }
 
     public String getActualSceneName() {
