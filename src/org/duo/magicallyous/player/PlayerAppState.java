@@ -19,8 +19,6 @@ import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.List;
 import org.duo.magicallyous.Main;
-import org.duo.magicallyous.player.local.LocalPlayerActionControl;
-import org.duo.magicallyous.player.remote.RemotePlayerActionControl;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.ToneGodGuiState;
 import tonegod.gui.core.Screen;
@@ -106,14 +104,10 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("level", 1);
         player.setUserData("points", 0);
         PlayerActionControl playerActionControl;
-        if(isRemote) {
-            playerActionControl = new RemotePlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
-        } else {
-            playerActionControl = new LocalPlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
-            ((LocalPlayerActionControl) playerActionControl).setMoveSpeed(1.0f);
-            ((LocalPlayerActionControl) playerActionControl).setRunSpeed(9.0f);
-            ((LocalPlayerActionControl) playerActionControl).setAbleToRun(true);
-        }
+        playerActionControl = new PlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
+        ((PlayerActionControl) playerActionControl).setMoveSpeed(1.0f);
+        ((PlayerActionControl) playerActionControl).setRunSpeed(9.0f);
+        ((PlayerActionControl) playerActionControl).setAbleToRun(true);
         normalGravity = new Vector3f(0.0f, 9.81f, 0.0f);
         playerActionControl.setGravity(normalGravity);
         player.move(0.0f, 0.0f, 0.0f);

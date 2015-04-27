@@ -12,7 +12,6 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.scene.Node;
 import org.duo.magicallyous.Main;
-import org.duo.magicallyous.player.local.LocalPlayerActionControl;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 
 /**
@@ -26,7 +25,7 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
     Node player;
     Node rightHandNode;
     Node swordNode;
-    LocalPlayerActionControl localPlayerActionControl;
+    PlayerActionControl localPlayerActionControl;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
@@ -38,7 +37,7 @@ public class PlayerActionInput extends AbstractAppState implements ActionListene
         player = (Node) actualScene.getChild("player");
         rightHandNode = (Node) player.getChild("hand.R_attachnode");
         swordNode = (Node) rightHandNode.getChild("sword01");
-        localPlayerActionControl = player.getControl(LocalPlayerActionControl.class);
+        localPlayerActionControl = player.getControl(PlayerActionControl.class);
     }
     
     @Override

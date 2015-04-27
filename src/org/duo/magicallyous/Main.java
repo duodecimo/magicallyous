@@ -17,6 +17,8 @@ import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientMessageListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
+import org.duo.magicallyous.npc.NpcAppState;
+import org.duo.magicallyous.player.PlayerAppState;
 
 /**
  *
@@ -76,12 +78,14 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         //setDisplayStatView(false);
-        NiftyAppState niftyAppState = new NiftyAppState();
-        stateManager.attach(niftyAppState);
-        //underworldAppState = new UnderworldAppState();
-        //stateManager.attach(underworldAppState);
-        //magicallyousAppState = new MagicallyousAppState();
-        //stateManager.attach(magicallyousAppState);
+        //NiftyAppState niftyAppState = new NiftyAppState();
+        //stateManager.attach(niftyAppState);
+        underworldAppState = new UnderworldAppState();
+        stateManager.attach(underworldAppState);
+        magicallyousAppState = new MagicallyousAppState();
+        stateManager.attach(magicallyousAppState);
+        stateManager.attach(new PlayerAppState());
+        stateManager.attach(new NpcAppState());
     }
 
     public String getActualSceneName() {

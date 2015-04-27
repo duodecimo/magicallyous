@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Random;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.player.PlayerActionControl;
-import org.duo.magicallyous.player.local.LocalPlayerActionControl;
+import org.duo.magicallyous.player.PlayerActionControl;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.ParticleBlowControl;
 
@@ -164,12 +164,12 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                                 spatial.setLocalRotation(lookRotation);
                                 //lookRotation.lookAt(dist.negate(), Vector3f.UNIT_Y);
                                 //player.setLocalRotation(lookRotation);
-                                if (playerMovementControl instanceof LocalPlayerActionControl) {
-                                    ((LocalPlayerActionControl) 
+                                if (playerMovementControl instanceof PlayerActionControl) {
+                                    ((PlayerActionControl) 
                                             playerMovementControl).setTarget(spatial);
-                                    ((LocalPlayerActionControl) 
+                                    ((PlayerActionControl) 
                                             playerMovementControl).setStartAttack(true);
-                                    ((LocalPlayerActionControl) 
+                                    ((PlayerActionControl) 
                                             playerMovementControl).setGeneralStateEnum(GeneralStateEnum.BATTLE);
                                 }
                                 battleStartTime = timeCounter;
@@ -307,8 +307,8 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
                         // player must die
                         npcRemoveBlowControls();
                         playerMovementControl.removeShootControls();
-                        if (playerMovementControl instanceof LocalPlayerActionControl) {
-                            ((LocalPlayerActionControl) 
+                        if (playerMovementControl instanceof PlayerActionControl) {
+                            ((PlayerActionControl) 
                                     playerMovementControl).setTarget(null);
                         }
                         playerMovementControl.setAnimationStateEnum(AnimationStateEnum.DIE);
@@ -331,8 +331,8 @@ public class NpcMotionControl extends AbstractControl implements AnimEventListen
     }
 
     protected void npcDie() {
-        if (playerMovementControl instanceof LocalPlayerActionControl) {
-                            ((LocalPlayerActionControl) 
+        if (playerMovementControl instanceof PlayerActionControl) {
+                            ((PlayerActionControl) 
                                     playerMovementControl).setTarget(null);
         }
         playerMovementControl.setAnimationStateEnum(AnimationStateEnum.IDLE);
