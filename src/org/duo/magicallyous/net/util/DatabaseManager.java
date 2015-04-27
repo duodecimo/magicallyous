@@ -101,6 +101,15 @@ public class DatabaseManager {
             }
             if (count == 0) {
                 System.out.println("No account found!");
+                System.out.println("Listing existing accounts:");
+                cmd = "SELECT * FROM account";
+                resultSet = statement.executeQuery(cmd);
+                while (resultSet.next()) {
+                    System.out.println("   >>> id: " + resultSet.getInt("id") +
+                            " name: " + resultSet.getString("name") + 
+                            " email: " + resultSet.getString("email") + 
+                            " password: " + resultSet.getString("password"));
+                }
             }
         } catch (SQLException sQLException) {
             magicallyousAccount = null;
