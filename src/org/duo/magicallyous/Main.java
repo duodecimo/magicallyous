@@ -80,8 +80,8 @@ public class Main extends SimpleApplication {
         //setDisplayStatView(false);
         //NiftyAppState niftyAppState = new NiftyAppState();
         //stateManager.attach(niftyAppState);
-        underworldAppState = new UnderworldAppState();
-        stateManager.attach(underworldAppState);
+        //underworldAppState = new UnderworldAppState();
+        //stateManager.attach(underworldAppState);
         magicallyousAppState = new MagicallyousAppState();
         stateManager.attach(magicallyousAppState);
         stateManager.attach(new PlayerAppState());
