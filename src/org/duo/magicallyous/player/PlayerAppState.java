@@ -18,8 +18,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.List;
-import org.duo.magicallyous.Main;
 import org.duo.magicallyous.utils.HealthBarControl;
+import org.duo.magicallyous.utils.MagicallyousApp;
 import org.duo.magicallyous.utils.ToneGodGuiState;
 import tonegod.gui.core.Screen;
 
@@ -29,7 +29,7 @@ import tonegod.gui.core.Screen;
  */
 public class PlayerAppState extends AbstractAppState {
     AppStateManager stateManager;
-    private Main app;
+    private MagicallyousApp app;
     Node actualScene;
     private ChaseCamera chaseCamera;
     private Node localPlayer;
@@ -42,21 +42,29 @@ public class PlayerAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.stateManager = stateManager;
-        this.app = (Main) app;
+        this.app = (MagicallyousApp) app;
         actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
         actualScene.setName(this.app.getActualSceneName());
         this.app.getFlyByCamera().setEnabled(false);
+        // if app is server isntance
+        // no local player is needed
+        if(!this.app.isServerInstance()) {
         // local player
         localPlayer = addLocalPlayer("Astofoboldo");
+        } else {
+            // add extra remove player
+            addRemotePlayer("Astofoboldo");
+        }
         // one remote player for test
         addRemotePlayer("Miforonaldo");
     }
 
     private Node addLocalPlayer(String playerName) {
+        // create player (model, action control, properties, etc)
+        // and attach it to *** actual scene ***
         Node player = createPlayer(playerName, false);
         player.addControl(new HealthBarControl(this.app, player));
         // start player basic key controls
-        //stateManager.attach(new PlayerActionInput());
         if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
             PlayerActionInput playerActionInput =
                     stateManager.getState(PlayerActionInput.class);
@@ -144,11 +152,13 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         timeCounter += tpf;
-        int health = localPlayer.getUserData("health");
-        if(timeCounter - timeEvent > 5.0d && health < 100) {
-            health +=2;
-            localPlayer.setUserData("health", health);
-            timeEvent = timeCounter;
+        if (localPlayer != null) {
+            int health = localPlayer.getUserData("health");
+            if (timeCounter - timeEvent > 5.0d && health < 100) {
+                health += 2;
+                localPlayer.setUserData("health", health);
+                timeEvent = timeCounter;
+            }
         }
     }
     

@@ -13,16 +13,16 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
-import org.duo.magicallyous.Main;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.GeneralStateEnum;
+import org.duo.magicallyous.utils.MagicallyousApp;
 
 /**
  *
  * @author duo
  */
 public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener {
-    private Main app;
+    private MagicallyousApp app;
     private GeneralStateEnum generalStateEnum;
     private AnimationStateEnum animationStateEnum;
     private AnimControl animControl;
@@ -59,7 +59,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     public PlayerActionControl() {
     }
 
-    public PlayerActionControl(Main app, float radius, float height, float mass) {
+    public PlayerActionControl(MagicallyousApp app, float radius, float height, float mass) {
         super(radius, height, mass);
         this.app = app;
     }
@@ -483,11 +483,11 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         } while (playerShootControl != null);
     }
 
-    public Main getApp() {
+    public MagicallyousApp getApp() {
         return app;
     }
 
-    public void setApp(Main app) {
+    public void setApp(MagicallyousApp app) {
         this.app = app;
     }
 

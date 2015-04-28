@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.duo.magicallyous.MagicallyousAppState;
 import org.duo.magicallyous.net.message.WelcomeMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
@@ -22,14 +23,20 @@ import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 import org.duo.magicallyous.net.util.MainServerMessageListener;
+import org.duo.magicallyous.utils.MagicallyousApp;
 
 /**
  *
  * @author aluno
  */
-public class MainServer extends SimpleApplication {
+public class MainServer extends MagicallyousApp {
     private Server magicallyousServer;
     private int port;
+    private MagicallyousAppState magicallyousAppState;
+    private String actualSceneName = "";
+    private final String magicallyousSceneName = "Scene01";
+    private final String underworldSceneName = "underworldScene";
+    private boolean serverInstance;
 
     public MainServer() {
         Properties properties = new Properties();
@@ -66,10 +73,15 @@ public class MainServer extends SimpleApplication {
         } catch (IOException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
+        actualSceneName = magicallyousSceneName;
     }
 
     @Override
     public void simpleInitApp() {
+        // allow check if app is server instance
+        setServerInstance(true);
+        magicallyousAppState = new MagicallyousAppState();
+        stateManager.attach(magicallyousAppState);
     }
     
     public static void main(String[] args) {
@@ -79,5 +91,32 @@ public class MainServer extends SimpleApplication {
 
     public Server getMagicallyousServer() {
         return magicallyousServer;
+    }
+
+    @Override
+    public boolean isServerInstance() {
+        return serverInstance;
+    }
+
+    public void setServerInstance(boolean serverInstance) {
+        this.serverInstance = serverInstance;
+    }
+
+    @Override
+    public String getMagicallyousSceneName() {
+        return magicallyousSceneName;
+    }
+
+    public String getUnderworldSceneName() {
+        return underworldSceneName;
+    }
+
+    @Override
+    public String getActualSceneName() {
+        return actualSceneName;
+    }
+
+    public void setActualSceneName(String actualSceneName) {
+        this.actualSceneName = actualSceneName;
     }
 }

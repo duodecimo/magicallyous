@@ -1,6 +1,5 @@
 package org.duo.magicallyous;
 
-import com.jme3.app.SimpleApplication;
 import com.jme3.network.Client;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
@@ -17,14 +16,13 @@ import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientMessageListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
-import org.duo.magicallyous.npc.NpcAppState;
-import org.duo.magicallyous.player.PlayerAppState;
+import org.duo.magicallyous.utils.MagicallyousApp;
 
 /**
  *
  * @author duo
  */
-public class Main extends SimpleApplication {
+public class Main extends MagicallyousApp {
     private Client magicallyousClient;
     private Integer magicallyousClientConnectionId;
     private Integer localPlayerId;
@@ -33,6 +31,7 @@ public class Main extends SimpleApplication {
     private String actualSceneName = "";
     private final String magicallyousSceneName = "Scene01";
     private final String underworldSceneName = "underworldScene";
+    private boolean serverInstance;
 
     public Main() {
         Properties properties = new Properties();
@@ -77,6 +76,8 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        // allow check if app is server instance
+        setServerInstance(false);
         //setDisplayStatView(false);
         //NiftyAppState niftyAppState = new NiftyAppState();
         //stateManager.attach(niftyAppState);
@@ -88,10 +89,12 @@ public class Main extends SimpleApplication {
         //stateManager.attach(new NpcAppState());
     }
 
+    @Override
     public String getActualSceneName() {
         return actualSceneName;
     }
 
+    @Override
     public String getMagicallyousSceneName() {
         return magicallyousSceneName;
     }
@@ -118,5 +121,26 @@ public class Main extends SimpleApplication {
 
     public void setLocalPlayerId(Integer localPlayerId) {
         this.localPlayerId = localPlayerId;
+    }
+
+    @Override
+    public boolean isServerInstance() {
+        return serverInstance;
+    }
+
+    public void setServerInstance(boolean serverInstance) {
+        this.serverInstance = serverInstance;
+    }
+
+    @Override
+    public void requestClose(boolean esc) {
+        super.requestClose(esc);
+        System.exit(0);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        System.exit(0);
     }
 }
