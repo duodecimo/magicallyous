@@ -24,6 +24,7 @@ public class PlayerActionStateMessage extends AbstractMessage {
     private boolean rotateLeft;
     private boolean rightStrafe;
     private boolean leftStrafe;
+    private boolean requestToggleRunning;
     private boolean running;
     private boolean ableToRun;
     private float moveSpeed;
@@ -268,5 +269,13 @@ public class PlayerActionStateMessage extends AbstractMessage {
 
     public void setPlayerShootControl(PlayerShootControl playerShootControl) {
         this.playerShootControl = playerShootControl;
+    }
+
+    public boolean isRequestToggleRunning() {
+        return requestToggleRunning;
+    }
+
+    public void setRequestToggleRunning(boolean requestToggleRunning) {
+        this.requestToggleRunning = requestToggleRunning;
     }
 }

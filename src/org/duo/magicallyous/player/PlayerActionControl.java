@@ -12,7 +12,11 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.network.Client;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
 import com.jme3.scene.Spatial;
+import org.duo.magicallyous.net.message.PlayerActionControlMessage;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.MagicallyousApp;
@@ -21,7 +25,7 @@ import org.duo.magicallyous.utils.MagicallyousApp;
  *
  * @author duo
  */
-public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener {
+public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener, MessageListener<Client> {
     private MagicallyousApp app;
     private GeneralStateEnum generalStateEnum;
     private AnimationStateEnum animationStateEnum;
@@ -275,6 +279,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         quaternion.multLocal(viewDirection);
         turnTo(viewDirection);
     }
+    
 
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
@@ -529,5 +534,17 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
 
     public void setPlayerShootControl(PlayerShootControl playerShootControl) {
         this.playerShootControl = playerShootControl;
+    }
+
+    @Override
+    public void messageReceived(Client source, Message message) {
+        if(message instanceof PlayerActionControlMessage) {
+            PlayerActionControlMessage playerActionControlMessage = 
+                    (PlayerActionControlMessage) message;
+            turnTo(playerActionControlMessage.getViewDirection());
+            moveTo(playerActionControlMessage.getMoveDirection());
+            setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
+            animate();
+        }
     }
 }
