@@ -72,6 +72,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         super(radius, height, mass);
         this.app = app;
         this.playerId = playerId;
+        this.generalStateEnum = GeneralStateEnum.NORMAL;
     }
 
     @Override
