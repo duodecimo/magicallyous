@@ -18,6 +18,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.List;
+import org.duo.magicallyous.net.util.PlayerSendActionInput;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.MagicallyousApp;
 import org.duo.magicallyous.utils.ToneGodGuiState;
@@ -32,8 +33,7 @@ public class PlayerAppState extends AbstractAppState {
     private MagicallyousApp app;
     Node actualScene;
     private ChaseCamera chaseCamera;
-    private Node localPlayer;
-    private List<Node> remotePlayers;
+    private List<Node> players;
     private double timeCounter = 0.0d;
     private double timeEvent = 0.0d;
     Vector3f normalGravity;
@@ -50,7 +50,7 @@ public class PlayerAppState extends AbstractAppState {
         // no local player is needed
         if(!this.app.isServerInstance()) {
         // local player
-        localPlayer = addLocalPlayer("Astofoboldo");
+        addLocalPlayer("Astofoboldo");
         } else {
             // add extra remove player
             addRemotePlayer("Astofoboldo");
@@ -62,9 +62,13 @@ public class PlayerAppState extends AbstractAppState {
     private Node addLocalPlayer(String playerName) {
         // create player (model, action control, properties, etc)
         // and attach it to *** actual scene ***
-        Node player = createPlayer(playerName, false);
+        if(players == null) {
+            players = new ArrayList<>();
+        }
+        Node player = createPlayer(playerName, new Integer(players.size()), true);
         player.addControl(new HealthBarControl(this.app, player));
         // start player basic key controls
+        /*
         if (actualScene.getName().equals(this.app.getMagicallyousSceneName())) {
             PlayerActionInput playerActionInput =
                     stateManager.getState(PlayerActionInput.class);
@@ -75,6 +79,10 @@ public class PlayerAppState extends AbstractAppState {
             }
             stateManager.attach(new PlayerActionInput());
         }
+        */
+        stateManager.attach(new PlayerSendActionInput());
+        //stateManager.attach(new PlayerActionInput());
+ 
         // start camera
         this.app.getFlyByCamera().setEnabled(false);
         chaseCamera = new ChaseCamera(this.app.getCamera(), player, this.app.getInputManager());
@@ -91,15 +99,15 @@ public class PlayerAppState extends AbstractAppState {
     }
 
     private Node addRemotePlayer(String playerName) {
-        Node player = createPlayer(playerName, true);
-        if(remotePlayers == null) {
-            remotePlayers = new ArrayList<>();
+        if(players == null) {
+            players = new ArrayList<>();
         }
-        remotePlayers.add(player);
+        Node player = createPlayer(playerName, new Integer(players.size()), true);
+        players.add(player);
         return player;
     }
 
-    private Node createPlayer(String playerName, boolean isRemote) {
+    private Node createPlayer(String playerName, Integer playerId, boolean isRemote) {
         Node player = (Node) app.getAssetManager().loadModel("Models/kelum.j3o");
         player.setName("player");
         player.setUserData("fireMagic", getShoot("fireMagic"));
@@ -112,7 +120,7 @@ public class PlayerAppState extends AbstractAppState {
         player.setUserData("level", 1);
         player.setUserData("points", 0);
         PlayerActionControl playerActionControl;
-        playerActionControl = new PlayerActionControl(this.app, 0.5f, 2.5f, 80.0f);
+        playerActionControl = new PlayerActionControl(this.app, playerId, 0.5f, 2.5f, 80.0f);
         ((PlayerActionControl) playerActionControl).setMoveSpeed(1.0f);
         ((PlayerActionControl) playerActionControl).setRunSpeed(9.0f);
         ((PlayerActionControl) playerActionControl).setAbleToRun(true);
@@ -152,11 +160,11 @@ public class PlayerAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         timeCounter += tpf;
-        if (localPlayer != null) {
-            int health = localPlayer.getUserData("health");
+        if (players.get(0) != null) {
+            int health = players.get(0).getUserData("health");
             if (timeCounter - timeEvent > 5.0d && health < 100) {
                 health += 2;
-                localPlayer.setUserData("health", health);
+                players.get(0).setUserData("health", health);
                 timeEvent = timeCounter;
             }
         }
@@ -171,5 +179,13 @@ public class PlayerAppState extends AbstractAppState {
         //TODO: clean up what you initialized in the initialize method,
         //e.g. remove all spatials from rootNode
         //this is called on the OpenGL thread after the AppState has been detached
+    }
+
+    public List<Node> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Node> players) {
+        this.players = players;
     }
 }

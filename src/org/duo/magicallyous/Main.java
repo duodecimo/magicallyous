@@ -13,6 +13,8 @@ import org.duo.magicallyous.net.message.WelcomeMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.LoginResponseMessage;
+import org.duo.magicallyous.net.message.PlayerActionControlMessage;
+import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientMessageListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
@@ -51,6 +53,10 @@ public class Main extends MagicallyousApp {
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
             Serializer.registerClass(LoginResponseMessage.class);
+            // client sends input to server
+            Serializer.registerClass(PlayerActionStateMessage.class);
+            // server processes input message and sends action to client
+            Serializer.registerClass(PlayerActionControlMessage.class);
             // register listeners
             magicallyousClient.addMessageListener(new ClientMessageListener(), WelcomeMessage.class);
             magicallyousClient.start();

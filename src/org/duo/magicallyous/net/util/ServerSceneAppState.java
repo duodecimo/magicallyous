@@ -26,9 +26,15 @@ public class ServerSceneAppState extends AbstractAppState {
         super.initialize(stateManager, app);
         this.app = (MainServer) app;
         scenes = new ArrayList<>();
+        // it must be verifyed if each scene should be loaded
+        // on a specific server (app). If not, maybe
+        // 2 scenes objects may interpose along root node
+        // causing unexpected behavior on players and npc.
+        // for example: the player on magicallyousScene may stump at underworld boat!
+        //
         // add underworld
-        magicallyousScene = new MagicallyousScene(app.getAssetManager().loadModel("Scenes/Underworld.j3o"));
-        scenes.add(magicallyousScene);
+        //magicallyousScene = new MagicallyousScene(app.getAssetManager().loadModel("Scenes/Underworld.j3o"));
+        //scenes.add(magicallyousScene);
         // add Scene01
         magicallyousScene = new MagicallyousScene(app.getAssetManager().loadModel("Scenes/Scene01.j3o"));
         scenes.add(magicallyousScene);

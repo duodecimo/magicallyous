@@ -12,7 +12,11 @@ import java.util.List;
 import org.duo.magicallyous.net.MainServer;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
+import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
+import org.duo.magicallyous.player.PlayerActionControl;
+import org.duo.magicallyous.player.PlayerAppState;
+import org.duo.magicallyous.utils.MagicallyousApp;
 
 /**
  *
@@ -21,6 +25,7 @@ import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 public class MainServerMessageListener implements MessageListener<HostedConnection> {
     DatabaseManager databaseManager;
     MainServer mainServer;
+    private MagicallyousApp magicallyousApp;
 
     public MainServerMessageListener(MainServer mainServer) {
         this.mainServer = mainServer;
@@ -96,6 +101,38 @@ public class MainServerMessageListener implements MessageListener<HostedConnecti
                     System.out.println("  password: " + account.getPassword());
                 }
             }
+        } else if (message instanceof PlayerActionStateMessage) {
+            PlayerActionStateMessage playerActionStateMessage = (PlayerActionStateMessage) message;
+            System.out.println("Receiving input message: " + playerActionStateMessage.isMoveFoward());
+            PlayerAppState playerAppState = 
+                    ((MainServer)getMagicallyousApp()).getStateManager().getState(PlayerAppState.class);
+            PlayerActionControl playerActionControl = 
+                    playerAppState.getPlayers().get(0).getControl(PlayerActionControl.class);
+            // set all that we got from input (see PlayerSendActionInput)
+            playerActionControl.setMoveFoward(playerActionStateMessage.isMoveFoward());
+            playerActionControl.setMoveBackward(playerActionStateMessage.isMoveBackward());
+            playerActionControl.setStopped(playerActionStateMessage.isStopped());
+            playerActionControl.setRotateRight(playerActionStateMessage.isRotateRight());
+            playerActionControl.setRotateLeft(playerActionStateMessage.isRotateLeft());
+            if(playerActionStateMessage.isRequestToggleRunning()) {
+                playerActionControl.toggleRunning();
+            }
+            playerActionControl.setIncreaseHealth(playerActionStateMessage.isIncreaseHealth());
+            playerActionControl.setDecreaseHealth(playerActionStateMessage.isDecreaseHealth());
+            playerActionControl.setIncreaseDamage(playerActionStateMessage.isIncreaseDamage());
+            playerActionControl.setDecreaseDamage(playerActionStateMessage.isDecreaseDamage());
+            playerActionControl.setIncreaseDefense(playerActionStateMessage.isIncreaseDefense());
+            playerActionControl.setDecreaseDefense(playerActionStateMessage.isDecreaseDefense());
+            playerActionControl.setRotateValue(playerActionStateMessage.getRotateValue());
+            playerActionControl.setAnimationStateEnum(playerActionStateMessage.getAnimationStateEnum());
         }
+    }
+
+    public MagicallyousApp getMagicallyousApp() {
+        return magicallyousApp;
+    }
+
+    public void setMagicallyousApp(MagicallyousApp magicallyousApp) {
+        this.magicallyousApp = magicallyousApp;
     }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.duo.magicallyous.net;
+package org.duo.magicallyous.net.util;
 
 import org.duo.magicallyous.player.*;
 import com.jme3.app.Application;
@@ -44,7 +44,6 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
         player = (Node) actualScene.getChild("player");
         rightHandNode = (Node) player.getChild("hand.R_attachnode");
         swordNode = (Node) rightHandNode.getChild("sword01");
-        playerActionStateMessage = new PlayerActionStateMessage();
 
     }
     
@@ -53,6 +52,8 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
         super.update(tpf);
         if (playerActionStateMessage != null) {
             this.app.getMagicallyousClient().send(playerActionStateMessage);
+            System.out.println("Sending input message : " +
+                    playerActionStateMessage.isMoveFoward());
             playerActionStateMessage = null;
         }
     }
@@ -67,88 +68,95 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
 
     @Override
     public void onAction(String name, boolean isPressed, float tpf) {
-        if (playerActionStateMessage != null) {
-            switch (name) {
-                case PlayerActionMapping.MAP_MOVEFOWARD:
-                    playerActionStateMessage.setMoveFoward(isPressed);
-                    break;
-                case PlayerActionMapping.MAP_MOVEBACKWARD:
-                    playerActionStateMessage.setMoveBackward(isPressed);
-                    break;
-                case PlayerActionMapping.MAP_STOP:
-                    playerActionStateMessage.setStopped(isPressed);
-                    break;
-                case PlayerActionMapping.MAP_TURNRIGHT:
-                    playerActionStateMessage.setRotateRight(isPressed);
-                    break;
-                case PlayerActionMapping.MAP_TURNLEFT:
-                    playerActionStateMessage.setRotateLeft(isPressed);
-                    break;
-                case PlayerActionMapping.MAP_TOGGLEWALKSTATE:
-                    if (isPressed) {
-                        playerActionStateMessage.setRequestToggleRunning(isPressed);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_INCREASEHEALTH:
-                    if (isPressed) {
-                        playerActionStateMessage.setIncreaseHealth(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_DECREASEHEALTH:
-                    if (isPressed) {
-                        playerActionStateMessage.setDecreaseHealth(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_INCREASEDAMAGE:
-                    if (isPressed) {
-                        playerActionStateMessage.setIncreaseDamage(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_DECREASEDAMAGE:
-                    if (isPressed) {
-                        playerActionStateMessage.setDecreaseDamage(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_INCREASEDEFENSE:
-                    if (isPressed) {
-                        playerActionStateMessage.setIncreaseDefense(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_DECREASEDEFENSE:
-                    if (isPressed) {
-                        playerActionStateMessage.setDecreaseDefense(true);
-                    }
-                    break;
-                case PlayerActionMapping.MAP_USESWORD:
-                    if (isPressed) {
-                        if (rightHandNode.hasChild(swordNode)) {
-                            rightHandNode.detachChild(swordNode);
-                        } else {
-                            if (swordNode == null) {
-                                swordNode = player.getUserData("swordNode");
-                            }
-                            if (swordNode != null) {
-                                rightHandNode.attachChild(swordNode);
-                            }
+        if (playerActionStateMessage == null) {
+            playerActionStateMessage = new PlayerActionStateMessage();
+            // for the moment the only input will be from player 0
+            playerActionStateMessage.setPlayerId(new Integer(0));
+        }
+
+        switch (name) {
+            case PlayerActionMapping.MAP_MOVEFOWARD:
+                playerActionStateMessage.setMoveFoward(isPressed);
+                break;
+            case PlayerActionMapping.MAP_MOVEBACKWARD:
+                playerActionStateMessage.setMoveBackward(isPressed);
+                break;
+            case PlayerActionMapping.MAP_STOP:
+                playerActionStateMessage.setStopped(isPressed);
+                break;
+            case PlayerActionMapping.MAP_TURNRIGHT:
+                playerActionStateMessage.setRotateRight(isPressed);
+                break;
+            case PlayerActionMapping.MAP_TURNLEFT:
+                playerActionStateMessage.setRotateLeft(isPressed);
+                break;
+            case PlayerActionMapping.MAP_TOGGLEWALKSTATE:
+                if (isPressed) {
+                    playerActionStateMessage.setRequestToggleRunning(isPressed);
+                }
+                break;
+            case PlayerActionMapping.MAP_INCREASEHEALTH:
+                if (isPressed) {
+                    playerActionStateMessage.setIncreaseHealth(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_DECREASEHEALTH:
+                if (isPressed) {
+                    playerActionStateMessage.setDecreaseHealth(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_INCREASEDAMAGE:
+                if (isPressed) {
+                    playerActionStateMessage.setIncreaseDamage(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_DECREASEDAMAGE:
+                if (isPressed) {
+                    playerActionStateMessage.setDecreaseDamage(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_INCREASEDEFENSE:
+                if (isPressed) {
+                    playerActionStateMessage.setIncreaseDefense(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_DECREASEDEFENSE:
+                if (isPressed) {
+                    playerActionStateMessage.setDecreaseDefense(true);
+                }
+                break;
+            case PlayerActionMapping.MAP_USESWORD:
+                if (isPressed) {
+                    if (rightHandNode.hasChild(swordNode)) {
+                        rightHandNode.detachChild(swordNode);
+                    } else {
+                        if (swordNode == null) {
+                            swordNode = player.getUserData("swordNode");
+                        }
+                        if (swordNode != null) {
+                            rightHandNode.attachChild(swordNode);
                         }
                     }
-                    break;
-                default:
-            }
+                }
+                break;
+            default:
         }
     }
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (playerActionStateMessage != null) {
-            switch (name) {
-                case PlayerActionMapping.MAP_TURNLEFT:
-                    playerActionStateMessage.setRotateValue(value);
-                    break;
-                case PlayerActionMapping.MAP_TURNRIGHT:
-                    playerActionStateMessage.setRotateValue(value);
-                    break;
-            }
+        if (playerActionStateMessage == null) {
+            playerActionStateMessage = new PlayerActionStateMessage();
+            // for the moment the only input will be from player 0
+            playerActionStateMessage.setPlayerId(new Integer(0));
+        }
+        switch (name) {
+            case PlayerActionMapping.MAP_TURNLEFT:
+                playerActionStateMessage.setRotateValue(value);
+                break;
+            case PlayerActionMapping.MAP_TURNRIGHT:
+                playerActionStateMessage.setRotateValue(value);
+                break;
         }
     }
 

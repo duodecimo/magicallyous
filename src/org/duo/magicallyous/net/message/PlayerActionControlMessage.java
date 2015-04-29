@@ -15,9 +15,18 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
  */
 @Serializable
 public class PlayerActionControlMessage extends AbstractMessage {
+    private Integer playerId;
     private Vector3f moveDirection;
     private Vector3f viewDirection;
     private AnimationStateEnum animationStateEnum;
+
+    public Integer getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(Integer playerId) {
+        this.playerId = playerId;
+    }
 
     public Vector3f getMoveDirection() {
         return moveDirection;

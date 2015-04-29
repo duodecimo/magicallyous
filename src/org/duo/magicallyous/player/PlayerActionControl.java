@@ -16,7 +16,9 @@ import com.jme3.network.Client;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.scene.Spatial;
+import org.duo.magicallyous.Main;
 import org.duo.magicallyous.net.message.PlayerActionControlMessage;
+import org.duo.magicallyous.net.util.PlayerSendActionInput;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.MagicallyousApp;
@@ -27,6 +29,7 @@ import org.duo.magicallyous.utils.MagicallyousApp;
  */
 public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener, MessageListener<Client> {
     private MagicallyousApp app;
+    private Integer playerId;
     private GeneralStateEnum generalStateEnum;
     private AnimationStateEnum animationStateEnum;
     private AnimControl animControl;
@@ -59,18 +62,26 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private boolean decreaseDamage;
     private boolean increaseDefense;
     private boolean decreaseDefense;
+    private boolean messageListenerRegistered = false;
 
     public PlayerActionControl() {
     }
 
-    public PlayerActionControl(MagicallyousApp app, float radius, float height, float mass) {
+    public PlayerActionControl(MagicallyousApp app, Integer playerId, float radius, float height, float mass) {
         super(radius, height, mass);
         this.app = app;
+        this.playerId = playerId;
     }
 
     @Override
     public void update(float tpf) {
         super.update(tpf);
+        if (!messageListenerRegistered) {
+            if (!this.app.isServerInstance()) {
+                ((Main) app).getMagicallyousClient().addMessageListener(this, PlayerActionControlMessage.class);
+            }
+            messageListenerRegistered = true;
+        }
         timeCounter += tpf;
         updatePlayerSate();
         animate();
@@ -314,6 +325,14 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         running = false;
     }
 
+    public Integer getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(Integer playerId) {
+        this.playerId = playerId;
+    }
+
     public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
     }
@@ -545,6 +564,11 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
             moveTo(playerActionControlMessage.getMoveDirection());
             setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
             animate();
+        } else if (message instanceof PlayerSendActionInput) {
+            // this is received by server
+            if(this.app.isServerInstance()) {
+                
+            }
         }
     }
 }

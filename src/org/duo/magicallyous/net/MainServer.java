@@ -4,7 +4,6 @@
  */
 package org.duo.magicallyous.net;
 
-import com.jme3.app.SimpleApplication;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Network;
@@ -20,6 +19,8 @@ import org.duo.magicallyous.net.message.WelcomeMessage;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.LoginResponseMessage;
+import org.duo.magicallyous.net.message.PlayerActionControlMessage;
+import org.duo.magicallyous.net.message.PlayerActionStateMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
 import org.duo.magicallyous.net.util.MainServerMessageListener;
@@ -33,6 +34,7 @@ public class MainServer extends MagicallyousApp {
     private Server magicallyousServer;
     private int port;
     private MagicallyousAppState magicallyousAppState;
+    private MainServerMessageListener mainServerMessageListener;
     private String actualSceneName = "";
     private final String magicallyousSceneName = "Scene01";
     private final String underworldSceneName = "underworldScene";
@@ -64,10 +66,14 @@ public class MainServer extends MagicallyousApp {
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
             Serializer.registerClass(LoginResponseMessage.class);
-            magicallyousServer.addMessageListener(new MainServerMessageListener(this), 
+            Serializer.registerClass(PlayerActionControlMessage.class);
+            Serializer.registerClass(PlayerActionStateMessage.class);
+            mainServerMessageListener = new MainServerMessageListener(this);
+            magicallyousServer.addMessageListener(mainServerMessageListener, 
                     AccountRegisterMessage.class, 
                     MagicallyousAccount.class, 
-                    LoginRequestMessage.class);
+                    LoginRequestMessage.class,
+                    PlayerActionStateMessage.class);
             magicallyousServer.start();
             System.out.println("MagicallyousServer started on port " + port);
         } catch (IOException ex) {
@@ -81,6 +87,7 @@ public class MainServer extends MagicallyousApp {
         // allow check if app is server instance
         setServerInstance(true);
         magicallyousAppState = new MagicallyousAppState();
+        mainServerMessageListener.setMagicallyousApp(this);
         stateManager.attach(magicallyousAppState);
     }
     

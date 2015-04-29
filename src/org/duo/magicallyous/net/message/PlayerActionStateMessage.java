@@ -17,6 +17,7 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
  */
 @Serializable
 public class PlayerActionStateMessage extends AbstractMessage {
+    private Integer playerId;
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -46,6 +47,14 @@ public class PlayerActionStateMessage extends AbstractMessage {
     private boolean increaseDefense;
     private boolean decreaseDefense;
     private PlayerShootControl playerShootControl;
+
+    public Integer getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(Integer playerId) {
+        this.playerId = playerId;
+    }
 
     public boolean isMoveFoward() {
         return moveFoward;
