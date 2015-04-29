@@ -103,7 +103,7 @@ public class MainServerMessageListener implements MessageListener<HostedConnecti
             }
         } else if (message instanceof PlayerActionStateMessage) {
             PlayerActionStateMessage playerActionStateMessage = (PlayerActionStateMessage) message;
-            System.out.println("Receiving input message: " + playerActionStateMessage.isMoveFoward());
+            //System.out.println("Receiving input message: " + playerActionStateMessage.isMoveFoward());
             PlayerAppState playerAppState = 
                     ((MainServer)getMagicallyousApp()).getStateManager().getState(PlayerAppState.class);
             PlayerActionControl playerActionControl = 

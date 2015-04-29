@@ -52,8 +52,8 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
         super.update(tpf);
         if (playerActionStateMessage != null) {
             this.app.getMagicallyousClient().send(playerActionStateMessage);
-            System.out.println("Sending input message : " +
-                    playerActionStateMessage.isMoveFoward());
+            //System.out.println("Sending input message : " +
+            //        playerActionStateMessage.isMoveFoward());
             playerActionStateMessage = null;
         }
     }

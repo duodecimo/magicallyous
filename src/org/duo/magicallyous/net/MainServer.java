@@ -66,14 +66,16 @@ public class MainServer extends MagicallyousApp {
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
             Serializer.registerClass(LoginResponseMessage.class);
-            Serializer.registerClass(PlayerActionControlMessage.class);
+            // client sends input to server
             Serializer.registerClass(PlayerActionStateMessage.class);
+            // server processes input message and sends action to client
+            Serializer.registerClass(PlayerActionControlMessage.class);
             mainServerMessageListener = new MainServerMessageListener(this);
             magicallyousServer.addMessageListener(mainServerMessageListener, 
+                    PlayerActionStateMessage.class,
                     AccountRegisterMessage.class, 
                     MagicallyousAccount.class, 
-                    LoginRequestMessage.class,
-                    PlayerActionStateMessage.class);
+                    LoginRequestMessage.class);
             magicallyousServer.start();
             System.out.println("MagicallyousServer started on port " + port);
         } catch (IOException ex) {

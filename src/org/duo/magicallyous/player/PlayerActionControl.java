@@ -17,8 +17,8 @@ import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.Main;
+import org.duo.magicallyous.net.MainServer;
 import org.duo.magicallyous.net.message.PlayerActionControlMessage;
-import org.duo.magicallyous.net.util.PlayerSendActionInput;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.MagicallyousApp;
@@ -63,6 +63,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private boolean increaseDefense;
     private boolean decreaseDefense;
     private boolean messageListenerRegistered = false;
+    private PlayerActionControlMessage playerActionControlMessage;
 
     public PlayerActionControl() {
     }
@@ -85,6 +86,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         timeCounter += tpf;
         updatePlayerSate();
         animate();
+        sendPlayerActionControlMessage();
     }
 
     public void updatePlayerSate() {
@@ -564,10 +566,24 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
             moveTo(playerActionControlMessage.getMoveDirection());
             setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
             animate();
-        } else if (message instanceof PlayerSendActionInput) {
-            // this is received by server
-            if(this.app.isServerInstance()) {
-                
+            System.out.println("Action message received: " + playerActionControlMessage.getMoveDirection());
+        }
+    }
+
+
+    public void sendPlayerActionControlMessage() {
+        if (this.app.isServerInstance()) {
+            if (walkDirection.x!=0 || walkDirection.y!=0 || walkDirection.z!=0) {
+                if (playerActionControlMessage == null) {
+                    playerActionControlMessage = new PlayerActionControlMessage();
+                }
+                playerActionControlMessage.setPlayerId(new Integer(0));
+                playerActionControlMessage.setViewDirection(viewDirection);
+                playerActionControlMessage.setMoveDirection(walkDirection);
+                playerActionControlMessage.setAnimationStateEnum(animationStateEnum);
+                ((MainServer) app).getMagicallyousServer().broadcast(playerActionControlMessage);
+                System.out.println("Sending input response: " + playerActionControlMessage.getMoveDirection());
+                playerActionControlMessage = null;
             }
         }
     }
