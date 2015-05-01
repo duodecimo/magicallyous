@@ -109,20 +109,42 @@ public class MainServerMessageListener implements MessageListener<HostedConnecti
             PlayerActionControl playerActionControl = 
                     playerAppState.getPlayers().get(0).getControl(PlayerActionControl.class);
             // set all that we got from input (see PlayerSendActionInput)
-            playerActionControl.setMoveFoward(playerActionStateMessage.isMoveFoward());
-            playerActionControl.setMoveBackward(playerActionStateMessage.isMoveBackward());
-            playerActionControl.setStopped(playerActionStateMessage.isStopped());
-            playerActionControl.setRotateRight(playerActionStateMessage.isRotateRight());
-            playerActionControl.setRotateLeft(playerActionStateMessage.isRotateLeft());
+            if (playerActionStateMessage.isMoveFowardEvent()) {
+                playerActionControl.setMoveFoward(playerActionStateMessage.isMoveFoward());
+            }
+            if (playerActionStateMessage.isMoveBackwardEvent()) {
+                playerActionControl.setMoveBackward(playerActionStateMessage.isMoveBackward());
+            }
+            if (playerActionStateMessage.isStoppedEvent()) {
+                playerActionControl.setStopped(playerActionStateMessage.isStopped());
+            }
+            if (playerActionStateMessage.isRotateRightEvent()) {
+                playerActionControl.setRotateRight(playerActionStateMessage.isRotateRight());
+            }
+            if (playerActionStateMessage.isRotateLeftEvent()) {
+                playerActionControl.setRotateLeft(playerActionStateMessage.isRotateLeft());
+            }
             if(playerActionStateMessage.isRequestToggleRunning()) {
                 playerActionControl.toggleRunning();
             }
-            playerActionControl.setIncreaseHealth(playerActionStateMessage.isIncreaseHealth());
-            playerActionControl.setDecreaseHealth(playerActionStateMessage.isDecreaseHealth());
-            playerActionControl.setIncreaseDamage(playerActionStateMessage.isIncreaseDamage());
-            playerActionControl.setDecreaseDamage(playerActionStateMessage.isDecreaseDamage());
-            playerActionControl.setIncreaseDefense(playerActionStateMessage.isIncreaseDefense());
-            playerActionControl.setDecreaseDefense(playerActionStateMessage.isDecreaseDefense());
+            if (playerActionStateMessage.isIncreaseHealthEvent()) {
+                playerActionControl.setIncreaseHealth(playerActionStateMessage.isIncreaseHealth());
+            }
+            if (playerActionStateMessage.isDecreaseHealthEvent()) {
+                playerActionControl.setDecreaseHealth(playerActionStateMessage.isDecreaseHealth());
+            }
+            if (playerActionStateMessage.isIncreaseDamageEvent()) {
+                playerActionControl.setIncreaseDamage(playerActionStateMessage.isIncreaseDamage());
+            }
+            if (playerActionStateMessage.isDecreaseDamageEvent()) {
+                playerActionControl.setDecreaseDamage(playerActionStateMessage.isDecreaseDamage());
+            }
+            if (playerActionStateMessage.isIncreaseDefenseEvent()) {
+                playerActionControl.setIncreaseDefense(playerActionStateMessage.isIncreaseDefense());
+            }
+            if (playerActionStateMessage.isDecreaseDefenseEvent()) {
+                playerActionControl.setDecreaseDefense(playerActionStateMessage.isDecreaseDefense());
+            }
             playerActionControl.setRotateValue(playerActionStateMessage.getRotateValue());
             playerActionControl.setAnimationStateEnum(playerActionStateMessage.getAnimationStateEnum());
         }

@@ -19,13 +19,32 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
 public class PlayerActionStateMessage extends AbstractMessage {
     private Integer playerId;
     private boolean moveFoward;
+    private boolean moveFowardEvent;
     private boolean moveBackward;
+    private boolean moveBackwardEvent;
     private boolean stopped;
+    private boolean stoppedEvent;
     private boolean rotateRight;
+    private boolean rotateRightEvent;
     private boolean rotateLeft;
+    private boolean rotateLeftEvent;
     private boolean rightStrafe;
+    private boolean rightStrafeEvent;
     private boolean leftStrafe;
+    private boolean leftStrafeEvent;
     private boolean requestToggleRunning;
+    private boolean increaseHealth;
+    private boolean increaseHealthEvent;
+    private boolean decreaseHealth;
+    private boolean decreaseHealthEvent;
+    private boolean increaseDamage;
+    private boolean increaseDamageEvent;
+    private boolean decreaseDamage;
+    private boolean decreaseDamageEvent;
+    private boolean increaseDefense;
+    private boolean increaseDefenseEvent;
+    private boolean decreaseDefense;
+    private boolean decreaseDefenseEvent;
     private boolean running;
     private boolean ableToRun;
     private float moveSpeed;
@@ -40,12 +59,6 @@ public class PlayerActionStateMessage extends AbstractMessage {
     private boolean waitingForPrecast = false;
     private Spatial target;
     private Quaternion lookRotation;
-    private boolean increaseHealth;
-    private boolean decreaseHealth;
-    private boolean increaseDamage;
-    private boolean decreaseDamage;
-    private boolean increaseDefense;
-    private boolean decreaseDefense;
     private PlayerShootControl playerShootControl;
 
     public Integer getPlayerId() {
@@ -286,5 +299,109 @@ public class PlayerActionStateMessage extends AbstractMessage {
 
     public void setRequestToggleRunning(boolean requestToggleRunning) {
         this.requestToggleRunning = requestToggleRunning;
+    }
+
+    public boolean isMoveFowardEvent() {
+        return moveFowardEvent;
+    }
+
+    public void setMoveFowardEvent(boolean moveFowardEvent) {
+        this.moveFowardEvent = moveFowardEvent;
+    }
+
+    public boolean isMoveBackwardEvent() {
+        return moveBackwardEvent;
+    }
+
+    public void setMoveBackwardEvent(boolean moveBackwardEvent) {
+        this.moveBackwardEvent = moveBackwardEvent;
+    }
+
+    public boolean isStoppedEvent() {
+        return stoppedEvent;
+    }
+
+    public void setStoppedEvent(boolean stoppedEvent) {
+        this.stoppedEvent = stoppedEvent;
+    }
+
+    public boolean isRotateRightEvent() {
+        return rotateRightEvent;
+    }
+
+    public void setRotateRightEvent(boolean rotateRightEvent) {
+        this.rotateRightEvent = rotateRightEvent;
+    }
+
+    public boolean isRotateLeftEvent() {
+        return rotateLeftEvent;
+    }
+
+    public void setRotateLeftEvent(boolean rotateLeftEvent) {
+        this.rotateLeftEvent = rotateLeftEvent;
+    }
+
+    public boolean isRightStrafeEvent() {
+        return rightStrafeEvent;
+    }
+
+    public void setRightStrafeEvent(boolean rightStrafeEvent) {
+        this.rightStrafeEvent = rightStrafeEvent;
+    }
+
+    public boolean isLeftStrafeEvent() {
+        return leftStrafeEvent;
+    }
+
+    public void setLeftStrafeEvent(boolean leftStrafeEvent) {
+        this.leftStrafeEvent = leftStrafeEvent;
+    }
+
+    public boolean isIncreaseHealthEvent() {
+        return increaseHealthEvent;
+    }
+
+    public void setIncreaseHealthEvent(boolean increaseHealthEvent) {
+        this.increaseHealthEvent = increaseHealthEvent;
+    }
+
+    public boolean isDecreaseHealthEvent() {
+        return decreaseHealthEvent;
+    }
+
+    public void setDecreaseHealthEvent(boolean decreaseHealthEvent) {
+        this.decreaseHealthEvent = decreaseHealthEvent;
+    }
+
+    public boolean isIncreaseDamageEvent() {
+        return increaseDamageEvent;
+    }
+
+    public void setIncreaseDamageEvent(boolean increaseDamageEvent) {
+        this.increaseDamageEvent = increaseDamageEvent;
+    }
+
+    public boolean isDecreaseDamageEvent() {
+        return decreaseDamageEvent;
+    }
+
+    public void setDecreaseDamageEvent(boolean decreaseDamageEvent) {
+        this.decreaseDamageEvent = decreaseDamageEvent;
+    }
+
+    public boolean isIncreaseDefenseEvent() {
+        return increaseDefenseEvent;
+    }
+
+    public void setIncreaseDefenseEvent(boolean increaseDefenseEvent) {
+        this.increaseDefenseEvent = increaseDefenseEvent;
+    }
+
+    public boolean isDecreaseDefenseEvent() {
+        return decreaseDefenseEvent;
+    }
+
+    public void setDecreaseDefenseEvent(boolean decreaseDefenseEvent) {
+        this.decreaseDefenseEvent = decreaseDefenseEvent;
     }
 }

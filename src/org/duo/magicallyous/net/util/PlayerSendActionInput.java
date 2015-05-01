@@ -76,18 +76,23 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
 
         switch (name) {
             case PlayerActionMapping.MAP_MOVEFOWARD:
+                playerActionStateMessage.setMoveFowardEvent(true);
                 playerActionStateMessage.setMoveFoward(isPressed);
                 break;
             case PlayerActionMapping.MAP_MOVEBACKWARD:
+                playerActionStateMessage.setMoveBackwardEvent(true);
                 playerActionStateMessage.setMoveBackward(isPressed);
                 break;
             case PlayerActionMapping.MAP_STOP:
+                playerActionStateMessage.setStoppedEvent(true);
                 playerActionStateMessage.setStopped(isPressed);
                 break;
             case PlayerActionMapping.MAP_TURNRIGHT:
+                playerActionStateMessage.setRotateRightEvent(true);
                 playerActionStateMessage.setRotateRight(isPressed);
                 break;
             case PlayerActionMapping.MAP_TURNLEFT:
+                playerActionStateMessage.setRotateLeftEvent(true);
                 playerActionStateMessage.setRotateLeft(isPressed);
                 break;
             case PlayerActionMapping.MAP_TOGGLEWALKSTATE:
@@ -97,31 +102,37 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
                 break;
             case PlayerActionMapping.MAP_INCREASEHEALTH:
                 if (isPressed) {
+                    playerActionStateMessage.setIncreaseHealthEvent(true);
                     playerActionStateMessage.setIncreaseHealth(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEHEALTH:
                 if (isPressed) {
+                    playerActionStateMessage.setDecreaseHealthEvent(true);
                     playerActionStateMessage.setDecreaseHealth(true);
                 }
                 break;
             case PlayerActionMapping.MAP_INCREASEDAMAGE:
                 if (isPressed) {
+                    playerActionStateMessage.setIncreaseDamageEvent(true);
                     playerActionStateMessage.setIncreaseDamage(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEDAMAGE:
                 if (isPressed) {
+                    playerActionStateMessage.setDecreaseDamageEvent(true);
                     playerActionStateMessage.setDecreaseDamage(true);
                 }
                 break;
             case PlayerActionMapping.MAP_INCREASEDEFENSE:
                 if (isPressed) {
+                    playerActionStateMessage.setIncreaseDefenseEvent(true);
                     playerActionStateMessage.setIncreaseDefense(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEDEFENSE:
                 if (isPressed) {
+                    playerActionStateMessage.setDecreaseDefenseEvent(true);
                     playerActionStateMessage.setDecreaseDefense(true);
                 }
                 break;
