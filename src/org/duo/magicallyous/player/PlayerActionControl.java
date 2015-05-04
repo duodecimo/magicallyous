@@ -37,6 +37,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private double timeCounter = 0d;
     private PlayerShootControl playerShootControl;
 
+    private boolean inputMessageReceived;
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -73,6 +74,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         this.app = app;
         this.playerId = playerId;
         this.generalStateEnum = GeneralStateEnum.NORMAL;
+        inputMessageReceived = false;
     }
 
     @Override
@@ -563,28 +565,34 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         if(message instanceof PlayerActionControlMessage) {
             PlayerActionControlMessage playerActionControlMessage = 
                     (PlayerActionControlMessage) message;
-            turnTo(playerActionControlMessage.getViewDirection());
-            moveTo(playerActionControlMessage.getMoveDirection());
-            setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
-            animate();
-            System.out.println("Action message received: " + playerActionControlMessage.getMoveDirection());
+            if (getPlayerId() == playerActionControlMessage.getPlayerId()) {
+                turnTo(playerActionControlMessage.getViewDirection());
+                moveTo(playerActionControlMessage.getMoveDirection());
+                setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
+                animate();
+                System.out.println("Action message received: " + playerActionControlMessage.getMoveDirection());
+                inputMessageReceived = true;
+            }
         }
     }
 
 
     public void sendPlayerActionControlMessage() {
         if (this.app.isServerInstance()) {
-            if (walkDirection.x!=0 || walkDirection.y!=0 || walkDirection.z!=0) {
-                if (playerActionControlMessage == null) {
-                    playerActionControlMessage = new PlayerActionControlMessage();
+            if (inputMessageReceived) {
+                if (walkDirection.x != 0 || walkDirection.y != 0 || walkDirection.z != 0) {
+                    if (playerActionControlMessage == null) {
+                        playerActionControlMessage = new PlayerActionControlMessage();
+                    }
+                    playerActionControlMessage.setPlayerId(new Integer(0));
+                    playerActionControlMessage.setViewDirection(viewDirection);
+                    playerActionControlMessage.setMoveDirection(walkDirection);
+                    playerActionControlMessage.setAnimationStateEnum(animationStateEnum);
+                    ((MainServer) app).getMagicallyousServer().broadcast(playerActionControlMessage);
+                    System.out.println("Sending input response: " + playerActionControlMessage.getMoveDirection());
+                    playerActionControlMessage = null;
+                    inputMessageReceived = false;
                 }
-                playerActionControlMessage.setPlayerId(new Integer(0));
-                playerActionControlMessage.setViewDirection(viewDirection);
-                playerActionControlMessage.setMoveDirection(walkDirection);
-                playerActionControlMessage.setAnimationStateEnum(animationStateEnum);
-                ((MainServer) app).getMagicallyousServer().broadcast(playerActionControlMessage);
-                System.out.println("Sending input response: " + playerActionControlMessage.getMoveDirection());
-                playerActionControlMessage = null;
             }
         }
     }

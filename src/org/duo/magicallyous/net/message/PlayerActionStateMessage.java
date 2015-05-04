@@ -17,6 +17,7 @@ import org.duo.magicallyous.utils.AnimationStateEnum;
  */
 @Serializable
 public class PlayerActionStateMessage extends AbstractMessage {
+    private boolean inputRegistered;
     private Integer playerId;
     private boolean moveFoward;
     private boolean moveFowardEvent;
@@ -403,5 +404,13 @@ public class PlayerActionStateMessage extends AbstractMessage {
 
     public void setDecreaseDefenseEvent(boolean decreaseDefenseEvent) {
         this.decreaseDefenseEvent = decreaseDefenseEvent;
+    }
+
+    public boolean isInputRegistered() {
+        return inputRegistered;
+    }
+
+    public void setInputRegistered(boolean inputRegistered) {
+        this.inputRegistered = inputRegistered;
     }
 }

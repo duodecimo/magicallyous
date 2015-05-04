@@ -50,7 +50,7 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        if (playerActionStateMessage != null) {
+        if (playerActionStateMessage != null && playerActionStateMessage.isInputRegistered()) {
             this.app.getMagicallyousClient().send(playerActionStateMessage);
             //System.out.println("Sending input message : " +
             //        playerActionStateMessage.isMoveFoward());
@@ -70,68 +70,81 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
     public void onAction(String name, boolean isPressed, float tpf) {
         if (playerActionStateMessage == null) {
             playerActionStateMessage = new PlayerActionStateMessage();
+            playerActionStateMessage.setInputRegistered(false);
             // for the moment the only input will be from player 0
             playerActionStateMessage.setPlayerId(new Integer(0));
         }
 
         switch (name) {
             case PlayerActionMapping.MAP_MOVEFOWARD:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setMoveFowardEvent(true);
                 playerActionStateMessage.setMoveFoward(isPressed);
                 break;
             case PlayerActionMapping.MAP_MOVEBACKWARD:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setMoveBackwardEvent(true);
                 playerActionStateMessage.setMoveBackward(isPressed);
                 break;
             case PlayerActionMapping.MAP_STOP:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setStoppedEvent(true);
                 playerActionStateMessage.setStopped(isPressed);
                 break;
             case PlayerActionMapping.MAP_TURNRIGHT:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setRotateRightEvent(true);
                 playerActionStateMessage.setRotateRight(isPressed);
                 break;
             case PlayerActionMapping.MAP_TURNLEFT:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setRotateLeftEvent(true);
                 playerActionStateMessage.setRotateLeft(isPressed);
                 break;
             case PlayerActionMapping.MAP_TOGGLEWALKSTATE:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setRequestToggleRunning(isPressed);
                 }
                 break;
             case PlayerActionMapping.MAP_INCREASEHEALTH:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setIncreaseHealthEvent(true);
                     playerActionStateMessage.setIncreaseHealth(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEHEALTH:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setDecreaseHealthEvent(true);
                     playerActionStateMessage.setDecreaseHealth(true);
                 }
                 break;
             case PlayerActionMapping.MAP_INCREASEDAMAGE:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setIncreaseDamageEvent(true);
                     playerActionStateMessage.setIncreaseDamage(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEDAMAGE:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setDecreaseDamageEvent(true);
                     playerActionStateMessage.setDecreaseDamage(true);
                 }
                 break;
             case PlayerActionMapping.MAP_INCREASEDEFENSE:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setIncreaseDefenseEvent(true);
                     playerActionStateMessage.setIncreaseDefense(true);
                 }
                 break;
             case PlayerActionMapping.MAP_DECREASEDEFENSE:
                 if (isPressed) {
+                    playerActionStateMessage.setInputRegistered(true);
                     playerActionStateMessage.setDecreaseDefenseEvent(true);
                     playerActionStateMessage.setDecreaseDefense(true);
                 }
@@ -158,14 +171,17 @@ public class PlayerSendActionInput extends AbstractAppState implements ActionLis
     public void onAnalog(String name, float value, float tpf) {
         if (playerActionStateMessage == null) {
             playerActionStateMessage = new PlayerActionStateMessage();
+            playerActionStateMessage.setInputRegistered(false);
             // for the moment the only input will be from player 0
             playerActionStateMessage.setPlayerId(new Integer(0));
         }
         switch (name) {
             case PlayerActionMapping.MAP_TURNLEFT:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setRotateValue(value);
                 break;
             case PlayerActionMapping.MAP_TURNRIGHT:
+                playerActionStateMessage.setInputRegistered(true);
                 playerActionStateMessage.setRotateValue(value);
                 break;
         }

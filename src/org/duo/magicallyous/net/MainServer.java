@@ -95,7 +95,8 @@ public class MainServer extends MagicallyousApp {
     
     public static void main(String[] args) {
         MainServer app = new MainServer();
-        app.start(JmeContext.Type.Headless);
+        //app.start(JmeContext.Type.Headless);
+        app.start(JmeContext.Type.Display);
     }
 
     public Server getMagicallyousServer() {
