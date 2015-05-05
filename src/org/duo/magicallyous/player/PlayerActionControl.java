@@ -12,13 +12,7 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.network.Client;
-import com.jme3.network.Message;
-import com.jme3.network.MessageListener;
 import com.jme3.scene.Spatial;
-import org.duo.magicallyous.Main;
-import org.duo.magicallyous.net.MainServer;
-import org.duo.magicallyous.net.message.PlayerActionControlMessage;
 import org.duo.magicallyous.utils.AnimationStateEnum;
 import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.MagicallyousApp;
@@ -27,7 +21,7 @@ import org.duo.magicallyous.utils.MagicallyousApp;
  *
  * @author duo
  */
-public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener, MessageListener<Client> {
+public class PlayerActionControl extends BetterCharacterControl implements AnimEventListener {
     private MagicallyousApp app;
     private Integer playerId;
     private GeneralStateEnum generalStateEnum;
@@ -37,7 +31,6 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private double timeCounter = 0d;
     private PlayerShootControl playerShootControl;
 
-    private boolean inputMessageReceived;
     private boolean moveFoward;
     private boolean moveBackward;
     private boolean stopped;
@@ -63,8 +56,6 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
     private boolean decreaseDamage;
     private boolean increaseDefense;
     private boolean decreaseDefense;
-    private boolean messageListenerRegistered = false;
-    private PlayerActionControlMessage playerActionControlMessage;
 
     public PlayerActionControl() {
     }
@@ -74,26 +65,18 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         this.app = app;
         this.playerId = playerId;
         this.generalStateEnum = GeneralStateEnum.NORMAL;
-        inputMessageReceived = false;
     }
 
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        if (!messageListenerRegistered) {
-            if (!this.app.isServerInstance()) {
-                ((Main) app).getMagicallyousClient().addMessageListener(this, PlayerActionControlMessage.class);
-            }
-            messageListenerRegistered = true;
-        }
         timeCounter += tpf;
         updatePlayerSate();
         animate();
-        sendPlayerActionControlMessage();
     }
 
     public void updatePlayerSate() {
-        if (getGeneralStateEnum() == GeneralStateEnum.NORMAL) {
+        if (true || getGeneralStateEnum() == GeneralStateEnum.NORMAL) {
             // not in battle and not dead!
             if (isMoveFoward() || isMoveBackward()) {
                 if (ableToRun && running) {
@@ -273,6 +256,7 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         }
         if(isMoveFoward()) {
             walkDirection.addLocal(getSpatialFowardDir().mult(speed));
+            System.out.println("Really moving foward!!!! speed = " + speed);
         } else if(isMoveBackward()) {
             walkDirection.addLocal(getSpatialFowardDir().negate().mult(speed));
         } else if(isRightStrafe()) {
@@ -287,8 +271,10 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
         float rotateBase = 0.0f;
         if(isRotateRight()) {
             rotateBase = -1.0f;
+            System.out.println("Really rotating right!!!!");
         } else if(isRotateLeft()) {
             rotateBase = 1.0f;
+            System.out.println("Really rotating left!!!!");
         }
         Quaternion quaternion = new Quaternion().fromAngleAxis(FastMath.PI * 
                 (rotateValue * rotateBase), Vector3f.UNIT_Y);
@@ -558,42 +544,5 @@ public class PlayerActionControl extends BetterCharacterControl implements AnimE
 
     public void setPlayerShootControl(PlayerShootControl playerShootControl) {
         this.playerShootControl = playerShootControl;
-    }
-
-    @Override
-    public void messageReceived(Client source, Message message) {
-        if(message instanceof PlayerActionControlMessage) {
-            PlayerActionControlMessage playerActionControlMessage = 
-                    (PlayerActionControlMessage) message;
-            if (getPlayerId() == playerActionControlMessage.getPlayerId()) {
-                turnTo(playerActionControlMessage.getViewDirection());
-                moveTo(playerActionControlMessage.getMoveDirection());
-                setAnimationStateEnum(playerActionControlMessage.getAnimationStateEnum());
-                animate();
-                System.out.println("Action message received: " + playerActionControlMessage.getMoveDirection());
-                inputMessageReceived = true;
-            }
-        }
-    }
-
-
-    public void sendPlayerActionControlMessage() {
-        if (this.app.isServerInstance()) {
-            if (inputMessageReceived) {
-                if (walkDirection.x != 0 || walkDirection.y != 0 || walkDirection.z != 0) {
-                    if (playerActionControlMessage == null) {
-                        playerActionControlMessage = new PlayerActionControlMessage();
-                    }
-                    playerActionControlMessage.setPlayerId(new Integer(0));
-                    playerActionControlMessage.setViewDirection(viewDirection);
-                    playerActionControlMessage.setMoveDirection(walkDirection);
-                    playerActionControlMessage.setAnimationStateEnum(animationStateEnum);
-                    ((MainServer) app).getMagicallyousServer().broadcast(playerActionControlMessage);
-                    System.out.println("Sending input response: " + playerActionControlMessage.getMoveDirection());
-                    playerActionControlMessage = null;
-                    inputMessageReceived = false;
-                }
-            }
-        }
     }
 }

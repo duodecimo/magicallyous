@@ -8,14 +8,20 @@ import org.duo.magicallyous.net.message.WelcomeMessage;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
+import com.jme3.scene.Node;
 import java.util.List;
+import org.duo.magicallyous.MagicallyousAppState;
+import org.duo.magicallyous.Main;
 import org.duo.magicallyous.net.MainServer;
 import org.duo.magicallyous.net.message.AccountRegisterMessage;
 import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.PlayerActionStateMessage;
+import org.duo.magicallyous.net.message.PlayerNetInputMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.player.PlayerActionControl;
+import org.duo.magicallyous.player.PlayerActionMapping;
 import org.duo.magicallyous.player.PlayerAppState;
+import org.duo.magicallyous.utils.GeneralStateEnum;
 import org.duo.magicallyous.utils.MagicallyousApp;
 
 /**
@@ -101,52 +107,77 @@ public class MainServerMessageListener implements MessageListener<HostedConnecti
                     System.out.println("  password: " + account.getPassword());
                 }
             }
-        } else if (message instanceof PlayerActionStateMessage) {
-            PlayerActionStateMessage playerActionStateMessage = (PlayerActionStateMessage) message;
-            //System.out.println("Receiving input message: " + playerActionStateMessage.isMoveFoward());
-            PlayerAppState playerAppState = 
-                    ((MainServer)getMagicallyousApp()).getStateManager().getState(PlayerAppState.class);
-            PlayerActionControl playerActionControl = 
-                    playerAppState.getPlayers().get(0).getControl(PlayerActionControl.class);
-            // set all that we got from input (see PlayerSendActionInput)
-            if (playerActionStateMessage.isMoveFowardEvent()) {
-                playerActionControl.setMoveFoward(playerActionStateMessage.isMoveFoward());
+        } else if (message instanceof PlayerNetInputMessage) {
+            System.out.println("input received! (PlayerNetInputMessage)");
+            PlayerNetInputMessage playerNetInputMessage = 
+                    (PlayerNetInputMessage) message;
+            List<Node> players = 
+                    getMagicallyousApp().getStateManager().getState(PlayerAppState.class).getPlayers();
+            // only player 0 for debug
+            Node player = players.get(0);
+            PlayerActionControl playerActionControl = player.getControl(PlayerActionControl.class);
+            playerActionControl.setGeneralStateEnum(GeneralStateEnum.NORMAL);
+            switch(playerNetInputMessage.getName()) {
+                case PlayerActionMapping.MAP_MOVEFOWARD :
+                    playerActionControl.setMoveFoward(playerNetInputMessage.isIsPressed());
+                    break;
+                case PlayerActionMapping.MAP_MOVEBACKWARD :
+                    playerActionControl.setMoveBackward(playerNetInputMessage.isIsPressed());
+                    break;
+                case PlayerActionMapping.MAP_STOP :
+                    playerActionControl.setStopped(playerNetInputMessage.isIsPressed());
+                    break;
+                case PlayerActionMapping.MAP_TURNRIGHT :
+                    playerActionControl.setRotateRight(playerNetInputMessage.isIsPressed());
+                    playerActionControl.setRotateValue(playerNetInputMessage.getValue());
+                    break;
+                case PlayerActionMapping.MAP_TURNLEFT :
+                    playerActionControl.setRotateLeft(playerNetInputMessage.isIsPressed());
+                    playerActionControl.setRotateValue(playerNetInputMessage.getValue());
+                    break;
+                case PlayerActionMapping.MAP_TOGGLEWALKSTATE :
+                    if(!playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.toggleRunning();
+                    }
+                    break;
+                case PlayerActionMapping.MAP_INCREASEHEALTH:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setIncreaseHealth(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_DECREASEHEALTH:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setDecreaseHealth(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_INCREASEDAMAGE:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setIncreaseDamage(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_DECREASEDAMAGE:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setDecreaseDamage(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_INCREASEDEFENSE:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setIncreaseDefense(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_DECREASEDEFENSE:
+                    if (playerNetInputMessage.isIsPressed()) {
+                        playerActionControl.setDecreaseDefense(true);
+                    }
+                    break;
+                case PlayerActionMapping.MAP_USESWORD :
+                    if (playerNetInputMessage.isIsPressed()) {
+                    }
+                    break;
+                default:
             }
-            if (playerActionStateMessage.isMoveBackwardEvent()) {
-                playerActionControl.setMoveBackward(playerActionStateMessage.isMoveBackward());
-            }
-            if (playerActionStateMessage.isStoppedEvent()) {
-                playerActionControl.setStopped(playerActionStateMessage.isStopped());
-            }
-            if (playerActionStateMessage.isRotateRightEvent()) {
-                playerActionControl.setRotateRight(playerActionStateMessage.isRotateRight());
-            }
-            if (playerActionStateMessage.isRotateLeftEvent()) {
-                playerActionControl.setRotateLeft(playerActionStateMessage.isRotateLeft());
-            }
-            if(playerActionStateMessage.isRequestToggleRunning()) {
-                playerActionControl.toggleRunning();
-            }
-            if (playerActionStateMessage.isIncreaseHealthEvent()) {
-                playerActionControl.setIncreaseHealth(playerActionStateMessage.isIncreaseHealth());
-            }
-            if (playerActionStateMessage.isDecreaseHealthEvent()) {
-                playerActionControl.setDecreaseHealth(playerActionStateMessage.isDecreaseHealth());
-            }
-            if (playerActionStateMessage.isIncreaseDamageEvent()) {
-                playerActionControl.setIncreaseDamage(playerActionStateMessage.isIncreaseDamage());
-            }
-            if (playerActionStateMessage.isDecreaseDamageEvent()) {
-                playerActionControl.setDecreaseDamage(playerActionStateMessage.isDecreaseDamage());
-            }
-            if (playerActionStateMessage.isIncreaseDefenseEvent()) {
-                playerActionControl.setIncreaseDefense(playerActionStateMessage.isIncreaseDefense());
-            }
-            if (playerActionStateMessage.isDecreaseDefenseEvent()) {
-                playerActionControl.setDecreaseDefense(playerActionStateMessage.isDecreaseDefense());
-            }
-            playerActionControl.setRotateValue(playerActionStateMessage.getRotateValue());
-            playerActionControl.setAnimationStateEnum(playerActionStateMessage.getAnimationStateEnum());
+            // replicate message to client
+            source.send(message);
         }
     }
 

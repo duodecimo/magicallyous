@@ -15,6 +15,7 @@ import org.duo.magicallyous.net.message.LoginRequestMessage;
 import org.duo.magicallyous.net.message.LoginResponseMessage;
 import org.duo.magicallyous.net.message.PlayerActionControlMessage;
 import org.duo.magicallyous.net.message.PlayerActionStateMessage;
+import org.duo.magicallyous.net.message.PlayerNetInputMessage;
 import org.duo.magicallyous.net.message.ServerServiceOutcomeMessage;
 import org.duo.magicallyous.net.util.ClientMessageListener;
 import org.duo.magicallyous.net.util.MagicallyousAccount;
@@ -29,6 +30,7 @@ public class Main extends MagicallyousApp {
     private Integer magicallyousClientConnectionId;
     private Integer localPlayerId;
     private MagicallyousAppState magicallyousAppState;
+    private ClientMessageListener clientMessageListener;
     private UnderworldAppState underworldAppState;
     private String actualSceneName = "";
     private final String magicallyousSceneName = "Scene01";
@@ -53,12 +55,11 @@ public class Main extends MagicallyousApp {
             Serializer.registerClass(ServerServiceOutcomeMessage.class);
             Serializer.registerClass(LoginRequestMessage.class);
             Serializer.registerClass(LoginResponseMessage.class);
-            // client sends input to server
-            Serializer.registerClass(PlayerActionStateMessage.class);
-            // server processes input message and sends action to client
-            Serializer.registerClass(PlayerActionControlMessage.class);
+            Serializer.registerClass(PlayerNetInputMessage.class);
             // register listeners
-            magicallyousClient.addMessageListener(new ClientMessageListener(), WelcomeMessage.class);
+            clientMessageListener = new ClientMessageListener();
+            magicallyousClient.addMessageListener(clientMessageListener, 
+                    WelcomeMessage.class, PlayerNetInputMessage.class);
             magicallyousClient.start();
             System.out.println("Application connected to server " 
                     + "name: " + properties.getProperty("server.name") 
@@ -90,6 +91,7 @@ public class Main extends MagicallyousApp {
         //underworldAppState = new UnderworldAppState();
         //stateManager.attach(underworldAppState);
         magicallyousAppState = new MagicallyousAppState();
+        clientMessageListener.setMagicallyousApp(this);
         stateManager.attach(magicallyousAppState);
         //stateManager.attach(new PlayerAppState());
         //stateManager.attach(new NpcAppState());

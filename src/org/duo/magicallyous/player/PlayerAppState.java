@@ -18,7 +18,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.List;
-import org.duo.magicallyous.net.util.PlayerSendActionInput;
+import org.duo.magicallyous.net.util.PlayerSendNetInput;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.MagicallyousApp;
 import org.duo.magicallyous.utils.ToneGodGuiState;
@@ -80,7 +80,7 @@ public class PlayerAppState extends AbstractAppState {
             stateManager.attach(new PlayerActionInput());
         }
         */
-        stateManager.attach(new PlayerSendActionInput());
+        stateManager.attach(new PlayerSendNetInput());
         //stateManager.attach(new PlayerActionInput());
  
         // start camera
