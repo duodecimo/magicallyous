@@ -22,7 +22,7 @@ import org.duo.magicallyous.net.util.PlayerSendNetInput;
 import org.duo.magicallyous.utils.HealthBarControl;
 import org.duo.magicallyous.utils.MagicallyousApp;
 import org.duo.magicallyous.utils.ToneGodGuiState;
-import tonegod.gui.core.Screen;
+//import tonegod.gui.core.Screen;
 
 /**
  *
@@ -91,7 +91,7 @@ public class PlayerAppState extends AbstractAppState {
         ToneGodGuiState toneGodGuiState = stateManager.getState(ToneGodGuiState.class);
         if (toneGodGuiState != null) {
             stateManager.detach(toneGodGuiState);
-            this.app.getGuiNode().removeControl(Screen.class);
+            //this.app.getGuiNode().removeControl(Screen.class);
             this.app.getGuiNode().detachAllChildren();
         }
         stateManager.attach(new ToneGodGuiState());

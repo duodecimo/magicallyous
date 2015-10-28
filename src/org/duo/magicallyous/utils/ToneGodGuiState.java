@@ -16,29 +16,32 @@ import com.jme3.math.Vector4f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.duo.magicallyous.Main;
-import tonegod.gui.controls.buttons.Button;
-import tonegod.gui.controls.extras.Indicator;
-import tonegod.gui.controls.lists.Table;
-import tonegod.gui.controls.windows.Panel;
-import tonegod.gui.controls.windows.Window;
-import tonegod.gui.core.Element;
-import tonegod.gui.core.Screen;
+//import tonegod.gui.controls.buttons.Button;
+//import tonegod.gui.controls.extras.Indicator;
+//import tonegod.gui.controls.lists.Table;
+//import tonegod.gui.controls.windows.Panel;
+//import tonegod.gui.controls.windows.Window;
+//import tonegod.gui.core.Element;
+//import tonegod.gui.core.Screen;
 
 /**
  *
  * @author duo
  */
 public class ToneGodGuiState extends AbstractAppState {
+
     Main app;
     Node player;
     Node actualScene;
     Node underworld;
+/*
     private Screen screen;
     Indicator healthBarIndicator;
     Table statsTable;
     int playerDamage;
     int playerDefense;
-
+*/
+    
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
@@ -46,6 +49,7 @@ public class ToneGodGuiState extends AbstractAppState {
         System.out.println("Starting toneGod!");
         actualScene = (Node) this.app.getRootNode().getChild(this.app.getActualSceneName());
         player = (Node) actualScene.getChild("player");
+/*
         playerDamage = getPlayerDamage();
         playerDefense = getPlayerDefense();
         screen = new Screen(this.app);
@@ -224,5 +228,7 @@ public class ToneGodGuiState extends AbstractAppState {
 
     public int getPlayerDefense() {
         return player.getUserData("defense");
+*/
+        }
+
     }
-}
